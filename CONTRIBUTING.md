@@ -88,7 +88,7 @@ Looking at the existing issues is a great way to find something to contribute on
 
 
 ## Code of Conduct
-This project has adopted an [Open Source Code of Conduct](./CODE_OF_CONDUCT.md).
+This project has adopted an [Open Source Code of Conduct](CODE_OF_CONDUCT.md).
 
 
 ## Security issue notifications
@@ -97,6 +97,6 @@ If you discover a potential security issue in this project we ask that you notif
 
 ## Licensing
 
-See the [LICENSE](./LICENSE.txt) file for our project's licensing. We will ask you to confirm the licensing of your contribution.
+See the [LICENSE](LICENSE.txt) file for our project's licensing. We will ask you to confirm the licensing of your contribution.
 
 We may ask you to sign a [Contributor License Agreement (CLA)](http://en.wikipedia.org/wiki/Contributor_License_Agreement) for larger changes.

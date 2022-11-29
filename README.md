@@ -27,7 +27,7 @@ They are available for download from [Artifacts page](https://opensearch.org/art
 ### Windows
 
 1. Run the `.msi` installer to install the OpenSearch SQL ODBC Driver.
-2. [Test connection](./docs/user/windows_configure_dsn.md) using ODBC Data Source Administrator.
+2. [Test connection](docs/user/windows_configure_dsn.md) using ODBC Data Source Administrator.
 
 To use the driver with Tableau:
 1. Copy the `.tdc` file from `<driver-install-dir>/resources` to `<windows-user-dir>/Documents/My Tableau Repository/Datasources`.
@@ -39,7 +39,7 @@ This will customize the connection from Tableau to OpenSearch, ensuring that the
 [iODBC Driver Manager](http://www.iodbc.org/dataspace/doc/iodbc/wiki/iodbcWiki/WelcomeVisitors) should be installed before installing the OpenSearch SQL ODBC Driver on Mac.
 
 1. Run the `.pkg` installer to install the OpenSearch SQL ODBC Driver.
-2. Configure a Driver and DSN entry for the OpenSearch SQL ODBC Driver, following the instructions [here](./docs/user/mac_configure_dsn.md).
+2. Configure a Driver and DSN entry for the OpenSearch SQL ODBC Driver, following the instructions [here](docs/user/mac_configure_dsn.md).
 
 To use the driver with Tableau:
 1. Copy the `.tdc` file from `<driver-install-dir>/resources` to `<mac-user-dir>/Documents/My Tableau Repository/Datasources`.
@@ -56,7 +56,7 @@ If using with ODBC compatible BI tools, refer to the tool documentation on confi
 
 ### Connection Strings and Configuring the Driver
 
-A list of options available for configuring driver behaviour is available [here](./docs/user/configuration_options.md).
+A list of options available for configuring driver behaviour is available [here](docs/user/configuration_options.md).
 
 To setup a connection, the driver uses an ODBC connection string. Connection strings are semicolon-delimited strings specifying the set of options to use for a connection. Typically, a connection string will either:
 
@@ -67,7 +67,7 @@ To setup a connection, the driver uses an ODBC connection string. Connection str
 
 ### Building
 
-Please refer to the [build instructions](./docs/dev/BUILD_INSTRUCTIONS.md) for detailed build instructions on your platform.
+Please refer to the [build instructions](docs/dev/BUILD_INSTRUCTIONS.md) for detailed build instructions on your platform.
 If your PC is already setup to build the library, you can simply invoke cmake using
 
 > cmake ./src
@@ -79,7 +79,7 @@ From the projects root directory, then build the project using Visual Studio (Wi
 
 ### Testing
 
-**NOTE**: Some tests in ITODBCConnection will fail if a test DSN (Data Source Name) is not configured on your system. Refer to "Running Tests" in the [build instructions](./docs/dev/BUILD_INSTRUCTIONS.md) for more information on configuring this.
+**NOTE**: Some tests in ITODBCConnection will fail if a test DSN (Data Source Name) is not configured on your system. Refer to "Running Tests" in the [build instructions](docs/dev/BUILD_INSTRUCTIONS.md) for more information on configuring this.
 
 ## Documentation
 
@@ -87,7 +87,7 @@ Please refer to the [documentation](https://docs-beta.opensearch.org/) for detai
 
 ## Code of Conduct
 
-This project has adopted an [Open Source Code of Conduct](./CODE_OF_CONDUCT.md).
+This project has adopted an [Open Source Code of Conduct](CODE_OF_CONDUCT.md).
 
 ## Security issue notifications
 
@@ -95,7 +95,7 @@ If you discover a potential security issue in this project we ask that you notif
 
 ## Licensing
 
-See the [LICENSE](./LICENSE.txt) file for our project's licensing. We will ask you to confirm the licensing of your contribution.
+See the [LICENSE](LICENSE.txt) file for our project's licensing. We will ask you to confirm the licensing of your contribution.
 
 ## Copyright
 

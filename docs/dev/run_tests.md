@@ -10,7 +10,7 @@
 
 Loading a dataset requires an [OpenSearch](https://docs-beta.opensearch.org/opensearch/install/index/) service running with [OpenSearch Dashboards](https://docs-beta.opensearch.org/dashboards/index/). If either of these are missing, please refer to the documentation on how to set them up.
 
-Note, if you wish to work with SSL/TLS, you need to configure OpenSearch and OpenSearch Dashboards to support it. See the [build instructions](./BUILD_INSTRUCTIONS.md) for more info.
+Note, if you wish to work with SSL/TLS, you need to configure OpenSearch and OpenSearch Dashboards to support it. See the [build instructions](BUILD_INSTRUCTIONS.md) for more info.
 
 First load the sample datasets provided by OpenSearch Dashboards.
 
