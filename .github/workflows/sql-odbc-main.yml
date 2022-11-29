@@ -6,11 +6,11 @@ on:
     branches-ignore:
       - 'dependabot/**'
     paths:
-      - 'sql-odbc/**'
+      - '.'
       - '.github/workflows/sql-odbc-main.yml'
 
 env:
-  CI_OUTPUT_PATH: "sql-odbc/ci-output"
+  CI_OUTPUT_PATH: "./ci-output"
   ODBC_LIB_PATH: "./build/odbc/lib"
   ODBC_BIN_PATH: "./build/odbc/bin"
   ODBC_BUILD_PATH: "./build/odbc/build"
@@ -35,7 +35,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: cppcheck-results
-        path: sql-odbc/cppcheck-results.log
+        path: cppcheck-results.log
     - name: get-dependencies
       run: |
         brew unlink unixodbc
@@ -73,13 +73,13 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: mac64-build
-        path: sql-odbc/build-output
+        path: build-output
     - name: upload-installer
       if: success()
       uses: actions/upload-artifact@v3
       with:
         name: mac64-installer
-        path: sql-odbc/installer
+        path: installer
     #- name: upload-test-results
     #  if: always()
     #  uses: actions/upload-artifact@v3
@@ -118,13 +118,13 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: windows32-build
-        path: sql-odbc/ci-output/build
+        path: ci-output/build
     - name: upload-installer
       if: always()
       uses: actions/upload-artifact@v3
       with:
         name: windows32-installer
-        path: sql-odbc/ci-output/installer
+        path: ci-output/installer
     #- name: upload-test-results
     #  if: always()
     #  uses: actions/upload-artifact@v3
@@ -163,16 +163,16 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: windows64-build
-        path: sql-odbc/ci-output/build
+        path: ci-output/build
     - name: upload-installer
       if: always()
       uses: actions/upload-artifact@v3
       with:
         name: windows64-installer
-        path: sql-odbc/ci-output/installer
+        path: ci-output/installer
     #- name: upload-test-results
     #  if: always()
     #  uses: actions/upload-artifact@v3
     #  with:
     #    name: windows-test-results
-    #    path: sql-odbc/ci-output/test-output
+    #    path: ci-output/test-output
