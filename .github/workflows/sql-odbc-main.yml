@@ -85,9 +85,6 @@ jobs:
     #    path: test-output
   build-windows32:
     runs-on: windows-2019
-    defaults:
-      run:
-        working-directory: sql-odbc
     steps:
     - uses: actions/checkout@v3
     - name: Get specific version CMake, v3.18.3
