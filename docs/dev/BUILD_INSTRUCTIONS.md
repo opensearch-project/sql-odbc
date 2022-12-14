@@ -54,7 +54,7 @@ msbuild .\build\odbc\PACKAGE.vcxproj -p:Configuration=Release
 `OpenSearch SQL ODBC Driver-<version>-Windows-<Bitness>-bit.msi` will be generated in the build directory.
 
 ### Testing
-See [run_tests.md](run_tests.md)
+See [run_tests.md](./run_tests.md)
 
 ## Mac
 
@@ -99,7 +99,7 @@ cpack .
 `OpenSearch SQL ODBC Driver-<version>-Darwin.pkg` will be generated in the build directory.
 
 ### Testing
-See [run_tests.md](run_tests.md)
+See [run_tests.md](./run_tests.md)
 
 ## General Build Info
 
