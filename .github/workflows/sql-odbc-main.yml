@@ -1,6 +1,7 @@
 name: OpenSearch ODBC Driver
 
 on:
+  workflow_dispatch:
   pull_request:
   push:
     branches-ignore:
@@ -13,14 +14,15 @@ env:
   CI_OUTPUT_PATH: "./ci-output"
   ODBC_LIB_PATH: "./build/odbc/lib"
   ODBC_BIN_PATH: "./build/odbc/bin"
-  ODBC_BUILD_PATH: "./build/odbc/build"
-  AWS_SDK_INSTALL_PATH: "./build/aws-sdk/install"
+  ODBC_BUILD_PATH: "./build/odbc/cmake"
+  VCPKG_X64_INSTALL_PATH: ".\\src\\vcpkg_installed\\x64-windows"
+  VCPKG_X86_INSTALL_PATH: ".\\src\\vcpkg_installed\\x86-windows"
 
 # Tests are disabled (commented out) in all jobs because they are fail and/or outdated
 # Keeping them for the brighten future when we can re-activate them
 jobs:    
   build-mac:
-    runs-on: macos-10.15
+    runs-on: macos-12
     steps:
     - uses: actions/checkout@v3
     - name: run-cppcheck
@@ -85,9 +87,6 @@ jobs:
     #    path: test-output
   build-windows32:
     runs-on: windows-2019
-    defaults:
-      run:
-        working-directory: .
     steps:
     - uses: actions/checkout@v3
     - name: Get specific version CMake, v3.18.3
@@ -100,7 +99,7 @@ jobs:
     - name: build-installer
       if: success()
       run: |
-        .\scripts\build_installer.ps1 Release Win32 .\src $Env:ODBC_BUILD_PATH $Env:AWS_SDK_INSTALL_PATH
+        .\scripts\build_installer.ps1 Release Win32 .\src $Env:ODBC_BUILD_PATH $Env:VCPKG_X86_INSTALL_PATH
     #- name: test
     #  run: |
     #    cp .\\libraries\\VisualLeakDetector\\bin32\\*.* .\\bin32\\Release
@@ -130,9 +129,6 @@ jobs:
     #    path: $CI_OUTPUT_PATH/test
   build-windows64:
     runs-on: windows-2019
-    defaults:
-      run:
-        working-directory: .
     steps:
     - uses: actions/checkout@v3
     - name: Get specific version CMake, v3.18.3
@@ -145,7 +141,7 @@ jobs:
     - name: build-installer
       if: success()
       run: |
-        .\scripts\build_installer.ps1 Release x64 .\src $Env:ODBC_BUILD_PATH $Env:AWS_SDK_INSTALL_PATH
+        .\scripts\build_installer.ps1 Release x64 .\src $Env:ODBC_BUILD_PATH $Env:VCPKG_X64_INSTALL_PATH
     #- name: test
     #  run: |
     #    cp .\\libraries\\VisualLeakDetector\\bin64\\*.* .\\bin64\\Release

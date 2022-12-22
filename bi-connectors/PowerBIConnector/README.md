@@ -6,7 +6,7 @@ The release snapshots are also available here: [OpenSearch Project](OpenSearchPr
 ## Connector Install
 
 1. Put connector `mez` file into: `C:\Users\%USERNAME%\Documents\Power BI Desktop\Custom Connectors`.
-2. Install OpenSearch `ODBC` [driver](../../sql-odbc/README.md).
+2. Install OpenSearch `ODBC` [driver](README.md).
 3. Run `Power BI Desktop`.
 4. Check under `File | Options and settings | Options | Security | Data Extensions` option `(Not Recommended) Allow any extension to load without validation or warning in Power BI Desktop`:
 <img src="img/pbi_settings.png">

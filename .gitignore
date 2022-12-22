@@ -4,7 +4,6 @@
 *.ipdb
 *.pdb
 *.exp
-*.lib
 *.res
 *.idb
 *.res
@@ -36,8 +35,6 @@ src/IntegrationTests/ITODBCHelper/ITODBCHelper.vcxproj.user
 src/IntegrationTests/ITODBCExecution/memory_leak_report.txt
 src/IntegrationTests/ITODBCResults/ITODBCResults.vcxproj.user
 LICENSE.txt
-/AWSSDK/
-/sdk-build/
 /CMakeFiles/
 /googletest/
 /installer/
