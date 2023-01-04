@@ -92,7 +92,7 @@ From the projects root directory, then build the project using Visual Studio (Wi
 
 ## Documentation
 
-Please refer to the [documentation](https://docs-beta.opensearch.org/) for detailed information on installing and configuring OpenSearch.
+Please refer to the [documentation](https://opensearch.org/docs/latest/) for detailed information on installing and configuring OpenSearch.
 
 ## Code of Conduct
 
@@ -108,5 +108,5 @@ See the [LICENSE](LICENSE.txt) file for our project's licensing. We will ask you
 
 ## Copyright
 
-Copyright OpenSearch Contributors. See [NOTICE](./NOTICE) for details.
+Copyright OpenSearch Contributors. See [NOTICE](NOTICE) for details.
 
