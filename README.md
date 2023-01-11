@@ -25,8 +25,7 @@ The driver is compatible with ODBC 3.51.
 
 ## BI Tool Connectors
 
-* [Power BI Desktop](../bi-connectors/PowerBIConnector/README.md)
-* [Tableau Desktop](../bi-connectors/TableauConnector/README.md)
+* [Power BI Desktop](bi-connectors/PowerBIConnector/README.md)
 
 ## Download and Installation the Driver
 
