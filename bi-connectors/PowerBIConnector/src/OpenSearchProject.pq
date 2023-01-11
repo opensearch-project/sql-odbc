@@ -234,7 +234,7 @@ OpenSearchProject.Publish = [
     Beta = false,
     Category = "Other",
     ButtonText = { Extension.LoadString("ButtonTitle"), Extension.LoadString("ButtonHelp") },
-    LearnMoreUrl = "https://github.com/opensearch-project/sql/blob/main/bi-connectors/PowerBIConnector/docs/OpenSearchProject.md",
+    LearnMoreUrl = "https://github.com/opensearch-project/sql-odbc/blob/main/bi-connectors/PowerBIConnector/OpenSearchProject.md",
     
     SupportsDirectQuery = true,
 
