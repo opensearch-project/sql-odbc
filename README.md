@@ -25,8 +25,7 @@ The driver is compatible with ODBC 3.51.
 
 ## BI Tool Connectors
 
-* [Power BI Desktop](../bi-connectors/PowerBIConnector/README.md)
-* [Tableau Desktop](../bi-connectors/TableauConnector/README.md)
+* [Power BI Desktop](bi-connectors/PowerBIConnector/README.md)
 
 ## Download and Installation the Driver
 
@@ -92,7 +91,7 @@ From the projects root directory, then build the project using Visual Studio (Wi
 
 ## Documentation
 
-Please refer to the [documentation](https://docs-beta.opensearch.org/) for detailed information on installing and configuring OpenSearch.
+Please refer to the [documentation](https://opensearch.org/docs/latest/) for detailed information on installing and configuring OpenSearch.
 
 ## Code of Conduct
 
@@ -108,5 +107,5 @@ See the [LICENSE](LICENSE.txt) file for our project's licensing. We will ask you
 
 ## Copyright
 
-Copyright OpenSearch Contributors. See [NOTICE](./NOTICE) for details.
+Copyright OpenSearch Contributors. See [NOTICE](NOTICE) for details.
 
