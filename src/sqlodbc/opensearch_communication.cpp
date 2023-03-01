@@ -12,6 +12,7 @@
 #include <aws/core/client/AWSClient.h>
 #include <aws/core/utils/HashingUtils.h>
 #include <aws/core/auth/AWSAuthSigner.h>
+#include <aws/core/auth/AWSCredentials.h>
 #include <aws/core/auth/AWSCredentialsProvider.h>
 #include <aws/core/http/HttpClient.h>
 // clang-format on
@@ -428,10 +429,9 @@ OpenSearchCommunication::IssueRequest(
             Aws::Utils::HashingUtils::Base64Encode(userpw_arr);
         request->SetAuthorization("Basic " + hashed_userpw);
     } else if (m_rt_opts.auth.auth_type == AUTHTYPE_IAM) {
-        std::shared_ptr< Aws::Auth::ProfileConfigFileAWSCredentialsProvider >
+        std::shared_ptr< Aws::Auth::AWSCredentials >
             credential_provider = Aws::MakeShared<
-                Aws::Auth::ProfileConfigFileAWSCredentialsProvider >(
-                ALLOCATION_TAG.c_str(), ESODBC_PROFILE_NAME.c_str());
+                Aws::Auth::DefaultAWSCredentialsProviderChain >().GetAWSCredentials();
         Aws::Client::AWSAuthV4Signer signer(credential_provider,
                                             SERVICE_NAME.c_str(),
                                             m_rt_opts.auth.region.c_str());
