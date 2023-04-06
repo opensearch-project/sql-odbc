@@ -37,7 +37,6 @@ jobs:
         path: cppcheck-results.log
     - name: get-dependencies
       run: |
-        brew unlink unixodbc
         brew install curl
         brew install cmake
         brew install libiodbc
