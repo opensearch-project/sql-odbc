@@ -120,7 +120,7 @@ elseif(APPLE)
 								SQLCOLATTRIBUTE_SQLLEN
 							)
 	# iODBC includes
-	include_directories(/usr/local/include)
+	include_directories(/usr/local/opt/libiodbc/include)
 elseif(UNIX)
 	# Unix specific
 	add_compile_definitions	(	WITH_UNIXODBC	
