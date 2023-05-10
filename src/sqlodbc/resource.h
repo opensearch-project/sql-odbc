@@ -40,6 +40,8 @@
 #define IDC_AUTHTYPE                    1115
 #define IDC_HOST_VER                    1115
 #define IDC_USERNAME_STATIC             1116
+#define IDC_TUNNEL_HOST_STATIC          1119
+#define IDC_TUNNEL_HOST                 1120
 #define IDC_REGION                      1121
 #define IDC_REGION_STATIC               1122
 #define IDC_AUTH_STATIC                 1123

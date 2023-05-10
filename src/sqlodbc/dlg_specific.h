@@ -43,7 +43,8 @@ extern "C" {
 #define INI_PASSWORD "password"        
 #define INI_PASSWORD_ABBR "PWD"  
 #define INI_AUTH_MODE "auth"
-#define INI_REGION "region" 
+#define INI_REGION "region"
+#define INI_TUNNEL_HOST "tunnel_host"
 #define INI_SSL_USE "useSSL"  
 #define INI_SSL_HOST_VERIFY "hostnameVerification"
 #define INI_LOG_LEVEL "logLevel"
@@ -63,7 +64,6 @@ extern "C" {
 #define DEFAULT_DRIVERNAME "opensearchodbc"
 #define DEFAULT_DESC ""
 #define DEFAULT_DSN ""
-#define DEFAULT_REGION ""
 #define DEFAULT_VERIFY_SERVER 1
 
 #define AUTHTYPE_NONE "NONE"
@@ -124,6 +124,7 @@ extern "C" {
 #define DEFAULT_TRUST_SELF_SIGNED 0
 #define DEFAULT_AUTH_MODE "NONE"
 #define DEFAULT_REGION ""
+#define DEFAULT_TUNNEL_HOST ""
 #define DEFAULT_CERTIFICATE ""
 #define DEFAULT_KEY ""
 #define DEFAULT_UNKNOWNSIZES UNKNOWNS_AS_MAX

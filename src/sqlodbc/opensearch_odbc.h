@@ -612,6 +612,7 @@ typedef struct {
     char username[MEDIUM_REGISTRY_LEN];
     opensearchNAME password;
     char region[MEDIUM_REGISTRY_LEN];
+    char tunnel_host[MEDIUM_REGISTRY_LEN];
 
     // Encryption
     char use_ssl;

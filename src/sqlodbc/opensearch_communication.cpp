@@ -432,14 +432,35 @@ OpenSearchCommunication::IssueRequest(
             credential_provider = Aws::MakeShared<
                 Aws::Auth::ProfileConfigFileAWSCredentialsProvider >(
                 ALLOCATION_TAG.c_str(), ESODBC_PROFILE_NAME.c_str());
+
+        LogMsg(OPENSEARCH_ALL,
+               (Aws::String("=== KEY = ")
+                + credential_provider->GetAWSCredentials().GetAWSAccessKeyId()
+                + " SECRET = "
+                + credential_provider->GetAWSCredentials().GetAWSSecretKey()
+                + " TOKEN = "
+                + credential_provider->GetAWSCredentials().GetSessionToken())
+                   .c_str());
+
         Aws::Client::AWSAuthV4Signer signer(credential_provider,
                                             SERVICE_NAME.c_str(),
                                             m_rt_opts.auth.region.c_str());
+
+        LogMsg(OPENSEARCH_ALL, (Aws::String("=== TUNNEH_HOST = ")
+                                + m_rt_opts.auth.tunnel_host.c_str()).c_str());
+
+        if (m_rt_opts.auth.tunnel_host.length() > 0) {
+            request->SetHeaderValue("host", m_rt_opts.auth.tunnel_host.c_str());
+        }
         signer.SignRequest(*request);
     }
 
     // Issue request and return response
-    return m_http_client->MakeRequest(request);
+    auto resp = m_http_client->MakeRequest(request);
+    char body[1024];
+    resp->GetResponseBody().getline(&body[0], 1024);
+    LogMsg(OPENSEARCH_ALL, (Aws::String("=== ") + body).c_str());
+    return resp;
 }
 
 bool OpenSearchCommunication::IsSQLPluginEnabled(std::shared_ptr< ErrorDetails > error_details) {

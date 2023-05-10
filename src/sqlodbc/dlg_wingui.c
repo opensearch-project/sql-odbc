@@ -63,14 +63,17 @@ void SetAuthenticationVisibility(HWND hdlg, const struct authmode *am) {
         EnableWindow(GetDlgItem(hdlg, IDC_USER), TRUE);
         EnableWindow(GetDlgItem(hdlg, IDC_PASSWORD), TRUE);
         EnableWindow(GetDlgItem(hdlg, IDC_REGION), FALSE);
+        EnableWindow(GetDlgItem(hdlg, IDC_TUNNEL_HOST), FALSE);
     } else if (strcmp(am->authtype_str, AUTHTYPE_IAM) == 0) {
         EnableWindow(GetDlgItem(hdlg, IDC_USER), FALSE);
         EnableWindow(GetDlgItem(hdlg, IDC_PASSWORD), FALSE);
         EnableWindow(GetDlgItem(hdlg, IDC_REGION), TRUE);
+        EnableWindow(GetDlgItem(hdlg, IDC_TUNNEL_HOST), TRUE);
     } else {
         EnableWindow(GetDlgItem(hdlg, IDC_USER), FALSE);
         EnableWindow(GetDlgItem(hdlg, IDC_PASSWORD), FALSE);
         EnableWindow(GetDlgItem(hdlg, IDC_REGION), FALSE);
+        EnableWindow(GetDlgItem(hdlg, IDC_TUNNEL_HOST), FALSE);
     } 
 }
 
@@ -99,6 +102,7 @@ void SetDlgStuff(HWND hdlg, const ConnInfo *ci) {
     SetDlgItemText(hdlg, IDC_USER, ci->username);
     SetDlgItemText(hdlg, IDC_PASSWORD, SAFE_NAME(ci->password));
     SetDlgItemText(hdlg, IDC_REGION, ci->region);
+    SetDlgItemText(hdlg, IDC_TUNNEL_HOST, ci->tunnel_host);
 }
 
 static void GetNameField(HWND hdlg, int item, opensearchNAME *name) {
@@ -117,6 +121,8 @@ void GetDlgStuff(HWND hdlg, ConnInfo *ci) {
     GetDlgItemText(hdlg, IDC_USER, ci->username, sizeof(ci->username));
     GetNameField(hdlg, IDC_PASSWORD, &ci->password);
     GetDlgItemText(hdlg, IDC_REGION, ci->region, sizeof(ci->region));
+    GetDlgItemText(hdlg, IDC_TUNNEL_HOST, ci->tunnel_host,
+                   sizeof(ci->tunnel_host));
     const struct authmode *am = GetCurrentAuthMode(hdlg);
     SetAuthenticationVisibility(hdlg, am);
     STRCPY_FIXED(ci->authtype, am->authtype_str);
