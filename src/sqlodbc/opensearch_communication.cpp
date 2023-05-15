@@ -12,7 +12,7 @@
 #include <aws/core/client/AWSClient.h>
 #include <aws/core/utils/HashingUtils.h>
 #include <aws/core/auth/AWSAuthSigner.h>
-#include <aws/core/auth/AWSCredentialsProviderChain.h>
+#include <aws/core/auth/AWSCredentialsProvider.h>
 #include <aws/core/http/HttpClient.h>
 // clang-format on
 
