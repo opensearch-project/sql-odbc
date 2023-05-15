@@ -12,7 +12,7 @@
 #include <aws/core/client/AWSClient.h>
 #include <aws/core/utils/HashingUtils.h>
 #include <aws/core/auth/AWSAuthSigner.h>
-#include <aws/core/auth/AWSCredentialsProvider.h>
+#include <aws/core/auth/AWSCredentialsProviderChain.h>
 #include <aws/core/http/HttpClient.h>
 // clang-format on
 
@@ -352,6 +352,18 @@ bool OpenSearchCommunication::CheckConnectionOptions() {
                         ConnErrorType::CONN_ERROR_UNABLE_TO_ESTABLISH);
     }
 
+    Aws::Http::URI host(m_rt_opts.conn.server.c_str());
+    // URI class sets default port if not set
+    // Raise a error if server host field contains a port which doesn't match port field
+    // We can check URI for non-default port only
+    if (((host.GetScheme() == Aws::Http::Scheme::HTTP && host.GetPort() != Aws::Http::HTTP_DEFAULT_PORT)
+        || (host.GetScheme() == Aws::Http::Scheme::HTTPS && host.GetPort() != Aws::Http::HTTPS_DEFAULT_PORT))
+        && (m_rt_opts.conn.port.length() > 0 && host.GetPort() != atoi(m_rt_opts.conn.port.c_str()))) {
+        m_error_message = "Ambigiuos port value specified.";
+        SetErrorDetails("Connection error", m_error_message,
+                        ConnErrorType::CONN_ERROR_UNABLE_TO_ESTABLISH);
+    }
+
     if (m_error_message != "") {
         LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
         m_valid_connection_options = false;
@@ -387,12 +399,15 @@ OpenSearchCommunication::IssueRequest(
     const std::string& content_type, const std::string& query,
     const std::string& fetch_size, const std::string& cursor) {
     // Generate http request
+    Aws::Http::URI host(m_rt_opts.conn.server.c_str());
+    if (m_rt_opts.conn.port.length() > 0) {
+        host.SetPort((uint16_t) atoi(m_rt_opts.conn.port.c_str()));
+    }
+    host.SetPath(endpoint.c_str());
+
     std::shared_ptr< Aws::Http::HttpRequest > request =
         Aws::Http::CreateHttpRequest(
-            Aws::String(
-                m_rt_opts.conn.server
-                + (m_rt_opts.conn.port.empty() ? "" : ":" + m_rt_opts.conn.port)
-                + endpoint),
+            host.GetURIString(),
             request_type,
             Aws::Utils::Stream::DefaultResponseStreamFactoryMethod);
 
@@ -433,34 +448,21 @@ OpenSearchCommunication::IssueRequest(
                 Aws::Auth::ProfileConfigFileAWSCredentialsProvider >(
                 ALLOCATION_TAG.c_str(), ESODBC_PROFILE_NAME.c_str());
 
-        LogMsg(OPENSEARCH_ALL,
-               (Aws::String("=== KEY = ")
-                + credential_provider->GetAWSCredentials().GetAWSAccessKeyId()
-                + " SECRET = "
-                + credential_provider->GetAWSCredentials().GetAWSSecretKey()
-                + " TOKEN = "
-                + credential_provider->GetAWSCredentials().GetSessionToken())
-                   .c_str());
-
         Aws::Client::AWSAuthV4Signer signer(credential_provider,
                                             SERVICE_NAME.c_str(),
                                             m_rt_opts.auth.region.c_str());
 
-        LogMsg(OPENSEARCH_ALL, (Aws::String("=== TUNNEH_HOST = ")
-                                + m_rt_opts.auth.tunnel_host.c_str()).c_str());
-
         if (m_rt_opts.auth.tunnel_host.length() > 0) {
-            request->SetHeaderValue("host", m_rt_opts.auth.tunnel_host.c_str());
+            request->SetHeaderValue("host",
+                                    Aws::Http::URI(m_rt_opts.auth.tunnel_host.c_str())
+                                        .GetAuthority()
+                                        .c_str());
         }
         signer.SignRequest(*request);
     }
 
     // Issue request and return response
-    auto resp = m_http_client->MakeRequest(request);
-    char body[1024];
-    resp->GetResponseBody().getline(&body[0], 1024);
-    LogMsg(OPENSEARCH_ALL, (Aws::String("=== ") + body).c_str());
-    return resp;
+    return m_http_client->MakeRequest(request);
 }
 
 bool OpenSearchCommunication::IsSQLPluginEnabled(std::shared_ptr< ErrorDetails > error_details) {
