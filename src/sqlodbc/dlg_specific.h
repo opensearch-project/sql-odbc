@@ -44,7 +44,7 @@ extern "C" {
 #define INI_PASSWORD_ABBR "PWD"  
 #define INI_AUTH_MODE "auth"
 #define INI_REGION "region"
-#define INI_TUNNEL_HOST "tunnel_host"
+#define INI_TUNNEL_HOST "TunnelHost"
 #define INI_SSL_USE "useSSL"  
 #define INI_SSL_HOST_VERIFY "hostnameVerification"
 #define INI_LOG_LEVEL "logLevel"
