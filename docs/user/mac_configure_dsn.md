@@ -14,7 +14,7 @@ Note: In order to use the OpenSearch SQL ODBC driver with the [Tableau Connector
 	* **Description of the Driver**: The driver name used for ODBC connections (ex. `OpenSearch SQL ODBC Driver`)
 	* **Driver File Name**: The path to the driver file (default installed path: `/Library/ODBC/opensearch-sql-odbc/bin/libsqlodbc.dylib`)
 	* **Setup File Name**: The path to the driver file (default installed path: `/Library/ODBC/opensearch-sql-odbc/bin/libsqlodbc.dylib`)
-	* Set as a **User** driver
+	* Set as a **System** driver
     * Below is a screenshot of how the final screen should look.
 3. Click **OK** to save the options.
 
@@ -69,3 +69,92 @@ Try the following:
     Username = admin
     Password = admin
 	```
+
+## Configuration examples
+
+### `BASIC` Authentication
+
+```ini
+[ODBC Data Sources]
+OpenSearch SQL ODBC DSN = OpenSearch SQL ODBC Driver
+
+[ODBC]
+TraceLibrary  =
+Trace         = 1
+TraceAutoStop = 0
+TraceFile     = /Library/ODBC/opensearch-sql-odbc/odbc.log
+TraceDLL      =
+
+[OpenSearch SQL ODBC DSN]
+Driver               = /Library/ODBC/opensearch-sql-odbc/bin/libsqlodbc.dylib
+Host                 = https://localhost
+Port                 = 9200
+UseSSL               = 1
+ResponseTimeout      = 6
+HostnameVerification = 0
+LogOutput            = /Library/ODBC/opensearch-sql-odbc
+Auth                 = BASIC
+```
+
+<p align="center"> 
+<img src="img/mac_dsn_config_basic_auth.png" width="80%"/>
+</p>
+
+### `AWS_SIGv4` Authentication
+
+```ini
+[ODBC Data Sources]
+OpenSearch SQL ODBC DSN = OpenSearch SQL ODBC Driver
+
+[ODBC]
+TraceLibrary  =
+Trace         = 1
+TraceAutoStop = 0
+TraceFile     = /Library/ODBC/opensearch-sql-odbc/odbc.log
+TraceDLL      =
+
+[OpenSearch SQL ODBC DSN]
+Driver               = /Library/ODBC/opensearch-sql-odbc/bin/libsqlodbc.dylib
+Host                 = https://search-*.us-east-1.es.amazonaws.com/
+Port                 = 443
+UseSSL               = 1
+ResponseTimeout      = 6
+HostnameVerification = 1
+Region               = us-east-1
+LogOutput            = /Library/ODBC/opensearch-sql-odbc
+Auth                 = AWS_SIGV4
+```
+
+<p align="center"> 
+<img src="img/mac_dsn_config_aws_sigv4_auth.png" width="80%"/>
+</p>
+
+### `AWS_SIGv4` Authentication with connecting to a VPC endpoint behind SSH tunnel
+
+```ini
+[ODBC Data Sources]
+OpenSearch SQL ODBC DSN = OpenSearch SQL ODBC Driver
+
+[ODBC]
+TraceLibrary  =
+Trace         = 1
+TraceAutoStop = 0
+TraceFile     = /Library/ODBC/opensearch-sql-odbc/odbc.log
+TraceDLL      =
+
+[OpenSearch SQL ODBC DSN]
+Driver               = /Library/ODBC/opensearch-sql-odbc/bin/libsqlodbc.dylib
+Host                 = https://localhost
+Port                 = 9200
+UseSSL               = 1
+ResponseTimeout      = 6
+HostnameVerification = 0
+Region               = us-east-1
+LogOutput            = /Library/ODBC/opensearch-sql-odbc
+Auth                 = AWS_SIGV4
+TunnelHost           = vpc-*.us-east-1.es.amazonaws.com
+```
+
+<p align="center"> 
+<img src="img/mac_dsn_config_aws_sigv4_auth_with_ssh_tunnel.png" width="80%"/>
+</p>
