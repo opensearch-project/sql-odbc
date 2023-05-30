@@ -123,6 +123,7 @@ int LIBOPENSEARCH_connect(ConnectionClass *self) {
     rt_opts.auth.username.assign(self->connInfo.username);
     rt_opts.auth.password.assign(SAFE_NAME(self->connInfo.password));
     rt_opts.auth.region.assign(self->connInfo.region);
+    rt_opts.auth.tunnel_host.assign(self->connInfo.tunnel_host);
 
     // Encryption
     rt_opts.crypt.verify_server = (self->connInfo.verify_server == 1);

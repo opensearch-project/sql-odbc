@@ -352,6 +352,18 @@ bool OpenSearchCommunication::CheckConnectionOptions() {
                         ConnErrorType::CONN_ERROR_UNABLE_TO_ESTABLISH);
     }
 
+    Aws::Http::URI host(m_rt_opts.conn.server.c_str());
+    // URI class sets default port if not set
+    // Raise a error if server host field contains a port which doesn't match port field
+    // We can check URI for non-default port only
+    if (((host.GetScheme() == Aws::Http::Scheme::HTTP && host.GetPort() != Aws::Http::HTTP_DEFAULT_PORT)
+        || (host.GetScheme() == Aws::Http::Scheme::HTTPS && host.GetPort() != Aws::Http::HTTPS_DEFAULT_PORT))
+        && (m_rt_opts.conn.port.length() > 0 && host.GetPort() != atoi(m_rt_opts.conn.port.c_str()))) {
+        m_error_message = "Ambigiuos port value specified.";
+        SetErrorDetails("Connection error", m_error_message,
+                        ConnErrorType::CONN_ERROR_UNABLE_TO_ESTABLISH);
+    }
+
     if (m_error_message != "") {
         LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
         m_valid_connection_options = false;
@@ -387,12 +399,15 @@ OpenSearchCommunication::IssueRequest(
     const std::string& content_type, const std::string& query,
     const std::string& fetch_size, const std::string& cursor) {
     // Generate http request
+    Aws::Http::URI host(m_rt_opts.conn.server.c_str());
+    if (m_rt_opts.conn.port.length() > 0) {
+        host.SetPort((uint16_t) atoi(m_rt_opts.conn.port.c_str()));
+    }
+    host.SetPath(endpoint.c_str());
+
     std::shared_ptr< Aws::Http::HttpRequest > request =
         Aws::Http::CreateHttpRequest(
-            Aws::String(
-                m_rt_opts.conn.server
-                + (m_rt_opts.conn.port.empty() ? "" : ":" + m_rt_opts.conn.port)
-                + endpoint),
+            host.GetURIString(),
             request_type,
             Aws::Utils::Stream::DefaultResponseStreamFactoryMethod);
 
@@ -432,9 +447,17 @@ OpenSearchCommunication::IssueRequest(
             credential_provider = Aws::MakeShared<
                 Aws::Auth::ProfileConfigFileAWSCredentialsProvider >(
                 ALLOCATION_TAG.c_str(), ESODBC_PROFILE_NAME.c_str());
+
         Aws::Client::AWSAuthV4Signer signer(credential_provider,
                                             SERVICE_NAME.c_str(),
                                             m_rt_opts.auth.region.c_str());
+
+        if (m_rt_opts.auth.tunnel_host.length() > 0) {
+            request->SetHeaderValue("host",
+                                    Aws::Http::URI(m_rt_opts.auth.tunnel_host.c_str())
+                                        .GetAuthority()
+                                        .c_str());
+        }
         signer.SignRequest(*request);
     }
 

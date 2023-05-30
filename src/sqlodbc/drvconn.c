@@ -115,6 +115,8 @@ INT_PTR CALLBACK dconn_FDriverConnectProc(HWND hdlg, UINT wMsg, WPARAM wParam,
                 SetFocus(GetDlgItem(hdlg, IDC_USER));
             else if (ci->region[0] == '\0')
                 SetFocus(GetDlgItem(hdlg, IDC_REGION));
+            else if (ci->tunnel_host[0] == '\0')
+                SetFocus(GetDlgItem(hdlg, IDC_TUNNEL_HOST));
 
             SendDlgItemMessage(hdlg, IDC_AUTHTYPE, CB_SETCURSEL, 2, (WPARAM)0);
 

@@ -6,6 +6,8 @@
 
  <img src="img/win_odbc_data_sources.png" width="30%">
 
+**NOTE**: Use 32 bit application to configure 32 bit driver and 64 bit app for 64 bit driver.
+
 2. Click on the `System DSN` tab. Select `OpenSearch SQL ODBC DSN` and click on `Configure`.
 
  <img src="img/win_system_dsn.png" width="60%">
@@ -53,4 +55,9 @@ For example, if you can connect to server using following curl command
 7. You will find this newly added DSN in User DSN list.
 
  <img src="img/win_user_dsn_list.png" width="60%">
-    
+
+## Connecting to an OpenSearch cluster created as an AWS VPC endpoint over a tunnel
+
+In case if you use a tunnel or a proxy to connect to an OpenSearch cluster located into a VPC, `Host` doesn't represent a real OpenSearch hostname. To properly sign requests with AWS signature, real OpenSearch cluster hostname is required. It could be set in `Tunnel Host` field.
+
+ <img src="img/win_configure_with_tunnel.png" width="50%">
