@@ -90,4 +90,18 @@ install(FILES "${PROJECT_ROOT}/THIRD-PARTY" DESTINATION doc COMPONENT "Docs")
 # Install resource files
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/Resources/opensearch_sql_odbc.tdc" DESTINATION resources COMPONENT "Resources")
 
+if(WIN32)
+    set(AWS_SDK_BIN_DIR "${PROJECT_ROOT}/src/vcpkg_installed/x${BITNESS}-windows/bin")
+    install(DIRECTORY ${AWS_SDK_BIN_DIR} DESTINATION . COMPONENT "Driver" FILES_MATCHING PATTERN "*.dll")
+
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        # We actually never build the installer for Debug
+        install(FILES "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/libcurl-d.dll" DESTINATION bin COMPONENT "Driver")
+        install(FILES "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Debug/zlibd1.dll" DESTINATION bin COMPONENT "Driver")
+    else() # release
+        install(FILES "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/libcurl.dll" DESTINATION bin COMPONENT "Driver")
+        install(FILES "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/Release/zlib1.dll" DESTINATION bin COMPONENT "Driver")
+    endif()
+endif()
+
 include(CPack)
