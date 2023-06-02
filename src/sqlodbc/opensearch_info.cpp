@@ -423,9 +423,9 @@ void GenerateTableQuery(std::string &tables_query, const UWORD flag,
     if (table_valid && (table_name_value != "")
         && (result_type == TableResultSet::All))
         tables_query +=
-            search_pattern ? table_name_value : "^" + table_name_value + "$";
+            search_pattern ? table_name_value : "'^" + table_name_value + "$'";
     else
-        tables_query += "%";
+        tables_query += "'%'";
 }
 
 // In case of unique_ptr's, using push_back (over emplace_back) is preferred in
