@@ -1,7 +1,7 @@
 <CPackWiXPatch>
 	<CPackWiXFragment Id="CM_CP_Driver.bin.sqlodbc.dll">
 		<!-- Add driver entry in Software -->
-		<RegistryKey Root="HKLM" Key="SOFTWARE\Amazon\OpenSearch SQL ODBC Driver\Driver" >
+		<RegistryKey Root="HKLM" Key="SOFTWARE\OpenSearch Project\OpenSearch SQL ODBC Driver\Driver" >
 			<RegistryValue Type="string" Name="InstallPath" Value="[INSTALL_ROOT]" />
 			<RegistryValue Type="string" Name="LogLevel" Value="" />
 			<RegistryValue Type="string" Name="LogOutput" Value="" />

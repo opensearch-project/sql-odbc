@@ -6,7 +6,7 @@ set(CMAKE_INSTALL_PREFIX ${INSTALL_ROOT})
 # General package info
 set(CPACK_PACKAGE_NAME "OpenSearch SQL ODBC Driver ${BITNESS}-bit")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "OpenSearch SQL ODBC Driver ${BITNESS}-bit")
-set(CPACK_PACKAGE_VENDOR "Amazon")
+set(CPACK_PACKAGE_VENDOR "OpenSearch Project")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_NAME}")
 set(CPACK_SYSTEM_NAME "${CMAKE_SYSTEM_NAME}")
 set(CPACK_PACKAGE_VERSION "${DRIVER_PACKAGE_VERSION}")
@@ -19,13 +19,13 @@ if(WIN32)
     # This is a unique id for the installer - required for Windows
     # Generated at https://www.guidgen.com/
     set(CPACK_WIX_UPGRADE_GUID "2D325BD7-1176-40E8-8AB8-C52DD2F7B792")
-	
+
     # The Icon shown next to the program name in Add/Remove programs
     set(CPACK_WIX_PRODUCT_ICON "${CMAKE_CURRENT_SOURCE_DIR}/icon.ico")
-	
+
     # The bitmap will appear at the top of all installer pages other than the welcome and completion dialogs
     set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/banner.bmp")
-	
+
     # Background bitmap used on the welcome and completion dialogs
     set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/dialog.bmp")
 
@@ -67,7 +67,7 @@ cpack_add_component(Docs
 cpack_add_component(Driver
 	DISPLAY_NAME "Driver"
 	DESCRIPTION "Library files for running the OpenSearch SQL ODBC Driver"
-    REQUIRED 
+    REQUIRED
 )
 cpack_add_component(Resources
 	DISPLAY_NAME "Resources"
