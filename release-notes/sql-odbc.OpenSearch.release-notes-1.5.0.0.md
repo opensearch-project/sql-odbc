@@ -39,3 +39,4 @@
 * Accelerate CI ([#45](https://github.com/opensearch-project/sql-odbc/pull/45))
 * Update third party notice. ([#46](https://github.com/opensearch-project/sql-odbc/pull/46))
 * Bump version and update vendor. ([#47](https://github.com/opensearch-project/sql-odbc/pull/47))
+* Add release notes for version 1.5. ([#49](https://github.com/opensearch-project/sql-odbc/pull/49))
