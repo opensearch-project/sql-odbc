@@ -652,12 +652,13 @@ void GenerateColumnQuery(std::string &query, const std::string &table_name,
                          const std::string &column_name, const bool table_valid,
                          const bool column_valid, const UWORD flag) {
     bool search_pattern = (~flag & PODBC_NOT_SEARCH_PATTERN);
-    query = "DESCRIBE TABLES LIKE ";
+    query = "DESCRIBE TABLES LIKE '";
     query += table_valid
                  ? (search_pattern ? table_name : "^" + table_name + "$")
                  : "%";
+    query += '\'';
     if (column_valid)
-        query += " COLUMNS LIKE " + column_name;
+        query += " COLUMNS LIKE '" + column_name + '\'';
 }
 
 // In case of unique_ptr's, using push_back (over emplace_back) is preferred in
