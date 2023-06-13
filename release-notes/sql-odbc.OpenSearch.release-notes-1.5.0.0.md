@@ -2,7 +2,7 @@
 
 ### Features
 
-* Add new parameter for SIGv4 auth. ([#42](https://github.com/opensearch-project/sql-odbc/pull/42))
+* Add new parameter `tunnelHost` for SIGv4 auth. ([#42](https://github.com/opensearch-project/sql-odbc/pull/42))
 
 ### Enhancements
 
