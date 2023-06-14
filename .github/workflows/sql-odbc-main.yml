@@ -22,28 +22,49 @@ jobs:
     runs-on: macos-12
     steps:
     - uses: actions/checkout@v3
-    - name: run-cppcheck
+    - name: Run cppcheck
       run: |
         brew install cppcheck
         sh run_cppcheck.sh
-    - name: upload-cppcheck-results
+    - name: Upload cppcheck results
       if: failure()
       uses: actions/upload-artifact@v3
       with:
         name: cppcheck-results
         path: cppcheck-results.log
-    - name: get-dependencies
+    - name: Get dependencies
       run: |
         brew install curl
         brew install cmake
         brew install libiodbc
-    - name: configure-and-build-driver
+
+    - name: Get vcpkg config fingerprint
+      id: get-key
+      run:  |
+        echo key=`md5 src/vcpkg.json | cut -d ' ' -f 4`-mac >> $GITHUB_OUTPUT
+
+    - name: Restore vcpkg cache
+      id: cache-restore
+      uses: actions/cache/restore@v3
+      with:
+        path: src/vcpkg_installed
+        key: ${{ steps.get-key.outputs.key }}
+
+    - name: Configure and build driver
       run: |
         ./build_mac_release64.sh
+
+    - name: Save vcpkg cache
+      if: steps.cache-restore.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v3
+      with:
+        path: src/vcpkg_installed
+        key: ${{ steps.get-key.outputs.key }}
+
     #- name: test
     #  run: | 
     #    bash ./run_test_runner.sh
-    - name: build-installer
+    - name: Build installer
       if: success()
       run: |
         cd cmake-build64
@@ -51,7 +72,7 @@ jobs:
         make
         cpack .
         cd ..
-    - name: create-output
+    - name: Create-output
       if: success()
       run: |
         mkdir build-output
@@ -63,36 +84,58 @@ jobs:
     # cp $(ls -d ./build/odbc/bin/* | grep -v "\.") build-output
     #    cp ./bin64/*.html test-output
     #    cp ./bin64/*.log test-output
-    - name: upload-build
+    - name: Upload build
       if: success()
       uses: actions/upload-artifact@v3
       with:
         name: mac64-build
         path: build-output
-    - name: upload-installer
+    - name: Upload installer
       if: success()
       uses: actions/upload-artifact@v3
       with:
         name: mac64-installer
         path: installer
-    #- name: upload-test-results
+    #- name: Upload test results
     #  if: always()
     #  uses: actions/upload-artifact@v3
     #  with:
     #    name: mac-test-results
     #    path: test-output
+
   build-windows32:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v3
-    - name: Get specific version CMake, v3.18.3
-      uses: lukka/get-cmake@v3.18.3
-    - name: add-msbuild-to-path
-      uses: microsoft/setup-msbuild@v1.0.2
-    - name: configure-and-build-driver
+    - name: Get specific version CMake, v3.26.3
+      uses: lukka/get-cmake@v3.26.3
+    - name: Add msbuild to path
+      uses: microsoft/setup-msbuild@v1.3.1
+
+    - name: Get vcpkg config fingerprint
+      id: get-key
+      run:  |
+        "key=" + (Get-FileHash -Algorithm MD5 .\src\vcpkg.json).Hash + "-w32" >> $Env:GITHUB_OUTPUT
+
+    - name: Restore vcpkg cache
+      id: cache-restore
+      uses: actions/cache/restore@v3
+      with:
+        path: src/vcpkg_installed
+        key: ${{ steps.get-key.outputs.key }}
+
+    - name: Configure and build driver
       run: |
         .\build_win_release32.ps1
-    - name: build-installer
+
+    - name: Save vcpkg cache
+      if: steps.cache-restore.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v3
+      with:
+        path: src/vcpkg_installed
+        key: ${{ steps.get-key.outputs.key }}
+
+    - name: Build installer
       if: success()
       run: |
         .\scripts\build_installer.ps1 Release Win32 .\src $Env:ODBC_BUILD_PATH $Env:VCPKG_X86_INSTALL_PATH
@@ -101,40 +144,62 @@ jobs:
     #    cp .\\libraries\\VisualLeakDetector\\bin32\\*.* .\\bin32\\Release
     #    cp .\\libraries\\VisualLeakDetector\\lib32\\*.lib .\\lib32\\Release
     #    .\run_test_runner.bat
-    - name: prepare-output
+    - name: Prepare output
       if: always()
       run: |
         .\scripts\prepare_ci_output.ps1 $Env:ODBC_BIN_PATH $Env:ODBC_LIB_PATH $Env:ODBC_BUILD_PATH
-    - name: upload-build
+    - name: Upload build
       if: always()
       uses: actions/upload-artifact@v3
       with:
         name: windows32-build
         path: ci-output/build
-    - name: upload-installer
+    - name: Upload installer
       if: always()
       uses: actions/upload-artifact@v3
       with:
         name: windows32-installer
         path: ci-output/installer
-    #- name: upload-test-results
+    #- name: Upload test results
     #  if: always()
     #  uses: actions/upload-artifact@v3
     #  with:
     #    name: windows-test-results
     #    path: $CI_OUTPUT_PATH/test
+
   build-windows64:
     runs-on: windows-2019
     steps:
     - uses: actions/checkout@v3
-    - name: Get specific version CMake, v3.18.3
-      uses: lukka/get-cmake@v3.18.3
-    - name: add-msbuild-to-path
-      uses: microsoft/setup-msbuild@v1.0.2
-    - name: configure-and-build-driver
+    - name: Get specific version CMake, v3.26.3
+      uses: lukka/get-cmake@v3.26.3
+    - name: Add msbuild to path
+      uses: microsoft/setup-msbuild@v1.3.1
+
+    - name: Get vcpkg config fingerprint
+      id: get-key
+      run: |
+        "key=" + (Get-FileHash -Algorithm MD5 .\src\vcpkg.json).Hash + "-w64" >> $Env:GITHUB_OUTPUT
+
+    - name: Restore vcpkg cache
+      id: cache-restore
+      uses: actions/cache/restore@v3
+      with:
+        path: src/vcpkg_installed
+        key: ${{ steps.get-key.outputs.key }}
+
+    - name: Configure and build driver
       run: |
         .\build_win_release64.ps1
-    - name: build-installer
+
+    - name: Save vcpkg cache
+      if: steps.cache-restore.outputs.cache-hit != 'true'
+      uses: actions/cache/save@v3
+      with:
+        path: src/vcpkg_installed
+        key: ${{ steps.get-key.outputs.key }}
+
+    - name: Build installer
       if: success()
       run: |
         .\scripts\build_installer.ps1 Release x64 .\src $Env:ODBC_BUILD_PATH $Env:VCPKG_X64_INSTALL_PATH
@@ -143,23 +208,23 @@ jobs:
     #    cp .\\libraries\\VisualLeakDetector\\bin64\\*.* .\\bin64\\Release
     #    cp .\\libraries\\VisualLeakDetector\\lib64\\*.lib .\\lib64\\Release
     #    .\run_test_runner.bat
-    - name: prepare-output
+    - name: Prepare output
       if: always()
       run: |
         .\scripts\prepare_ci_output.ps1 $Env:ODBC_BIN_PATH $Env:ODBC_LIB_PATH $Env:ODBC_BUILD_PATH
-    - name: upload-build
+    - name: Upload build
       if: always()
       uses: actions/upload-artifact@v3
       with:
         name: windows64-build
         path: ci-output/build
-    - name: upload-installer
+    - name: Upload installer
       if: always()
       uses: actions/upload-artifact@v3
       with:
         name: windows64-installer
         path: ci-output/installer
-    #- name: upload-test-results
+    #- name: Upload test results
     #  if: always()
     #  uses: actions/upload-artifact@v3
     #  with:
