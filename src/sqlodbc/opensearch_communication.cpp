@@ -481,7 +481,7 @@ bool OpenSearchCommunication::IsSQLPluginEnabled(std::shared_ptr< ErrorDetails >
  */
 bool OpenSearchCommunication::CheckSQLPluginAvailability() {
     LogMsg(OPENSEARCH_ALL, "Checking for SQL plugin status.");
-    std::string test_query = "SHOW TABLES LIKE %";
+    std::string test_query = "SHOW TABLES LIKE '%'";
     try {
         std::shared_ptr< Aws::Http::HttpResponse > response =
             IssueRequest(sql_endpoint,
