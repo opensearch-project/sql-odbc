@@ -1,8 +1,8 @@
 # Pre 3.16 versions of Windows set MD/MT incorrectly and cause linker 'warnings' which are actually serious issues
 if(WIN32)
-cmake_minimum_required(VERSION 3.16) 
+    cmake_minimum_required(VERSION 3.16)
 else()
-cmake_minimum_required(VERSION 3.13) 
+    cmake_minimum_required(VERSION 3.13)
 endif()
 
 project(global_make_list)
@@ -62,9 +62,9 @@ set(LIBRARY_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../libraries)
 set(INSTALL_SRC "${CMAKE_CURRENT_SOURCE_DIR}/installer")
 set(DSN_INSTALLER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/DSNInstaller")
 
-# ODBC Driver version 
-set(DRIVER_PACKAGE_VERSION "1.4.0.0")
-set(DRIVER_PACKAGE_VERSION_COMMA_SEPARATED "1,4,0,0")
+# ODBC Driver version
+set(DRIVER_PACKAGE_VERSION "1.5.0.0")
+set(DRIVER_PACKAGE_VERSION_COMMA_SEPARATED "1,5,0,0")
 add_compile_definitions( OPENSEARCH_ODBC_VERSION="${DRIVER_PACKAGE_VERSION}"
                          # Comma separated version is required for odbc administrator's driver file.
                          OPENSEARCH_ODBC_DRVFILE_VERSION=${DRIVER_PACKAGE_VERSION_COMMA_SEPARATED} )
@@ -79,7 +79,7 @@ if(WIN32)
     set(RAPIDJSON_SRC ${LIBRARY_DIRECTORY}/rapidjson/include)
 endif ()
 # Without this symbols will be exporting to Unix but not Windows
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)	
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 
 find_package(aws-cpp-sdk-core CONFIG REQUIRED)
 if(APPLE)
@@ -89,41 +89,41 @@ endif()
 
 # General compiler definitions
 add_compile_definitions		(	_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING
-								UNICODE_SUPPORT	
-								DYNAMIC_LOAD	
+								UNICODE_SUPPORT
+								DYNAMIC_LOAD
 								_MBCS
-								_CRT_SECURE_NO_DEPRECATE	
-								_USRDLL	
+								_CRT_SECURE_NO_DEPRECATE
+								_USRDLL
 								_SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING
 								_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
-								# USE_SSL					
+								# USE_SSL
 							)
 
 # Platform specific compiler definitions
 if (WIN32 AND BITNESS EQUAL 64)
 	# Windows specific
-	add_compile_definitions	(	_WINDLL						
-								_WIN64			
+	add_compile_definitions	(	_WINDLL
+								_WIN64
 								_WINDOWS
-								WIN_EXPORT				
+								WIN_EXPORT
 							)
 elseif (WIN32 AND BITNESS EQUAL 32)
 	# Windows specific
-	add_compile_definitions	(	_WINDLL						
-								_WIN32			
+	add_compile_definitions	(	_WINDLL
+								_WIN32
 								_WINDOWS
-								WIN_EXPORT				
+								WIN_EXPORT
 							)
 elseif(APPLE)
 	# macOS specific
-	add_compile_definitions	(	WITH_IODBC	
+	add_compile_definitions	(	WITH_IODBC
 								SQLCOLATTRIBUTE_SQLLEN
 							)
 	# iODBC includes
 	include_directories(/usr/local/opt/libiodbc/include)
 elseif(UNIX)
 	# Unix specific
-	add_compile_definitions	(	WITH_UNIXODBC	
+	add_compile_definitions	(	WITH_UNIXODBC
 								SQLCOLATTRIBUTE_SQLLEN
 							)
 endif()
