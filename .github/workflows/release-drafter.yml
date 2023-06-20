@@ -15,7 +15,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v2.27.0
         with:
           workflow: sql-odbc-main.yml
-          branch: main
+          commit: ${{github.sha}}
           workflow_conclusion: success
           skip_unpack: true
 
