@@ -17,14 +17,13 @@ jobs:
           workflow: sql-odbc-main.yml
           commit: ${{github.sha}}
           workflow_conclusion: success
-          skip_unpack: true
+
+      - name: Pack artifacts
+        run: tar -cvf artifacts.tar.gz *-installer
 
       - name: Draft a release
         uses: softprops/action-gh-release@v1
         with:
           draft: true
           generate_release_notes: true
-          files: |
-            mac64-installer.zip
-            windows32-installer.zip
-            windows64-installer.zip
+          files: artifacts.tar.gz
