@@ -18,8 +18,11 @@ jobs:
           commit: ${{github.sha}}
           workflow_conclusion: success
 
-      - name: Pack artifacts
-        run: tar -cvf artifacts.tar.gz *-installer
+      - name: Rename and pack artifacts
+        run: |
+          # replace spaces by dashes in file names
+          for i in *-installer/*; do mv "$i" "${i//\ /-}"; done
+          tar -cvf artifacts.tar.gz *-installer
 
       - name: Draft a release
         uses: softprops/action-gh-release@v1
