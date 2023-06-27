@@ -13,6 +13,7 @@
 
 * ODBC SSL Compliance Fix ([#653](https://github.com/opensearch-project/sql/pull/653))
 * Reverted UseSSL flag to false and removed invalid test case ([#671](https://github.com/opensearch-project/sql/pull/671))
+* Fix jenkins lib version to accommodate mac signing ([#54](https://github.com/opensearch-project/sql-odbc/pull/54))
 
 ### Documentation
 

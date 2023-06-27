@@ -1,4 +1,4 @@
-lib = library(identifier: 'jenkins@4.2.2', retriever: modernSCM([
+lib = library(identifier: 'jenkins@4.4.0', retriever: modernSCM([
     $class: 'GitSCMSource',
     remote: 'https://github.com/opensearch-project/opensearch-build-libraries.git',
 ]))
@@ -28,7 +28,7 @@ standardReleasePipelineWithGenericTrigger(
                             assumedRoleName: 'sql-odbc-upload-role',
                             source: 'mac64-installer/OpenSearch-SQL-ODBC-Driver-64-bit-1.5.0.0-Darwin.pkg',
                             destination: 'opensearch-clients/odbc/opensearch-sql-odbc-driver-64-bit-1.5.0.0-Darwin.pkg',
-                            signingPlatform: 'macos',
+                            signingPlatform: 'mac',
                             sigType: 'null',
                             sigOverwrite: true
                         )
