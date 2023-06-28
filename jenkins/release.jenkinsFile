@@ -89,15 +89,15 @@ pipeline {
                                 sh 'ls -l'
                                 publishToArtifactsProdBucket(
                                     assumedRoleName: 'sql-odbc-upload-role',
-                                    source: "${WORKSPACE}/windows32-installer/OpenSearch-SQL-ODBC-Driver-32-bit-1.5.0.0-Windows.msi",
-                                    destination: 'opensearch-clients/odbc/opensearch-sql-odbc-driver-32-bit-1.5.0.0-Windows.msi',
+                                    source: "${WORKSPACE}/windows32-installer/OpenSearch-SQL-ODBC-Driver-32-bit-${tag}-Windows.msi",
+                                    destination: "opensearch-clients/odbc/opensearch-sql-odbc-driver-32-bit-${tag}-Windows.msi",
                                     signingPlatform: 'windows',
                                     sigOverwrite: true
                                 )
                                 publishToArtifactsProdBucket(
                                     assumedRoleName: 'sql-odbc-upload-role',
-                                    source: "${WORKSPACE}/windows64-installer/OpenSearch-SQL-ODBC-Driver-64-bit-1.5.0.0-Windows.msi",
-                                    destination: 'opensearch-clients/odbc/opensearch-sql-odbc-driver-64-bit-1.5.0.0-Windows.msi',
+                                    source: "${WORKSPACE}/windows64-installer/OpenSearch-SQL-ODBC-Driver-64-bit-${tag}-Windows.msi",
+                                    destination: "opensearch-clients/odbc/opensearch-sql-odbc-driver-64-bit-${tag}-Windows.msi",
                                     signingPlatform: 'windows',
                                     sigOverwrite: true
                                 )
@@ -115,8 +115,8 @@ pipeline {
                             unstash 'odbc-release-artifacts'
                             publishToArtifactsProdBucket(
                                 assumedRoleName: 'sql-odbc-upload-role',
-                                source: "${WORKSPACE}/mac64-installer/OpenSearch-SQL-ODBC-Driver-64-bit-1.5.0.0-Darwin.pkg",
-                                destination: 'opensearch-clients/odbc/opensearch-sql-odbc-driver-64-bit-1.5.0.0-Darwin.pkg',
+                                source: "${WORKSPACE}/mac64-installer/OpenSearch-SQL-ODBC-Driver-64-bit-${tag}-Darwin.pkg",
+                                destination: "opensearch-clients/odbc/opensearch-sql-odbc-driver-64-bit-${tag}-Darwin.pkg",
                                 signingPlatform: 'mac',
                                 sigOverwrite: true
                             )
