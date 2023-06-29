@@ -55,7 +55,6 @@ jobs:
         ./build_mac_release64.sh
 
     - name: Save vcpkg cache
-      if: steps.cache-restore.outputs.cache-hit != 'true'
       uses: actions/cache/save@v3
       with:
         path: src/vcpkg_installed
