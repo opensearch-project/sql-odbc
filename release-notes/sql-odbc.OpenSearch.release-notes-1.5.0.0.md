@@ -46,3 +46,4 @@
 * Update maintainer list. ([#51](https://github.com/opensearch-project/sql-odbc/pull/51))
 * Onboard 1 click release process. ([#52](https://github.com/opensearch-project/sql-odbc/pull/52)
 * Optimize cache usage in CI. ([#53](https://github.com/opensearch-project/sql-odbc/pull/53))
+* Fix release drafter CI workflow. ([#57](https://github.com/opensearch-project/sql-odbc/pull/57))
