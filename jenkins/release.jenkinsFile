@@ -4,7 +4,7 @@ lib = library(identifier: 'jenkins@4.4.0', retriever: modernSCM([
 ]))
 
 standardReleasePipelineWithGenericTrigger(
-    overrideDockerImage: 'opensearchstaging/ci-runner:release-centos7-clients-v2.3',
+    overrideDockerImage: 'opensearchstaging/ci-runner:release-centos7-clients-v4',
     tokenIdCredential: 'jenkins-sql-odbc-generic-webhook-token',
     causeString: 'A tag was cut on opensearch-project/sql-odbc repository causing this workflow to run',
     downloadReleaseAsset: true,
