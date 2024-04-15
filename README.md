@@ -109,5 +109,3 @@ See the [LICENSE](LICENSE.txt) file for our project's licensing. We will ask you
 
 Copyright OpenSearch Contributors. See [NOTICE](NOTICE) for details.
 
-Trifork.readme.md
-
