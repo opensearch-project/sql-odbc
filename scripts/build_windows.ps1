@@ -19,7 +19,9 @@ Set-Location $CURRENT_DIR
 # Build driver
 $DRIVER_SOURCE_DIR = "${WORKING_DIR}\src"
 $DRIVER_BUILD_DIR = "${BUILD_DIR}\odbc\cmake"
-$VCPKG_INSTALLED_DIR = "${DRIVER_SOURCE_DIR}\vcpkg_installed\$env:VCPKG_DEFAULT_TRIPLET"
+
+# Insert here the proper folder of the vcpkg installed in the local environmnent
+$VCPKG_INSTALLED_DIR = "c:\vcpkg\installed\$env:VCPKG_DEFAULT_TRIPLET"
 
 .\scripts\build_driver.ps1 `
     $CONFIGURATION $WIN_ARCH `

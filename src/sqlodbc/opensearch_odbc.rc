@@ -7,7 +7,11 @@
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
-#include "afxres.h"
+
+// The file "afxres.h" is not available in the Visual Studio 2019 Build Tools "MFC C++ v14.29 (16.10) for Build Tools v142 (x86 and x64)" and "winres.h" will substitute that.
+// #include "afxres.h" 
+
+#include "winres.h"
 #include "version.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -33,7 +37,10 @@ END
 
 2 TEXTINCLUDE 
 BEGIN
-    "#include ""afxres.h""\r\n"
+    // The file "afxres.h" is not available in the Visual Studio 2019 Build Tools "MFC C++ v14.29 (16.10) for Build Tools v142 (x86 and x64)" and "winres.h" will substitute that.
+    // "#include ""afxres.h""\r\n"
+
+    "#include ""winres.h""\r\n"
     "#include ""version.h""\r\n"
     "\0"
 END

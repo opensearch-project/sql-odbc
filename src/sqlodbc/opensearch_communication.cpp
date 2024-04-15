@@ -434,14 +434,7 @@ OpenSearchCommunication::IssueRequest(
 
     // Handle authentication
     if (m_rt_opts.auth.auth_type == AUTHTYPE_BASIC) {
-        std::string userpw_str =
-            m_rt_opts.auth.username + ":" + m_rt_opts.auth.password;
-        Aws::Utils::Array< unsigned char > userpw_arr(
-            reinterpret_cast< const unsigned char* >(userpw_str.c_str()),
-            userpw_str.length());
-        Aws::String hashed_userpw =
-            Aws::Utils::HashingUtils::Base64Encode(userpw_arr);
-        request->SetAuthorization("Basic " + hashed_userpw);
+        request->SetAuthorization("Bearer " + m_rt_opts.auth.password);
     } else if (m_rt_opts.auth.auth_type == AUTHTYPE_IAM) {
         std::shared_ptr< Aws::Auth::ProfileConfigFileAWSCredentialsProvider >
             credential_provider = Aws::MakeShared<
