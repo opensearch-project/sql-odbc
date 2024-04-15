@@ -56,10 +56,10 @@ This will customize the connection from Tableau to OpenSearch, ensuring that the
 5. Follow the instruction from the Readme file in [PowerBi](bi-connectors/PowerBIConnector/README.md), *.mez file required can be copied from the same folder or from the link descripted.
 
 ### The high level structure and relationships
-In order to customize the driver two areas has to be taken in consideration. To have a quick reference, there are some indication about the UI or frontend is managed mainly from a Microsoft Visual C++ file `opensearch_odbc.rc`, and C files such as `dlg_specific.h`, `dlg_wingui.c`, `setup.c` and instead the backend authentication is managed from C++ files such as `opensearch_communication.cpp`.
+In order to customize the driver two areas has to be taken in consideration. To have a quick reference, some indication about the UI of the driver is managed or declaring resources mainly from a Microsoft Visual C++ file `opensearch_odbc.rc`, and C programming such as `dlg_specific.h`, `dlg_wingui.c`, `setup.c`, `resource.h`. Instead the backend authentication is managed from C++ files such as `opensearch_communication.cpp`.
 
 ### Build with CMake
-For build the project after the development is only needed to run a shell script that run automatically all the CMake files in the whole project in the `src` folder depending on the OS type and architecture: `build_[mac | win]_release[86 | 64].[sh | ps1]`. This will produce in output the file `sqlodbc.dll` that contains the main logic. At the end of the building phase a folder should be created as `build` that contains all the dll's, CMake files and *.vcxproj scripts for packaging.
+For build the project after the development is only needed to run a shell script that run automatically all the CMake files in the whole project in the `src` folder depending on the OS type and architecture: `build_[mac | win]_release[86 | 64].[sh | ps1]`. This will produce in output the file `sqlodbc.dll` that contains the main logic. At the end of the building phase a folder should be created as `build` that contains all the dll's, CMake files and `*.vcxproj` scripts for packaging.
 
 ### Package
 1. Copy and paste the `libcurl.dll` file in the folder `build\odbc\bin\Release` created in the build phase.
@@ -75,8 +75,8 @@ If using with ODBC compatible BI tools, refer to the tool documentation on confi
 
 ## Using the Driver in PowerBI
 
-1. For avoiding authenticate with another previous session that now allows to insert any password, before testing is advisable to delete cached permission in `File -> Options and settings -> Data source settings` as described in <img src="docs/powerbi_cached.png" width="400">. 
-2. Use the connector for interact with the Opensearch database from the clipboard `Get data`: <img src="docs/custom_connector.png" width="400">
+1. For avoiding authenticate with another previous session that now allows to insert any password, before testing is advisable to delete cached permission in `File -> Options and settings -> Data source settings` and then: <img src="docs/powerbi_cached.png" width="500">. 
+2. Use the connector for interact with the Opensearch database from the clipboard `Get data`: <img src="docs/custom_connector.png" width="500">
 
 ### Connection Strings and Configuring the Driver
 
