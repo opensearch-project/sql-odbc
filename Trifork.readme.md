@@ -1,6 +1,7 @@
 # Cheetah OpenSearch ODBC Driver
 
-OpenSearchODBC is a read-only ODBC driver for Windows and Mac for connecting to OpenSearch SQL support that add Oauth authentication/authorization whithin JWToken. In this version the driver use the UI entry-point of the `BASIC` auth to allows to enter the token in the `Password` field. The information in the field `User name` will be not used. 
+OpenSearchODBC is a read-only ODBC driver for Windows and Mac for connecting to OpenSearch SQL support that add Oauth authentication/authorization whithin JWToken. 
+In this version the driver use the UI entry-point of the `BASIC` auth to allows to enter the JWT token in the `Password` field. The information in the field `User name` will be not used. 
 
 ## Specifications
 
@@ -51,7 +52,7 @@ This will customize the connection from Tableau to OpenSearch, ensuring that the
 ### Set up development environment
 1. In windows, install `vcpkg` (Package manager for C++) by cloning and follow the instruction from [Repo page](https://github.com/microsoft/vcpkg) in `c:\` (root) path. The reason of the the root path requirement is that a specific C++ package `aws-sdk-cpp` when installed from `vcpkg` doesn't work with a long installation-path. In case of different path make sure to modify the file `\scripts\build_windows.ps1` in `$VCPKG_INSTALLED_DIR` variable and check for warnings/errors: If is raised the warning "aws-sdk-cpp's buildsystem uses very long paths and may fail on your system" the installation is considered failed, so, too far way from the root.
 2. It is necessary to have Visual Studio 2019 (recomended and tested) C++ Build Tools, but should work also with Visual Studio 2022.
-3. For packaging is required to have `Wix < 4.0` (Windows installation creator) is possible to download the installer from [Wix page](https://wixtoolset.org/docs/wix3/) as `WiX Toolset build tools` or from this repository in  in `util-files` as `wix314.exe`.
+3. For packaging is required to have `Wix < 4.0` (Windows installation creator) is possible to download the installer from [Wix page](https://wixtoolset.org/docs/wix3/) as `WiX Toolset build tools` or from this repository in `util-files` as `wix314.exe`.
 4. Download the binary builds from [Curl page](https://curl.se/windows/) and copy the `libcurl.dll` or from this repository in `util-files`, that will be required in the packaging phase.
 5. Follow the instruction from the Readme file in [PowerBi](bi-connectors/PowerBIConnector/README.md), *.mez file required can be copied from the same folder or from the link descripted.
 
@@ -63,7 +64,7 @@ For build the project after the development is only needed to run a shell script
 
 ### Package
 1. Copy and paste the `libcurl.dll` file in the folder `build\odbc\bin\Release` created in the build phase.
-2. The packaging phase is made by a command: `msbuild .\build\odbc\cmake\PACKAGE.vcxproj -p:Configuration=Release`, at the end should be produced in `build\odbc\cmake\OpenSearch SQL ODBC Driver <OS architecture>-bit-<version>-<OS type>.msi`
+2. The packaging phase is made by a command from the root folder project: `msbuild .\build\odbc\cmake\PACKAGE.vcxproj -p:Configuration=Release`, at the end should produce a file in this location `build\odbc\cmake\OpenSearch SQL ODBC Driver <OS architecture>-bit-<version>-<OS type>.msi`
 
 ## Using the Driver
 
@@ -74,8 +75,7 @@ The driver comes in the form of a library file:
 If using with ODBC compatible BI tools, refer to the tool documentation on configuring a new ODBC driver. In most cases, you will need to make the tool aware of the location of the driver library file and then use it to setup OpenSearch database connections. Should be enough for change the logic to substitute this dll `sqlodbc.dll` inside the opensearch installation path, but it was encounter some not so well specified error with this practice, so it is advisable to package and re-install from the produced `.msi` file.
 
 ## Using the Driver in PowerBI
-
-1. For avoiding authenticate with another previous session that now allows to insert any password, before testing is advisable to delete cached permission in `File -> Options and settings -> Data source settings` and then: <img src="docs/powerbi_cached.png" width="500">. 
+1. For avoiding authenticate with another previous session that not bypass inserting any password or username or before testing is advisable to delete cached permission in `File -> Options and settings -> Data source settings` and then: <img src="docs/powerbi_cached.png" width="500">. 
 2. Use the connector for interact with the Opensearch database from the clipboard `Get data`: <img src="docs/custom_connector.png" width="500">
 
 ### Connection Strings and Configuring the Driver
