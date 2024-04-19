@@ -83,8 +83,6 @@ COPY src c:/odbcdriver/src/
 COPY scripts c:/odbcdriver/scripts/
 COPY libraries c:/odbcdriver/libraries/
 
-ARG release_script="build_win_release$ARCH.ps1"
-
 # Run the script
 WORKDIR c:\odbcdriver
 SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'Continue';"]
