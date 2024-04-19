@@ -47,27 +47,32 @@ To use the driver with Tableau:
 
 This will customize the connection from Tableau to OpenSearch, ensuring that the correct forms of queries are used.
 
-## Customizing, developing and re-packaging the driver
+## Customizing, developing and re-build, re-packaging manually the driver 
+This option allows you to re-build and re-package the modified driver code advised if you don't have enough disk space or hardware resource or linuxOS.
 
 ### Set up development environment
 1. In windows, install `vcpkg` (Package manager for C++) by cloning and follow the instruction from [Repo page](https://github.com/microsoft/vcpkg) in `c:\` (root) path. The reason of the the root path requirement is that a specific C++ package `aws-sdk-cpp` when installed from `vcpkg` doesn't work with a long installation-path. In case of different path make sure to modify the file `\scripts\build_windows.ps1` in `$VCPKG_INSTALLED_DIR` variable and check for warnings/errors: If is raised the warning "aws-sdk-cpp's buildsystem uses very long paths and may fail on your system" the installation is considered failed, so, too far way from the root.
-2. It is necessary to have Visual Studio 2019 (recomended and tested) C++ Build Tools, but should work also with Visual Studio 2022.
+2. It is necessary to have Visual Studio 2019 C++ Build Tools, but also work with Visual Studio 2022.
 3. For packaging is required to have `Wix < 4.0` (Windows installation creator) is possible to download the installer from [Wix page](https://wixtoolset.org/docs/wix3/) as `WiX Toolset build tools` or from this repository in `util-files` as `wix314.exe`.
-4. Download the binary builds from [Curl page](https://curl.se/windows/) and copy the `libcurl.dll` or from this repository in `util-files`, that will be required in the packaging phase.
+4. In case of error during the packaging (especially in the case of Visual Studio 2019), download the binary builds from [Curl page](https://curl.se/windows/) and copy the `libcurl.dll` or from this repository in `util-files`, that will be required in the packaging phase.
 5. Follow the instruction from the Readme file in [PowerBi](bi-connectors/PowerBIConnector/README.md), *.mez file required can be copied from the same folder or from the link descripted.
 
 ### The high level structure and relationships
 In order to customize the driver two areas has to be taken in consideration. To have a quick reference, some indication about the UI of the driver is managed or declaring resources mainly from a Microsoft Visual C++ file `opensearch_odbc.rc`, and C programming such as `dlg_specific.h`, `dlg_wingui.c`, `setup.c`, `resource.h`. Instead the backend authentication is managed from C++ files such as `opensearch_communication.cpp`.
 
 ### Build with CMake
-For build the project after the development is only needed to run a shell script that run automatically all the CMake files in the whole project in the `src` folder depending on the OS type and architecture: `build_[mac | win]_release[86 | 64].[sh | ps1]`. This will produce in output the file `sqlodbc.dll` that contains the main logic. At the end of the building phase a folder should be created as `build` that contains all the dll's, CMake files and `*.vcxproj` scripts for packaging.
+For build the project after the development is only needed to run a shell script that run automatically all the CMake files in the whole project in the `src` folder depending on the OS type and architecture: `build_[mac | win]_release[32 | 64]manual.[sh | ps1]`. This will produce in output the file `sqlodbc.dll` that contains the main logic. At the end of the building phase a folder should be created as `build` that contains all the dll's, CMake files and `*.vcxproj` scripts for packaging.
 
 ### Package
 1. Copy and paste the `libcurl.dll` file in the folder `build\odbc\bin\Release` created in the build phase.
 2. The packaging phase is made by a command from the root folder project: `msbuild .\build\odbc\cmake\PACKAGE.vcxproj -p:Configuration=Release`, at the end should produce a file in this location `build\odbc\cmake\OpenSearch SQL ODBC Driver <OS architecture>-bit-<version>-<OS type>.msi`
 
-## Using the Driver
+## Customizing, developing and re-build, re-packaging without environment with docker and dockerfile 
+This option allows you to re-build and re-package the modified driver code without install any of the previous tools or take multiple actions, but will take some 2-3 hours to build the image. Also the image saved as Windows native will be around 22GB big. Of course, with a saved image and using caching the deployment time will be drastically shorten less than 5 min for building and packaging.
+1. The build command `docker build --pull --rm -f "DockerfileWin64" -t cheetahodbcwin:latest "." --build-arg ARCH=[32 | 64]` of the dockerfile `DockerfileWin` will create the image named `cheetahodbcwin:latest` using the architecture of the host inserting `32` or `64` in the `ARCH` argument. The image is build to preserve the dev environment, but with modifying the code of `src` or other files copied with `COPY` command in the dockerfile, invalidate the cache and so a new build and packaging of it is triggered. The image will save the `.msi` file in `c:\output` folder. 
+2. In the end the command `docker cp <containerId>:<source_path> <destination_path>` will transfer the folder with `.msi` or run `docker run -it cheetahodbcwin:latest`and interact with the container's terminal.
 
+## Using the Driver
 The driver comes in the form of a library file:
 * Windows: `sqlodbc.dll`
 * Mac: `libsqlodbc.dylib`

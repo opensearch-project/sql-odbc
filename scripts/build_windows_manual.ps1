@@ -21,7 +21,7 @@ $DRIVER_SOURCE_DIR = "${WORKING_DIR}\src"
 $DRIVER_BUILD_DIR = "${BUILD_DIR}\odbc\cmake"
 
 # Insert here the proper folder of the vcpkg installed in the local environmnent
-$VCPKG_INSTALLED_DIR = "c:\odbcdriver\vcpkg_installed\$env:VCPKG_DEFAULT_TRIPLET"
+$VCPKG_INSTALLED_DIR = "c:\vcpkg\installed\$env:VCPKG_DEFAULT_TRIPLET"
 
 .\scripts\build_driver.ps1 `
     $CONFIGURATION $WIN_ARCH `
