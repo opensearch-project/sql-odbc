@@ -75,6 +75,7 @@ This option allows you to re-build and re-package the modified driver code witho
 
 > [!IMPORTANT]
 > Even though the image after a successful building will be around 22GB, it requires at least 35-40 GB in order to accomplish intermediate passage (especially installing modules with `vcpkg`). The error shown from the lack of memory space can be generalistic and not really pointed.
+
 > [!IMPORTANT]
 > The image is Windows based. Check for eventual settings based on this case and your tools (for example, Docker Desktop require to specify the `desktop-windows` builder in `settings`).  
 
