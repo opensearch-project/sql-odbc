@@ -57,9 +57,6 @@ This option allows you to re-build and re-package the modified driver code advis
 4. In case of error during the packaging (especially in the case of Visual Studio 2019), download the binary builds from [Curl page](https://curl.se/windows/) and copy the `libcurl.dll` or from this repository in `util-files`, that will be required in the packaging phase.
 5. Follow the instruction from the Readme file in [PowerBi](bi-connectors/PowerBIConnector/README.md), *.mez file required can be copied from the same folder or from the link descripted.
 
-### The high level structure and relationships
-In order to customize the driver two areas has to be taken in consideration. To have a quick reference, some indication about the UI of the driver is managed or declaring resources mainly from a Microsoft Visual C++ file `opensearch_odbc.rc`, and C programming such as `dlg_specific.h`, `dlg_wingui.c`, `setup.c`, `resource.h`. Instead the backend authentication is managed from C++ files such as `opensearch_communication.cpp`.
-
 ### Build with CMake
 For build the project after the development is only needed to run a shell script that run automatically all the CMake files in the whole project in the `src` folder depending on the OS type and architecture: `build_[mac | win]_release[32 | 64]manual.[sh | ps1]`. This will produce in output the file `sqlodbc.dll` that contains the main logic. At the end of the building phase a folder should be created as `build` that contains all the dll's, CMake files and `*.vcxproj` scripts for packaging.
 
@@ -78,6 +75,9 @@ This option allows you to re-build and re-package the modified driver code witho
 
 > [!IMPORTANT]
 > The image is Windows based. Check for eventual settings based on this case and your tools (for example, Docker Desktop require to specify the `desktop-windows` builder in `settings`).  
+
+## The high level structure and relationships
+In order to customize the driver two areas has to be taken in consideration. To have a quick reference, some indication about the UI of the driver is managed or declaring resources mainly from a Microsoft Visual C++ file `opensearch_odbc.rc`, and C programming such as `dlg_specific.h`, `dlg_wingui.c`, `setup.c`, `resource.h`. Instead the backend authentication is managed from C++ files such as `opensearch_communication.cpp`.
 
 ## Using the Driver
 The driver comes in the form of a library file:
