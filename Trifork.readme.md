@@ -67,10 +67,16 @@ For build the project after the development is only needed to run a shell script
 1. Copy and paste the `libcurl.dll` file in the folder `build\odbc\bin\Release` created in the build phase.
 2. The packaging phase is made by a command from the root folder project: `msbuild .\build\odbc\cmake\PACKAGE.vcxproj -p:Configuration=Release`, at the end should produce a file in this location `build\odbc\cmake\OpenSearch SQL ODBC Driver <OS architecture>-bit-<version>-<OS type>.msi`
 
-## Customizing, developing and re-build, re-packaging without environment with docker and dockerfile 
+## Customizing, developing and re-build, re-packaging without local development environment with docker and Dockerfile 
 This option allows you to re-build and re-package the modified driver code without install any of the previous tools or take multiple actions, but will take some 2-3 hours to build the image. Also the image saved as Windows native will be around 22GB big. Of course, with a saved image and using caching the deployment time will be drastically shorten less than 5 min for building and packaging.
-1. The build command `docker build --pull --rm -f "DockerfileWin64" -t cheetahodbcwin:latest "." --build-arg ARCH=[32 | 64]` of the dockerfile `DockerfileWin` will create the image named `cheetahodbcwin:latest` using the architecture of the host inserting `32` or `64` in the `ARCH` argument. The image is build to preserve the dev environment, but with modifying the code of `src` or other files copied with `COPY` command in the dockerfile, invalidate the cache and so a new build and packaging of it is triggered. The image will save the `.msi` file in `c:\output` folder. 
-2. In the end the command `docker cp <containerId>:<source_path> <destination_path>` will transfer the folder with `.msi` or run `docker run -it cheetahodbcwin:latest`and interact with the container's terminal.
+1. The build command `docker build --pull --rm -f "DockerfileWin" -t cheetahodbcwin:latest "." --build-arg ARCH=[32 | 64]` of the Dockerfile `DockerfileWin` will create the image named `cheetahodbcwin:latest` using the architecture of the host inserting `32` or `64` in the `ARCH` argument. The image is build to preserve the staticity of the dev environment, but with modifying the code of `src` or other side files will invalidate the cache and so a new build and packaging of it is triggered. The image will save the `.msi` file in `c:\odbcdriver\build\odbc\cmake\` folder. 
+2. After successfully build an image, the command `docker run -v <destination_localhost_path>:<source_path> cheetahodbcwin:latest` will move theb saved output `.msi` file in `<source_path> = c:\output` and then will be available at `<destination_localhost_path>` as the preferred local folder path.
+3. Follow the instruction from the Readme file in [PowerBi](bi-connectors/PowerBIConnector/README.md), *.mez file required can be copied from the same folder or from the link descripted.
+
+> [!IMPORTANT]
+> Even though the image after a successful building will be around 22GB, it requires at least 35-40 GB in order to accomplish intermediate passage (especially installing modules with `vcpkg`). The error shown from the lack of memory space can be generalistic and not really pointed.
+> [!IMPORTANT]
+> The image is Windows based. Check for eventual settings based on this case and your tools (for example, Docker Desktop require to specify the `desktop-windows` builder in `settings`).  
 
 ## Using the Driver
 The driver comes in the form of a library file:

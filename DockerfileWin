@@ -85,8 +85,7 @@ COPY libraries c:/odbcdriver/libraries/
 
 # Run the script
 WORKDIR c:\odbcdriver
-SHELL ["powershell", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'Continue';"]
-RUN .\build_win_release64.ps1
+RUN powershell -Command .\build_win_release%ARCH%.ps1
 
 # Restore the default Windows shell for correct batch processing
 SHELL ["cmd", "/S", "/C"]
@@ -94,8 +93,9 @@ SHELL ["cmd", "/S", "/C"]
 # Create the .msi file
 RUN msbuild .\build\odbc\cmake\PACKAGE.vcxproj -p:Configuration=Release
 
-WORKDIR c:\
-
 # Move .msi file to c:/output
+WORKDIR c:\
 RUN mkdir output
-RUN move c:\odbcdriver\build\odbc\cmake\*.msi \output
+
+# Move .msi file to the host when the container is started, after the creation and mounting of the volume
+CMD move c:\odbcdriver\build\odbc\cmake\*.msi \output"
