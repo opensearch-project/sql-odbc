@@ -98,4 +98,4 @@ WORKDIR c:\
 RUN mkdir output
 
 # Move .msi file to the host when the container is started, after the creation and mounting of the volume
-CMD move c:\odbcdriver\build\odbc\cmake\*.msi \output"
+CMD move c:\odbcdriver\build\odbc\cmake\*.msi \output
