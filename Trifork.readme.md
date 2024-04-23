@@ -51,7 +51,7 @@ This will customize the connection from Tableau to OpenSearch, ensuring that the
 This option allows you to re-build and re-package the modified driver code advised if you don't have enough disk space or hardware resources.
 
 ### Set up development environment
-1. In windows, install `vcpkg` (Package manager for C++) by cloning and follow the instruction from [Repo page](https://github.com/microsoft/vcpkg) but the installation path should be `c:\` (root) path. The reason of the the root path requirement is that a specific C++ package `aws-sdk-cpp` when installed from `vcpkg` doesn't work with a long installation-path. In case of different path make sure to modify the file `\scripts\build_windows_manual.ps1` in `$VCPKG_INSTALLED_DIR` variable and check for warnings/errors: 
+1. In windows, install `vcpkg` (Package manager for C++) by cloning and follow the instruction from [Repo page](https://github.com/microsoft/vcpkg) but the installation path should be `c:\` (root) path. The reason of the the root path requirement is that a specific C++ package `aws-sdk-cpp` when installed from `vcpkg` doesn't work with a long installation-path. In case of different path make sure to modify the file `\scripts\build_windows_manual.ps1` in `$VCPKG_INSTALLED_DIR` variable and check for warnings/errors.
 > [!IMPORTANT] 
 > If is raised the warning "aws-sdk-cpp's buildsystem uses very long paths and may fail on your system" the installation path is too far way from the root and the installation is considered failed even though is a warning.
 2. Install Visual Studio 2019 C++ Build Tools, but also can work with Visual Studio 2022.
