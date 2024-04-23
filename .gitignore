@@ -41,6 +41,7 @@ LICENSE.txt
 /IntegrationTests/
 /opensearchenlist/
 /sqlodbc/
+/output/
 /PerformanceTests/
 /UnitTests/
 *.filters

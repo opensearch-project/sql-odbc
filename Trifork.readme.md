@@ -51,8 +51,10 @@ This will customize the connection from Tableau to OpenSearch, ensuring that the
 This option allows you to re-build and re-package the modified driver code advised if you don't have enough disk space or hardware resources.
 
 ### Set up development environment
-1. In windows, install `vcpkg` (Package manager for C++) by cloning and follow the instruction from [Repo page](https://github.com/microsoft/vcpkg) in `c:\` (root) path. The reason of the the root path requirement is that a specific C++ package `aws-sdk-cpp` when installed from `vcpkg` doesn't work with a long installation-path. In case of different path make sure to modify the file `\scripts\build_windows_manual.ps1` in `$VCPKG_INSTALLED_DIR` variable and check for warnings/errors: If is raised the warning "aws-sdk-cpp's buildsystem uses very long paths and may fail on your system" the installation is considered failed, so, too far way from the root.
-2. It is necessary to have Visual Studio 2019 C++ Build Tools, but also work with Visual Studio 2022.
+1. In windows, install `vcpkg` (Package manager for C++) by cloning and follow the instruction from [Repo page](https://github.com/microsoft/vcpkg) but the installation path should be `c:\` (root) path. The reason of the the root path requirement is that a specific C++ package `aws-sdk-cpp` when installed from `vcpkg` doesn't work with a long installation-path. In case of different path make sure to modify the file `\scripts\build_windows_manual.ps1` in `$VCPKG_INSTALLED_DIR` variable and check for warnings/errors: 
+> [!IMPORTANT] 
+> If is raised the warning "aws-sdk-cpp's buildsystem uses very long paths and may fail on your system" the installation path is too far way from the root and the installation is considered failed even though is a warning.
+2. Install Visual Studio 2019 C++ Build Tools, but also can work with Visual Studio 2022.
 3. For packaging is required to have `Wix < 4.0` (Windows installation creator) is possible to download the installer from [Wix page](https://wixtoolset.org/docs/wix3/) as `WiX Toolset build tools` or from this repository in `util-files` as `wix314.exe`.
 4. In case of error during the packaging (especially in the case of Visual Studio 2019), download the binary builds from [Curl page](https://curl.se/windows/) and copy the `libcurl.dll` or from this repository in `util-files`, that will be required in the packaging phase.
 5. Follow the instruction from the Readme file in [PowerBi](bi-connectors/PowerBIConnector/README.md), *.mez file required can be copied from the same folder or from the link descripted.
@@ -66,15 +68,14 @@ For build the project after the development is only needed to run a shell script
 
 ## Customizing, developing and re-build, re-packaging without local development environment with docker: Windows
 This option allows you to re-build and re-package the modified driver code without installing any of the previous tools or taking multiple actions, but will take some 2-3 hours to build the image. Also, the image saved as Windows native will be around 22GB big. Of course, with a saved image and using caching the deployment time will be drastically shortened to less than 5 min for building and packaging.
-1. The build command `docker build --pull --rm -f "DockerfileWin" -t cheetahodbcwin:latest "." --build-arg ARCH=[32 | 64]` of the Dockerfile `DockerfileWin` will create the image named `cheetahodbcwin:latest` using the architecture of the host inserting `32` or `64` in the `ARCH` argument. The image is build to preserve the staticity of the dev environment, but with modifying the code of `src` or other side files will invalidate the cache and so a new build and packaging of it is triggered. The image will save the `.msi` file in `c:\odbcdriver\build\odbc\cmake\` folder. 
-2. After successfully build an image, the command `docker run -v <destination_localhost_path>:<source_path> cheetahodbcwin:latest` will move the saved output `.msi` file in `<source_path> = c:\output` and then will be available at `<destination_localhost_path>` as the preferred local folder path.
-3. Follow the instruction from the Readme file in [PowerBi](bi-connectors/PowerBIConnector/README.md), *.mez file required can be copied from the same folder or from the link described.
-
+> [!IMPORTANT]
+> The image is Windows-based. Check for make sure Docker is configured to run Windows containers as describede here [Run yout first windows container](https://learn.microsoft.com/en-us/virtualization/windowscontainers/quick-start/run-your-first-container).  
 > [!IMPORTANT]
 > Even though the image after a successful building will be around 22GB, it requires at least 35-40 GB in order to accomplish intermediate passage (especially installing modules with `vcpkg`). The error shown by the lack of memory space can be generalistic and not really pointed.
 
-> [!IMPORTANT]
-> The image is Windows-based. Check for eventual settings based on this case and your tools (for example, Docker Desktop require to specify the `desktop-windows` builder in `settings`).  
+1. The build command `docker build --pull --rm -f "DockerfileWin" -t cheetahodbcwin:latest "." --build-arg ARCH=[32 | 64]` of the Dockerfile `DockerfileWin` will create the image named `cheetahodbcwin:latest` using the architecture of the host inserting `32` or `64` in the `ARCH` argument. The image is build to preserve the staticity of the dev environment, but with modifying the code of `src` or other side files will invalidate the cache and so a new build and packaging of it is triggered. The image will save the `.msi` file in `c:\odbcdriver\build\odbc\cmake\` folder. 
+2. After successfully build an image, the command `docker run -v <destination_localhost_path>:<source_path> cheetahodbcwin:latest` will move the saved output `.msi` file in `<source_path> = c:\output` and then will be available at `<destination_localhost_path>` as the preferred local folder path.
+3. Follow the instruction from the Readme file in [PowerBi](bi-connectors/PowerBIConnector/README.md), *.mez file required can be copied from the same folder or from the link described.
 
 ## The high level structure and relationships
 In order to customize the driver two areas has to be taken in consideration. To have a quick reference, some indication about the UI of the driver is managed or declaring resources mainly from a Microsoft Visual C++ file `opensearch_odbc.rc`, and C programming such as `dlg_specific.h`, `dlg_wingui.c`, `setup.c`, `resource.h`. Instead the backend authentication is managed from C++ files such as `opensearch_communication.cpp`.
