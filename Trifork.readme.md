@@ -54,7 +54,7 @@ This option allows you to re-build and re-package the modified driver code advis
 1. In windows, install `vcpkg` (Package manager for C++) by cloning and follow the instruction from [Repo page](https://github.com/microsoft/vcpkg) but the installation path should be `c:\` (root) path. The reason of the the root path requirement is that a specific C++ package `aws-sdk-cpp` when installed from `vcpkg` doesn't work with a long installation-path. In case of different path make sure to modify the file `\scripts\build_windows_manual.ps1` in `$VCPKG_INSTALLED_DIR` variable and check for warnings/errors.
 > [!IMPORTANT] 
 > If is raised the warning "aws-sdk-cpp's buildsystem uses very long paths and may fail on your system" the installation path is too far way from the root and the installation is considered failed even though is a warning.
-2. Install Visual Studio 2019 C++ Build Tools, but also can work with Visual Studio 2022.
+2. Install `Visual Studio 2019 - C++ Build Tools`, but also can work with `Visual Studio 2022`.
 3. For packaging is required to have `Wix < 4.0` (Windows installation creator) is possible to download the installer from [Wix page](https://wixtoolset.org/docs/wix3/) as `WiX Toolset build tools` or from this repository in `util-files` as `wix314.exe`.
 4. In case of error during the packaging (especially in the case of Visual Studio 2019), download the binary builds from [Curl page](https://curl.se/windows/) and copy the `libcurl.dll` or from this repository in `util-files`, that will be required in the packaging phase.
 5. Follow the instruction from the Readme file in [PowerBi](bi-connectors/PowerBIConnector/README.md), *.mez file required can be copied from the same folder or from the link descripted.
@@ -69,7 +69,7 @@ For build the project after the development is only needed to run a shell script
 ## Customizing, developing and re-build, re-packaging without local development environment with docker: Windows
 This option allows you to re-build and re-package the modified driver code without installing any of the previous tools or taking multiple actions, but will take some 2-3 hours to build the image. Also, the image saved as Windows native will be around 22GB big. Of course, with a saved image and using caching the deployment time will be drastically shortened to less than 5 min for building and packaging.
 > [!IMPORTANT]
-> The image is Windows-based. Check for make sure Docker is configured to run Windows containers as describede here: [Run yout first windows container](https://learn.microsoft.com/en-us/virtualization/windowscontainers/quick-start/run-your-first-container).  
+> The image is Windows-based. Check for make sure Docker is configured and abilited to run Windows containers as describede here: [Run yout first windows container](https://learn.microsoft.com/en-us/virtualization/windowscontainers/quick-start/run-your-first-container). For example using Docker Desktop, is not supported this feature in Windows 11 Home. 
 
 > [!IMPORTANT]
 > Even though the image after a successful building will be around 22GB, it requires at least 35-40 GB in order to accomplish intermediate passage (especially installing modules with `vcpkg`). The error shown by the lack of memory space can be generalistic and not really pointed.
