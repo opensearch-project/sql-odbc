@@ -69,7 +69,7 @@ For build the project after the development is only needed to run a shell script
 ## Customizing, developing and re-build, re-packaging without local development environment with docker: Windows
 This option allows you to re-build and re-package the modified driver code without installing any of the previous tools or taking multiple actions, but will take some 2-3 hours to build the image. Also, the image saved as Windows native will be around 22GB big. Of course, with a saved image and using caching the deployment time will be drastically shortened to less than 5 min for building and packaging.
 > [!IMPORTANT]
-> The image is Windows-based. Check for make sure Docker is configured and abilited to run Windows containers as describede here: [Run yout first windows container](https://learn.microsoft.com/en-us/virtualization/windowscontainers/quick-start/run-your-first-container). For example using Docker Desktop, does not support this feature in Windows 11 Home. 
+> The image is Windows-based. Check for make sure Docker is qualifyed and configured to run Windows containers as describede here: [Run yout first windows container](https://learn.microsoft.com/en-us/virtualization/windowscontainers/quick-start/run-your-first-container). For example using Docker Desktop, does not support this feature in Windows 11 Home. 
 
 > [!IMPORTANT]
 > Even though the image after a successful building will be around 22GB, it requires at least 35-40 GB in order to accomplish intermediate passage (especially installing modules with `vcpkg`). The error shown by the lack of memory space can be generalistic and not really pointed.
