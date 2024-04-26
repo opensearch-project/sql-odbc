@@ -54,8 +54,8 @@ extern "C" {
 
 #define DEFAULT_FETCH_SIZE -1
 #define DEFAULT_FETCH_SIZE_STR "-1"
-#define DEFAULT_RESPONSE_TIMEOUT 10  // Seconds
-#define DEFAULT_RESPONSE_TIMEOUT_STR "10"
+#define DEFAULT_RESPONSE_TIMEOUT 20  // Seconds
+#define DEFAULT_RESPONSE_TIMEOUT_STR "20"
 #define DEFAULT_AUTHTYPE "NONE"
 #define DEFAULT_HOST ""
 #define DEFAULT_PORT ""
@@ -68,7 +68,8 @@ extern "C" {
 
 #define AUTHTYPE_NONE "NONE"
 #define AUTHTYPE_BASIC "BASIC"
-#define AUTHTYPE_IAM "AWS_SIGV4"  
+#define AUTHTYPE_IAM "AWS_SIGV4"
+#define AUTHTYPE_OAUTH2 "OAUTH2"   
 
 #ifdef _HANDLE_ENLIST_IN_DTC_
 #define INI_XAOPT "XaOpt"

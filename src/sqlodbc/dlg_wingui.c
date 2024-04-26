@@ -13,7 +13,7 @@
 #define HTTP_PREFIX   "http://"
 #define HTTPS_PREFIX  "https://"
 
-#define AUTHMODE_CNT 3
+#define AUTHMODE_CNT 4
 #define LOGLEVEL_CNT 8
 extern HINSTANCE s_hModule;
 
@@ -30,7 +30,8 @@ int loglevels[LOGLEVEL_CNT] = {
 static const struct authmode authmodes[AUTHMODE_CNT] = {
     {IDS_AUTHTYPE_NONE, AUTHTYPE_IAM},
     {IDS_AUTHTYPE_BASIC, AUTHTYPE_BASIC},
-    {IDS_AUTHTYPE_IAM, AUTHTYPE_NONE}};
+    {IDS_AUTHTYPE_IAM, AUTHTYPE_NONE},
+    {IDS_AUTHTYPE_OAUTH2, AUTHTYPE_BASIC}};
 
 const struct authmode *GetCurrentAuthMode(HWND hdlg) {
     unsigned int ams_cnt = 0;
@@ -69,7 +70,13 @@ void SetAuthenticationVisibility(HWND hdlg, const struct authmode *am) {
         EnableWindow(GetDlgItem(hdlg, IDC_PASSWORD), FALSE);
         EnableWindow(GetDlgItem(hdlg, IDC_REGION), TRUE);
         EnableWindow(GetDlgItem(hdlg, IDC_TUNNEL_HOST), TRUE);
-    } else {
+    } else if (strcmp(am->authtype_str, AUTHTYPE_OAUTH2) == 0) {
+        EnableWindow(GetDlgItem(hdlg, IDC_USER), FALSE);
+        EnableWindow(GetDlgItem(hdlg, IDC_PASSWORD), TRUE);
+        EnableWindow(GetDlgItem(hdlg, IDC_REGION), FALSE);
+        EnableWindow(GetDlgItem(hdlg, IDC_TUNNEL_HOST), FALSE);
+    }
+    else {
         EnableWindow(GetDlgItem(hdlg, IDC_USER), FALSE);
         EnableWindow(GetDlgItem(hdlg, IDC_PASSWORD), FALSE);
         EnableWindow(GetDlgItem(hdlg, IDC_REGION), FALSE);

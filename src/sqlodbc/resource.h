@@ -26,6 +26,7 @@
 #define IDS_LOGTYPE_DEBUG               425
 #define IDS_LOGTYPE_TRACE               426
 #define IDS_LOGTYPE_ALL                 427
+#define IDS_AUTHTYPE_OAUTH2             428
 #define DLG_CONFIG                      1001
 #define IDC_PORT                        1002
 #define IDC_USER                        1006

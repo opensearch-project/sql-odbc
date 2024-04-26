@@ -434,7 +434,14 @@ OpenSearchCommunication::IssueRequest(
 
     // Handle authentication
     if (m_rt_opts.auth.auth_type == AUTHTYPE_BASIC) {
-        request->SetAuthorization("Bearer " + m_rt_opts.auth.password);
+        std::string userpw_str =
+            m_rt_opts.auth.username + ":" + m_rt_opts.auth.password;
+        Aws::Utils::Array< unsigned char > userpw_arr(
+            reinterpret_cast< const unsigned char* >(userpw_str.c_str()),
+            userpw_str.length());
+        Aws::String hashed_userpw =
+            Aws::Utils::HashingUtils::Base64Encode(userpw_arr);
+        request->SetAuthorization("Basic " + hashed_userpw);
     } else if (m_rt_opts.auth.auth_type == AUTHTYPE_IAM) {
         std::shared_ptr< Aws::Auth::ProfileConfigFileAWSCredentialsProvider >
             credential_provider = Aws::MakeShared<
@@ -452,7 +459,10 @@ OpenSearchCommunication::IssueRequest(
                                         .c_str());
         }
         signer.SignRequest(*request);
+    } else if (m_rt_opts.auth.auth_type == AUTHTYPE_OAUTH2) {
+        request->SetAuthorization("Bearer " + m_rt_opts.auth.password);
     }
+
 
     // Issue request and return response
     return m_http_client->MakeRequest(request);
