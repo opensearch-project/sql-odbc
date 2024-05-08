@@ -237,12 +237,21 @@ OpenSearchProject = [
     callbackUri = "https://oauth.powerbi.com/views/oauthredirect.html",
     logout_uri = "https://login.microsoftonline.com/logout.srf",
 
+<<<<<<< HEAD
     uri = "http://localhost:1852/realms/local-development/protocol/openid-connect/",
     AuthUrl = uri & "auth?",
     TokenUrl = uri & "token",
     LogoutUrl = uri & "logout",
     ClientId = "users",
     ClientSecret = "users-secret",
+=======
+    uriIdP = "<URI of IdP endpoint>",
+    AuthUrl = uriIdP & "auth?",
+    TokenUrl = uriIdP & "token",
+    LogoutUrl = uriIdP & "logout",
+    ClientId = "<User ID>",
+    ClientSecret = "<User secret>",
+>>>>>>> 0909b0b...  Prepare the branch for merge the fork
     Scope = "opensearch",
 
     // StartLogin function initiates OAuth2 authentication
@@ -381,4 +390,8 @@ Diagnostics = Extension.LoadFunction("Diagnostics.pqm");
 Diagnostics.LogValue = if (EnableTraceOutput) then Diagnostics[LogValue] else (prefix, value) => value;
 
 // OdbcConstants contains numeric constants from the ODBC header files, and helper function to create bitfield values.
+<<<<<<< HEAD
 ODBC = Extension.LoadFunction("OdbcConstants.pqm");
+=======
+ODBC = Extension.LoadFunction("OdbcConstants.pqm");
+>>>>>>> 0909b0b...  Prepare the branch for merge the fork

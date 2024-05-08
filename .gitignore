@@ -61,3 +61,13 @@ CTestTestfile.cmake
 /src/PowerBIConnector/obj/
 /src/PowerBIConnector/.vs/
 src/vcpkg_installed/
+# Internal file
+.gitignore
+Trifork.readme.md
+build_win_debug32manual.ps1
+build_win_debug64manual.ps1
+build_win_release32manual.ps1
+build_win_release64manual.ps1
+/extensionBiConnector/
+/util-files/
+DockerfileWin
