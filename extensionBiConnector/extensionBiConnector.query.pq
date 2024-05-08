@@ -8,6 +8,9 @@ shared MyExtension.UnitTest =
     Port = 9200,
     UseSSL = false,
     HostnameVerification = false,
+    ClientId = "developer",
+    ClientSecret = "developer",
+    IDPurl ="http://test.com",
 
     facts =
     {        

@@ -31,7 +31,7 @@ static const struct authmode authmodes[AUTHMODE_CNT] = {
     {IDS_AUTHTYPE_NONE, AUTHTYPE_IAM},
     {IDS_AUTHTYPE_BASIC, AUTHTYPE_BASIC},
     {IDS_AUTHTYPE_IAM, AUTHTYPE_NONE},
-    {IDS_AUTHTYPE_OAUTH2, AUTHTYPE_BASIC}};
+    {IDS_AUTHTYPE_OAUTH2, AUTHTYPE_OAUTH2}};
 
 const struct authmode *GetCurrentAuthMode(HWND hdlg) {
     unsigned int ams_cnt = 0;
@@ -63,22 +63,26 @@ void SetAuthenticationVisibility(HWND hdlg, const struct authmode *am) {
     if (strcmp(am->authtype_str, AUTHTYPE_BASIC) == 0) {
         EnableWindow(GetDlgItem(hdlg, IDC_USER), TRUE);
         EnableWindow(GetDlgItem(hdlg, IDC_PASSWORD), TRUE);
+        EnableWindow(GetDlgItem(hdlg, IDC_TOKEN), FALSE);        
         EnableWindow(GetDlgItem(hdlg, IDC_REGION), FALSE);
         EnableWindow(GetDlgItem(hdlg, IDC_TUNNEL_HOST), FALSE);
     } else if (strcmp(am->authtype_str, AUTHTYPE_IAM) == 0) {
         EnableWindow(GetDlgItem(hdlg, IDC_USER), FALSE);
         EnableWindow(GetDlgItem(hdlg, IDC_PASSWORD), FALSE);
+        EnableWindow(GetDlgItem(hdlg, IDC_TOKEN), FALSE);  
         EnableWindow(GetDlgItem(hdlg, IDC_REGION), TRUE);
         EnableWindow(GetDlgItem(hdlg, IDC_TUNNEL_HOST), TRUE);
     } else if (strcmp(am->authtype_str, AUTHTYPE_OAUTH2) == 0) {
         EnableWindow(GetDlgItem(hdlg, IDC_USER), FALSE);
-        EnableWindow(GetDlgItem(hdlg, IDC_PASSWORD), TRUE);
+        EnableWindow(GetDlgItem(hdlg, IDC_PASSWORD), FALSE);
+        EnableWindow(GetDlgItem(hdlg, IDC_TOKEN), TRUE);  
         EnableWindow(GetDlgItem(hdlg, IDC_REGION), FALSE);
         EnableWindow(GetDlgItem(hdlg, IDC_TUNNEL_HOST), FALSE);
     }
     else {
         EnableWindow(GetDlgItem(hdlg, IDC_USER), FALSE);
         EnableWindow(GetDlgItem(hdlg, IDC_PASSWORD), FALSE);
+        EnableWindow(GetDlgItem(hdlg, IDC_TOKEN), FALSE);  
         EnableWindow(GetDlgItem(hdlg, IDC_REGION), FALSE);
         EnableWindow(GetDlgItem(hdlg, IDC_TUNNEL_HOST), FALSE);
     } 
@@ -95,10 +99,10 @@ void SetDlgStuff(HWND hdlg, const ConnInfo *ci) {
     int authtype_selection_idx = 0;
     unsigned int ams_cnt = 0;
     const struct authmode *ams = GetAuthModes(&ams_cnt);
-    char buff[MEDIUM_REGISTRY_LEN + 1];
+    char buff[MEDIUM_LARGE_REGISTRY_LEN + 1];
     for (unsigned int i = 0; i < ams_cnt; i++) {
         LoadString(GetWindowInstance(hdlg), ams[i].authtype_id, buff,
-                   MEDIUM_REGISTRY_LEN);
+                   MEDIUM_LARGE_REGISTRY_LEN);
         SendDlgItemMessage(hdlg, IDC_AUTHTYPE, CB_ADDSTRING, 0, (WPARAM)buff);
         if (!stricmp(ci->authtype, ams[i].authtype_str)) {
             authtype_selection_idx = i;
@@ -108,12 +112,13 @@ void SetDlgStuff(HWND hdlg, const ConnInfo *ci) {
                        ams[authtype_selection_idx].authtype_id, (WPARAM)0);
     SetDlgItemText(hdlg, IDC_USER, ci->username);
     SetDlgItemText(hdlg, IDC_PASSWORD, SAFE_NAME(ci->password));
+    SetDlgItemText(hdlg, IDC_TOKEN, SAFE_NAME(ci->access_token));
     SetDlgItemText(hdlg, IDC_REGION, ci->region);
     SetDlgItemText(hdlg, IDC_TUNNEL_HOST, ci->tunnel_host);
 }
 
 static void GetNameField(HWND hdlg, int item, opensearchNAME *name) {
-    char medium_buf[MEDIUM_REGISTRY_LEN + 1];
+    char medium_buf[MEDIUM_LARGE_REGISTRY_LEN + 1];
     GetDlgItemText(hdlg, item, medium_buf, sizeof(medium_buf));
     STR_TO_NAME((*name), medium_buf);
 }
@@ -127,6 +132,7 @@ void GetDlgStuff(HWND hdlg, ConnInfo *ci) {
     // Authentication
     GetDlgItemText(hdlg, IDC_USER, ci->username, sizeof(ci->username));
     GetNameField(hdlg, IDC_PASSWORD, &ci->password);
+    GetNameField(hdlg, IDC_TOKEN, &ci->access_token);
     GetDlgItemText(hdlg, IDC_REGION, ci->region, sizeof(ci->region));
     GetDlgItemText(hdlg, IDC_TUNNEL_HOST, ci->tunnel_host,
                    sizeof(ci->tunnel_host));

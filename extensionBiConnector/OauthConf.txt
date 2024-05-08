@@ -1,0 +1,5 @@
+{
+    "ClientId": "users",
+    "ClientSecret": "users-secret",
+    "IDPurl": "http://localhost:1852/realms/local-development/protocol/openid-connect/"
+}

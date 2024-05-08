@@ -48,6 +48,8 @@ runtime_options rt_opts = []() {
             temp_opts.auth.username = wstring_to_string(it.second);
         else if (tmp == L"password")
             temp_opts.auth.password = wstring_to_string(it.second);
+        else if (tmp == L"access_token")
+            temp_opts.auth.access_token = wstring_to_string(it.second);
         else if (tmp == L"region")
             temp_opts.auth.region = wstring_to_string(it.second);
         else if (tmp == L"tunnelhost")

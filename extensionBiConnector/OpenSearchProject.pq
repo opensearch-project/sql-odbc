@@ -45,6 +45,7 @@ OpenSearchProjectType = type function (
     Documentation.Name = "OpenSearch Project"
 ];
 
+
 OpenSearchProjectImpl = (Server as text, Port as number, UseSSL as logical, HostnameVerification as logical) as table =>
     let
         Credential = Extension.CurrentCredential(),
@@ -64,7 +65,8 @@ OpenSearchProjectImpl = (Server as text, Port as number, UseSSL as logical, Host
                 ]
             else if AuthenticationMode = "OAuth" then
                 [
-                    Auth = "OAUTH2"
+                    Auth = "OAUTH2",
+                    JWT = Credential[access_token]
                 ]
             else
                 [
@@ -199,6 +201,7 @@ OnOdbcError = (errorRecord as record) =>
 // Data Source Kind description
 OpenSearchProject = [
     // Required for use with Power BI Service.
+
     TestConnection = (dataSourcePath) =>
         let
             json = Json.Document(dataSourcePath),
@@ -206,8 +209,10 @@ OpenSearchProject = [
             Port = json[Port],
             UseSSL = json[UseSSL],
             HostnameVerification = json[HostnameVerification]
+
         in
             {"OpenSearchProject.Contents", Server, Port, UseSSL, HostnameVerification},
+
     // Authentication modes
     Authentication = [
         Implicit = [
@@ -228,6 +233,82 @@ OpenSearchProject = [
             Logout = Logout
         ]
     ],
+
+    callbackUri = "https://oauth.powerbi.com/views/oauthredirect.html",
+    logout_uri = "https://login.microsoftonline.com/logout.srf",
+
+    uri = "http://localhost:1852/realms/local-development/protocol/openid-connect/",
+    AuthUrl = uri & "auth?",
+    TokenUrl = uri & "token",
+    LogoutUrl = uri & "logout",
+    ClientId = "users",
+    ClientSecret = "users-secret",
+    Scope = "opensearch",
+
+    // StartLogin function initiates OAuth2 authentication
+    StartLogin = (resourceUrl, state, display) =>
+            let
+                AuthorizeUrl = AuthUrl
+                & Uri.BuildQueryString(
+                    [
+                        client_id = ClientId,
+                        scope = Scope,
+                        state = state,
+                        response_type = "code",
+                        redirect_uri = callbackUri
+                    ]
+                )
+            in
+                [
+                    LoginUri = AuthorizeUrl,
+                    CallbackUri = callbackUri,
+                    WindowHeight =  720,
+                    WindowWidth =  720,
+                    Context = null
+                ],
+
+    FinishLogin = (context, callbackUri, state) => let Parts = Uri.Parts(callbackUri)[Query] in TokenMethod(Parts[code]),
+
+    TokenMethod = (code) =>
+        let
+            Response = Web.Contents(
+                TokenUrl,
+                [
+                    Content = Text.ToBinary(
+                        Uri.BuildQueryString(
+                            [
+                                client_id = ClientId,
+                                client_secret = ClientSecret,
+                                code = code,
+                                grant_type = "authorization_code",
+                                redirect_uri = callbackUri
+                            ]
+                        )
+                    ),
+                    Headers = [#"Content-type" = "application/x-www-form-urlencoded", #"Accept" = "application/json"]
+                ]
+            ),
+            Parts = Json.Document(Response)
+        in
+            Parts,
+
+    Refresh = (refreshToken) =>
+        let
+            tokenUrl = TokenUrl,
+            requestBody = "grant_type=refresh_token&refresh_token=" & refreshToken & "&client_id=" & ClientId & "&client_secret=" & ClientSecret,
+            refreshResponse = Json.Document(Web.Contents(tokenUrl, [Content = Text.ToBinary(requestBody), Headers = [#"Content-Type"="application/x-www-form-urlencoded"]])),
+            refreshedAccessToken = refreshResponse[access_token]
+        in
+            refreshedAccessToken,
+
+    Logout = (accessToken) =>
+        let
+            logoutUrl = LogoutUrl,
+            redirectUrl = callbackUri,
+            response = Web.Contents(logoutUrl, [Query = [redirect_uri = redirectUrl], Headers = [Authorization="Bearer " & accessToken]])
+        in
+            // Assuming successful logout
+            null,
 
     // PBIDS Handler
     DSRHandlers = [
@@ -301,78 +382,3 @@ Diagnostics.LogValue = if (EnableTraceOutput) then Diagnostics[LogValue] else (p
 
 // OdbcConstants contains numeric constants from the ODBC header files, and helper function to create bitfield values.
 ODBC = Extension.LoadFunction("OdbcConstants.pqm");
-
-clientId = "users";
-clientSecret = "users-secret";
-callbackUri = "https://oauth.powerbi.com/views/oauthredirect.html";
-logout_uri = "https://login.microsoftonline.com/logout.srf";
-
-url = "http://localhost:1852/realms/local-development/protocol/openid-connect/";
-AuthorizeUrl = url & "auth";
-TokenUrl = url & "token";
-LogoutUrl = url & "logout";
-scope = "opensearch";
-
-// StartLogin function initiates OAuth2 authentication
-StartLogin = (resourceUrl, state, display) =>
-        let
-        AuthorizeUrl = "http://localhost:1852/realms/local-development/protocol/openid-connect/auth?"
-            & Uri.BuildQueryString(
-                [
-                    client_id = clientId,
-                    scope = scope,
-                    state = state,
-                    response_type = "code",
-                    redirect_uri = callbackUri
-                ]
-            )
-        in
-            [
-                LoginUri = AuthorizeUrl,
-                CallbackUri = callbackUri,
-                WindowHeight =  720,
-                WindowWidth =  720,
-                Context = null
-            ];
-
-FinishLogin = (context, callbackUri, state) => let Parts = Uri.Parts(callbackUri)[Query] in TokenMethod(Parts[code]);
-
-TokenMethod = (code) =>
-    let
-        Response = Web.Contents(
-            TokenUrl,
-            [
-                Content = Text.ToBinary(
-                    Uri.BuildQueryString(
-                        [
-                            client_id = clientId,
-                            client_secret = clientSecret,
-                            code = code,
-                            grant_type = "authorization_code",
-                            redirect_uri = callbackUri
-                        ]
-                    )
-                ),
-                Headers = [#"Content-type" = "application/x-www-form-urlencoded", #"Accept" = "application/json"]
-            ]
-        ),
-        Parts = Json.Document(Response)
-    in
-        Parts;
-
-Refresh = (refreshToken) =>
-    let
-        tokenUrl = TokenUrl,
-        requestBody = "grant_type=refresh_token&refresh_token=" & refreshToken & "&client_id=" & clientId & "&client_secret=" & clientSecret,
-        refreshResponse = Json.Document(Web.Contents(tokenUrl, [Content = Text.ToBinary(requestBody), Headers = [#"Content-Type"="application/x-www-form-urlencoded"]])),
-        refreshedAccessToken = refreshResponse[access_token]
-    in
-        refreshedAccessToken;
-
-Logout = (accessToken) =>
-    let
-        logoutUrl = LogoutUrl,
-        redirectUrl = callbackUri,
-        response = Web.Contents(logoutUrl, [Query = [redirect_uri = redirectUrl], Headers = [Authorization="Bearer " & accessToken]])
-    in
-        null; // Assuming successful logout

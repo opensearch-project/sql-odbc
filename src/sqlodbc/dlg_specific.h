@@ -43,6 +43,10 @@ extern "C" {
 #define INI_PASSWORD "password"        
 #define INI_PASSWORD_ABBR "PWD"  
 #define INI_AUTH_MODE "auth"
+
+#define INI_TOKEN "access_token"        
+#define INI_TOKEN_ABBR "JWT"  
+
 #define INI_REGION "region"
 #define INI_TUNNEL_HOST "TunnelHost"
 #define INI_SSL_USE "useSSL"  

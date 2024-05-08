@@ -122,6 +122,7 @@ int LIBOPENSEARCH_connect(ConnectionClass *self) {
     rt_opts.auth.auth_type.assign(self->connInfo.authtype);
     rt_opts.auth.username.assign(self->connInfo.username);
     rt_opts.auth.password.assign(SAFE_NAME(self->connInfo.password));
+    rt_opts.auth.access_token.assign(SAFE_NAME(self->connInfo.access_token));
     rt_opts.auth.region.assign(self->connInfo.region);
     rt_opts.auth.tunnel_host.assign(self->connInfo.tunnel_host);
 

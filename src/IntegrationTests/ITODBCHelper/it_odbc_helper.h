@@ -26,6 +26,7 @@ std::vector< std::pair< std::wstring, std::wstring > > conn_str_pair = {
     {L"port", L"9200"},
     {L"user", L"admin"},
     {L"password", L"admin"},
+    {L"access_token", L"token"},    
     {L"auth", L"BASIC"},
     {L"useSSL", (use_ssl ? L"1" : L"0")},
     {L"hostnameVerification", L"0"},

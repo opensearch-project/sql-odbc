@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ClientId>users</ClientId>
+<ClientSecret>users-secret</ClientSecret>
+<IDPurl>http://localhost:1852/realms/local-development/protocol/openid-connect/</IDPurl>

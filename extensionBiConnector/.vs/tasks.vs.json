@@ -1,0 +1,10 @@
+{
+  "version": "0.2.1",
+  "tasks": [
+    {
+      "taskLabel": "attività-OpenSearchProject",
+      "appliesTo": "OpenSearchProject.pq",
+      "type": "launch"
+    }
+  ]
+}

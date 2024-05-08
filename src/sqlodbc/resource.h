@@ -7,6 +7,7 @@
 #define IDOK2                           3
 #define IDC_TEST                        4
 #define IDC_PASSWORD_STATIC             4
+#define IDC_TOKEN_STATIC                6
 #define IDC_SSL_STATIC                  4
 #define IDC_HOST_VER_STATIC             5
 #define IDC_DSNAME                      400
@@ -31,6 +32,7 @@
 #define IDC_PORT                        1002
 #define IDC_USER                        1006
 #define IDC_PASSWORD                    1009
+#define IDC_TOKEN                       1010
 #define IDC_MANAGEDSN                   1077
 #define IDC_EDIT1                       1112
 #define IDC_CONNTIMEOUT_STATIC          1112
