@@ -237,21 +237,12 @@ OpenSearchProject = [
     callbackUri = "https://oauth.powerbi.com/views/oauthredirect.html",
     logout_uri = "https://login.microsoftonline.com/logout.srf",
 
-<<<<<<< HEAD
     uri = "http://localhost:1852/realms/local-development/protocol/openid-connect/",
     AuthUrl = uri & "auth?",
     TokenUrl = uri & "token",
     LogoutUrl = uri & "logout",
     ClientId = "users",
     ClientSecret = "users-secret",
-=======
-    uriIdP = "<URI of IdP endpoint>",
-    AuthUrl = uriIdP & "auth?",
-    TokenUrl = uriIdP & "token",
-    LogoutUrl = uriIdP & "logout",
-    ClientId = "<User ID>",
-    ClientSecret = "<User secret>",
->>>>>>> 0909b0b...  Prepare the branch for merge the fork
     Scope = "opensearch",
 
     // StartLogin function initiates OAuth2 authentication
