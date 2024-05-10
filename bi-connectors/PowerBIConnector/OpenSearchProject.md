@@ -49,6 +49,9 @@
 
 <img src="img/pbi_simple_graph.png">
 
+## Set up Oauth2
+
+1. In the same folder where is placed the `.mez` file (usually in `C:\Users\User\Documents\Power BI Desktop\Custom Connectors`) put a JSON file filling the three fields required from the template provided.
 
 ## Troubleshooting 
 
