@@ -61,4 +61,6 @@ CTestTestfile.cmake
 /src/PowerBIConnector/obj/
 /src/PowerBIConnector/.vs/
 src/vcpkg_installed/
+/extensionBiConnector/
+/comparisonBiConnector/
 
