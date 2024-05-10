@@ -6,6 +6,9 @@ section OpenSearchProject;
 // This should be set to false before release. Tracing is done through a call to
 // Diagnostics.LogValue(). When EnableTraceOutput is set to false, the call becomes a
 // no-op and simply returns the original value.
+
+config = Text.FromBinary(Extension.Contents("OauthConf.json"));  
+
 EnableTraceOutput = true;
 
 [DataSource.Kind = "OpenSearchProject", Publish = "OpenSearchProject.Publish"]
@@ -202,6 +205,8 @@ OnOdbcError = (errorRecord as record) =>
 OpenSearchProject = [
     // Required for use with Power BI Service.
 
+    IdPinfo = Table.SingleRow(OpenSearchProjectImpl) as record ,
+
     TestConnection = (dataSourcePath) =>
         let
             json = Json.Document(dataSourcePath),
@@ -209,7 +214,6 @@ OpenSearchProject = [
             Port = json[Port],
             UseSSL = json[UseSSL],
             HostnameVerification = json[HostnameVerification]
-
         in
             {"OpenSearchProject.Contents", Server, Port, UseSSL, HostnameVerification},
 
@@ -237,12 +241,14 @@ OpenSearchProject = [
     callbackUri = "https://oauth.powerbi.com/views/oauthredirect.html",
     logout_uri = "https://login.microsoftonline.com/logout.srf",
 
-    uriIdP = "<URI of IdP endpoint>",
-    AuthUrl = uriIdP & "auth?",
-    TokenUrl = uriIdP & "token",
-    LogoutUrl = uriIdP & "logout",
-    ClientId = "<User ID>",
-    ClientSecret = "<User secret>",
+    oauthConfig = Json.Document(config),
+
+    AuthUrl = oauthConfig [IDPurl] & "auth?",
+    TokenUrl = oauthConfig [IDPurl] & "token",
+    LogoutUrl = oauthConfig [IDPurl] & "logout",
+    ClientId = oauthConfig [ClientId] ,
+    ClientSecret = oauthConfig[ClientSecret],
+
     Scope = "opensearch",
 
     // StartLogin function initiates OAuth2 authentication
@@ -313,13 +319,16 @@ OpenSearchProject = [
     // PBIDS Handler
     DSRHandlers = [
         opensearchproject = [
-            GetDSR = (Server, Port, UseSSL, HostnameVerification, optional Options) =>
+            GetDSR = (Server, Port, UseSSL, HostnameVerification, IDPurl, ClientId, ClientSecret, optional Options) =>
                 [
                     protocol = "opensearchproject-odbc",
                     address = [
                         server = Server,
                         port = Port,
                         useSSL = UseSSL,
+                        idpURL = IDPurl,
+                        username = ClientId,
+                        secret = ClientSecret,
                         hostnameVerification = HostnameVerification
                     ]
                 ],
@@ -330,16 +339,25 @@ OpenSearchProject = [
                             dsr[address][server],
                             dsr[address][port],
                             dsr[address][useSSL],
+                            dsr[address][idpURL],
+                            dsr[address][ClientId],
+                            dsr[address][ClientSecret],                            
                             dsr[address][hostnameVerification]
                         )
                     in
                         db,
-            GetFriendlyName = (dsr) => "OpenSearch Project"
+            GetFriendlyName = (dsr) => "OpenSearch Projectatr"
         ]
     ],
     // Enable Encryption
     SupportsEncryption = true,
     Label = Extension.LoadString("DataSourceLabel")
+];
+
+OpenSearchProject.UI = [
+    ButtonText = {"RedshiftODBC Sample", "RedshiftODBC Sample"},
+    Category = "Database",
+    SupportsDirectQuery = true
 ];
 
 // Data Source UI publishing description
