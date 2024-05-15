@@ -203,9 +203,6 @@ OnOdbcError = (errorRecord as record) =>
 
 // Data Source Kind description
 OpenSearchProject = [
-    // Required for use with Power BI Service.
-
-    IdPinfo = Table.SingleRow(OpenSearchProjectImpl) as record ,
 
     TestConnection = (dataSourcePath) =>
         let
