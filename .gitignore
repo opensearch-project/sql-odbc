@@ -63,4 +63,4 @@ CTestTestfile.cmake
 src/vcpkg_installed/
 /extensionBiConnector/
 /comparisonBiConnector/
-
+/extensionTableauConnector/
