@@ -3,8 +3,8 @@
 ## Prerequisites
 
 * Microsoft Excel 2016 and higher
-* [OpenSearch](https://docs-beta.opensearch.org/opensearch/install/index/)
-* [OpenSearch SQL ODBC driver](https://docs-beta.opensearch.org/search-plugins/sql/odbc/)
+* [OpenSearch](https://opensearch.org/docs/latest/install-and-configure/install-opensearch/index/)
+* [OpenSearch SQL ODBC driver](https://opensearch.org/docs/latest/search-plugins/sql/sql/odbc/)
 * A preconfigured [User or System DSN](../../README.md)
 
 ## Test Successful Connection
@@ -70,7 +70,7 @@ Alternately, **Data** > **Refresh** option can also be used to refresh the data.
 
 ## Troubleshooting
 
-* If the table has large number of datarows, increase [the keepalive](https://github.com/opensearch-project/sql/blob/main/docs/dev/Pagination.md#opendistrosqlcursorkeep_alive) value accordlingly. 
+* If the table has large number of datarows, increase [the keepalive](https://github.com/opensearch-project/sql-odbc/blob/cb5f4bd7ba4a15a2614ecbd3b53ddfcd9b4320fc/docs/dev/Pagination.md) value accordlingly. 
 
 * If the table has nested or object type column, you might get an error as below.
 

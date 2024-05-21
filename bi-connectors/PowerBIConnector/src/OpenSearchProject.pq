@@ -343,18 +343,12 @@ OpenSearchProject = [
                         )
                     in
                         db,
-            GetFriendlyName = (dsr) => "OpenSearch Projectatr"
+            GetFriendlyName = (dsr) => "OpenSearch Project"
         ]
     ],
     // Enable Encryption
     SupportsEncryption = true,
     Label = Extension.LoadString("DataSourceLabel")
-];
-
-OpenSearchProject.UI = [
-    ButtonText = {"RedshiftODBC Sample", "RedshiftODBC Sample"},
-    Category = "Database",
-    SupportsDirectQuery = true
 ];
 
 // Data Source UI publishing description

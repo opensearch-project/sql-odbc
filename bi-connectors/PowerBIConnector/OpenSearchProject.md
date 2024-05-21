@@ -55,7 +55,7 @@
 
 ## Troubleshooting 
 
-* If you get the following error, please install the [OpenSearch SQL ODBC Driver](https://docs-beta.opensearch.org/search-plugins/sql/odbc/).
+* If you get the following error, please install the [OpenSearch SQL ODBC Driver](https://opensearch.org/docs/latest/search-plugins/sql/sql/odbc/).
 
 <img src="img/pbi_error_driver_not_installed.png" width="350">
 

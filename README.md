@@ -1,6 +1,6 @@
 # OpenSearch ODBC Driver
 
-OpenSearchODBC is a read-only ODBC driver for Windows and Mac for connecting to OpenSearch SQL support. In Trifork.readme.md is explained in detail the development and deploying for new solutions by manual consequential task or authomatically with a Dockerfile.
+OpenSearchODBC is a read-only ODBC driver for Windows and Mac for connecting to OpenSearch SQL support. This driver version allows to levereage on Oauth2 authentication/authorization. 
 
 ### ODBC Driver
 
