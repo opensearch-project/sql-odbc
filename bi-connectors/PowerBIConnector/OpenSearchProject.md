@@ -23,29 +23,33 @@
 ## Connect to OpenSearch Project
 1. Open Power BI Desktop.
 
-2. Click on **Home** > **Get Data** > **More** > **Other**. Select **OpenSearch Project**. Click on **Connect**.
+2. If necessary clear the previous permissions.
+
+<img src="img/powerbi_cached.png" width="500">
+
+3. Click on **Home** > **Get Data** > **More** > **Other**. Select **OpenSearch Project**. Click on **Connect**.
 
 <img src="img/pbi_select_connector.png" width="500">
 
-3. You will get a warning for using a third-party service. Click on **Continue**.
+4. You will get a warning for using a third-party service. Click on **Continue**.
 
 <img src="img/pbi_third_party_warning.png" width="500">
 
-4. Enter host and port values and select your preferred SSL and Certificate validation options. Click on **OK**.
+5. Enter host and port values and select your preferred SSL and Certificate validation options. Click on **OK**.
 
 <img src="img/pbi_connection_string_options.png" width="500">
 
-5. Select authentication option. Enter credentials if required and click on **Connect**.
+6. Select authentication option. Enter credentials if required and click on **Connect**.
 
 <img src="img/pbi_auth.png" width="500">
 
-6. Select required table. Data preview will be loaded.
+7. Select required table. Data preview will be loaded.
 
 <img src="img/pbi_data_preview.png">
 
-7. Click on **Load**.
+8. Click on **Load**.
 
-8. Select required columns for creating a graph.
+9. Select required columns for creating a graph.
 
 <img src="img/pbi_simple_graph.png">
 
