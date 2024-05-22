@@ -3,7 +3,7 @@
 ## Prerequisites
 * Microsoft Power BI Desktop
 * [OpenSearch](https://opensearch.org/docs/latest/install-and-configure/install-opensearch/index/)
-* [OpenSearch SQL ODBC driver](https://docs-beta.opensearch.org/search-plugins/sql/odbc/)
+* [OpenSearch SQL ODBC driver](https://opensearch.org/docs/latest/search-plugins/sql/sql/odbc/)
 * [OpenSearchProject.mez](OpenSearchProject.mez) or [AmazonOpenSearchService.mez](AmazonOpenSearchService.mez)
 * Optional: [sqlodbc_import.pbids](PBIDSExamples/sqlodbc_import.pbids) to help with repeated connections to the same server 
 
