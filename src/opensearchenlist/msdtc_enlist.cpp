@@ -40,6 +40,11 @@
 #define CSTR static const char *const
 #endif /* CSTR */
 
+/* Makes CPPcheck happy */
+#ifndef KEYWORD_DTC_CHECK
+#define KEYWORD_DTC_CHECK
+#endif /*KEYWORD_DTC_CHECK*/
+
 EXTERN_C {
     HINSTANCE s_hModule; /* Saved module handle. */
 }
