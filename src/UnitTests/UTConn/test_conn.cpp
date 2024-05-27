@@ -18,15 +18,19 @@ const std::string invalid_port = "920";
 const std::string invalid_user = "amin";
 const std::string invalid_pw = "amin";
 const std::string invalid_region = "bad-region";
+const std::string no_token = "";
 runtime_options valid_opt_val = {{valid_host, valid_port, "1", "0"},
-                                 {"BASIC", valid_user, valid_pw, valid_region, valid_tunnel_host},
+                                 {"BASIC", valid_user, valid_pw, no_token, valid_region, valid_tunnel_host},
                                  {use_ssl, false, "", "", "", ""}};
 runtime_options invalid_opt_val = {
     {invalid_host, invalid_port, "1", "0"},
-    {"BASIC", invalid_user, invalid_pw, valid_region, valid_tunnel_host},
+    {"BASIC", invalid_user, invalid_pw, no_token, valid_region, valid_tunnel_host},
     {use_ssl, false, "", "", "", ""}};
 runtime_options missing_opt_val = {{"", "", "1", "0"},
-                                   {"BASIC", "", invalid_pw, valid_region, valid_tunnel_host},
+                                   {"BASIC", "", invalid_pw, no_token, valid_region, valid_tunnel_host},
+                                   {use_ssl, false, "", "", "", ""}};
+runtime_options missing_opt_val_token = {{"", "", "1", "0"},
+                                   {"OAUTH2", "","", no_token, "", ""},
                                    {use_ssl, false, "", "", "", ""}};
 
 TEST(TestOpenSearchConnConnectionOptions, ValidParameters) {
@@ -81,6 +85,13 @@ TEST_F(TestOpenSearchConnConnectDBStart, MissingParameters) {
     EXPECT_EQ(CONNECTION_BAD, m_conn.GetConnectionStatus());
 }
 
+TEST_F(TestOpenSearchConnConnectDBStart, MissingParametersOauth) {
+    ASSERT_NE(true, m_conn.ConnectionOptions(missing_opt_val_token, 1, 1,
+                                             missing_option_count));
+    EXPECT_EQ(false, m_conn.ConnectDBStart());
+    EXPECT_EQ(CONNECTION_BAD, m_conn.GetConnectionStatus());
+}
+
 TEST(TestOpenSearchConnDropDBConnection, InvalidParameters) {
     OpenSearchCommunication conn;
     ASSERT_EQ(CONNECTION_BAD, conn.GetConnectionStatus());
@@ -96,6 +107,17 @@ TEST(TestOpenSearchConnDropDBConnection, MissingParameters) {
     OpenSearchCommunication conn;
     ASSERT_EQ(CONNECTION_BAD, conn.GetConnectionStatus());
     ASSERT_NE(true, conn.ConnectionOptions(missing_opt_val, 1, 1,
+                                           missing_option_count));
+    ASSERT_NE(true, conn.ConnectDBStart());
+    ASSERT_EQ(CONNECTION_BAD, conn.GetConnectionStatus());
+    conn.DropDBConnection();
+    EXPECT_EQ(CONNECTION_BAD, conn.GetConnectionStatus());
+}
+
+TEST(TestOpenSearchConnDropDBConnection, MissingParametersOauth) {
+    OpenSearchCommunication conn;
+    ASSERT_EQ(CONNECTION_BAD, conn.GetConnectionStatus());
+    ASSERT_NE(true, conn.ConnectionOptions(missing_opt_val_token, 1, 1,
                                            missing_option_count));
     ASSERT_NE(true, conn.ConnectDBStart());
     ASSERT_EQ(CONNECTION_BAD, conn.GetConnectionStatus());
