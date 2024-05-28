@@ -55,7 +55,7 @@
 
 ## Set up Oauth2
 
-1. In the same folder of the source files to build put a JSON file filling the three fields required in the template provided.
+* In the same folder of the source files to build put a JSON file filling the three fields required in the template provided.
 
 ## Troubleshooting 
 
