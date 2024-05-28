@@ -33,31 +33,3 @@ For example, if you can connect to server using following curl command
  <img src="img/win_test_dsn.png" width="20%">
 
 6. Click on `OK` to save DSN values.
-
-
-## Add User DSN
-
-1. Open ODBC Data Source Administrator. Click on `User DSN` > `Add`.
-
- <img src="img/win_user_dsn.png" width="60%">
-
-2. Select `OpenSearch SQL ODBC Driver` and click on `Finish`.
-
- <img src="img/win_user_dsn_select_driver.png" width="50%">
-
-3. The DSN Setup window will open.
-
- <img src="img/win_user_dsn_configure_options.png" width="50%">
-
-4. Update values of configuration options.
-5. Click on `Test` to verify connectivity.
-6. Click on `OK` to save DSN values. 
-7. You will find this newly added DSN in User DSN list.
-
- <img src="img/win_user_dsn_list.png" width="60%">
-
-## Connecting to an OpenSearch cluster created as an AWS VPC endpoint over a tunnel
-
-In case if you use a tunnel or a proxy to connect to an OpenSearch cluster located into a VPC, `Host` doesn't represent a real OpenSearch hostname. To properly sign requests with AWS signature, real OpenSearch cluster hostname is required. It could be set in `Tunnel Host` field.
-
- <img src="img/win_configure_with_tunnel.png" width="50%">

@@ -12,14 +12,14 @@
 
 #### Authentication Options
 
-| Option             | Description                                                                   | Type   | Acceptable Values                                              | Default |
-|--------------------|-------------------------------------------------------------------------------|--------|----------------------------------------------------------------|---------|
-| `Auth`             | Authentication mechanism to use.                                              | string | `BASIC` (basic HTTP), `AWS_SIGV4` (AWS auth), `OAUTH2`, `NONE` | `NONE`  |
-| `User` / `UID`     | [`Auth=BASIC`] Username for the connection.                                   | string |                                                                |         |
-| `Password` / `PWD` | [`Auth=BASIC`] Password for the connection.                                   | string |                                                                |         |
-| `Token`            | [`Auth=OAUTH2`] Password for the connection.                                  | string |                                                                |         |
-| `Region`           | [`Auth=AWS_SIGV4`] Region used for signing requests                           | string | AWS region (eg. `us-west-1`)                                   |         |
-| `TunnelHost`       | [`Auth=AWS_SIGV4`] VPC endpoint hostname if connected through tunnel or proxy | string |                                                                |         |
+| Option                 | Description                                                                   | Type   | Acceptable Values                                              | Default |
+|------------------------|-------------------------------------------------------------------------------|--------|----------------------------------------------------------------|---------|
+| `Auth`                 | Authentication mechanism to use.                                              | string | `BASIC` (basic HTTP), `AWS_SIGV4` (AWS auth), `OAUTH2`, `NONE` | `NONE`  |
+| `User` / `UID`         | [`Auth=BASIC`] Username for the connection.                                   | string |                                                                |         |
+| `Password` / `PWD`     | [`Auth=BASIC`] Password for the connection.                                   | string |                                                                |         |
+| `access_token` / `JWT` | [`Auth=OAUTH2`] Password for the connection.                                  | string |                                                                |         |
+| `Region`               | [`Auth=AWS_SIGV4`] Region used for signing requests                           | string | AWS region (eg. `us-west-1`)                                   |         |
+| `TunnelHost`           | [`Auth=AWS_SIGV4`] VPC endpoint hostname if connected through tunnel or proxy | string |                                                                |         |
 
 **NOTE:** To use `AWS_SIGV4` authentication you need to create `~/.aws/credentials` and add `opensearchodbc` profile with aws access key id, secret key and session token (if used).
 

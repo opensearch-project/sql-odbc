@@ -57,6 +57,16 @@
 
 * In the same folder of the source files to build put a JSON file filling the three fields required in the template provided.
 
+## Login with Oauth2
+
+1.  Select the `OAUTH2` authentication and click on **Sign In**
+
+<img src="img/Oauth2_init.png" width="500">
+
+2.  After provided the user-id and the user-secret, click on **Connect**
+
+<img src="img/Oauth2_signedIn.png" width="500">
+
 ## Troubleshooting 
 
 * If you get the following error, please install the [OpenSearch SQL ODBC Driver](https://opensearch.org/docs/latest/search-plugins/sql/sql/odbc/).
