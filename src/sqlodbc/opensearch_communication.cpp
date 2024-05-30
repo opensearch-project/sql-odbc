@@ -340,6 +340,13 @@ bool OpenSearchCommunication::CheckConnectionOptions() {
                 SetErrorDetails("Auth error", m_error_message,
                                 ConnErrorType::CONN_ERROR_INVALID_AUTH);
             }
+        } else if (m_rt_opts.auth.auth_type == AUTHTYPE_OAUTH2){
+            if (m_rt_opts.auth.access_token.empty()) {
+                m_error_message = AUTHTYPE_OAUTH2
+                    " no token sended. ";
+                SetErrorDetails("Auth error", m_error_message,
+                                ConnErrorType::CONN_ERROR_INVALID_AUTH);
+            }
         } else {
             m_error_message = "Unknown authentication type: '"
                               + m_rt_opts.auth.auth_type + "'";
@@ -459,7 +466,10 @@ OpenSearchCommunication::IssueRequest(
                                         .c_str());
         }
         signer.SignRequest(*request);
+    } else if (m_rt_opts.auth.auth_type == AUTHTYPE_OAUTH2) {
+        request->SetAuthorization("Bearer " + m_rt_opts.auth.access_token);
     }
+
 
     // Issue request and return response
     return m_http_client->MakeRequest(request);

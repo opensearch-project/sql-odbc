@@ -1,0 +1,3476 @@
+<!-- clang-format off -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Elastic Search Test Results</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        table, td, th {
+          border: 1px solid black;
+        }
+        #fail-info {
+            color: lightcoral;
+        }
+        #pass-info {
+            color: lightgreen;
+        }
+        #info {
+            color: white;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        #info-body {
+            background: linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px, linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px, linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px, linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px, linear-gradient(90deg, #1b1b1b 10px, transparent 10px), linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424);
+            background-color: #131313;
+            background-size: 20px 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            color: white;
+        }
+        
+        .collapsible {
+            background: inherit;
+            background-color: #131313;
+            background-size: 10px 10px;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: medium;
+            margin-left: 5%;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .active, .collapsible:hover {
+            background-color: #555;
+        }
+
+        .content {
+            padding: 0 5px;
+            display: none;
+            overflow: hidden;
+            background: linear-gradient(27deg, #151515 5px, transparent 5px) 0 5px, linear-gradient(207deg, #151515 5px, transparent 5px) 10px 0px, linear-gradient(27deg, #222 5px, transparent 5px) 0px 10px, linear-gradient(207deg, #222 5px, transparent 5px) 10px 5px, linear-gradient(90deg, #1b1b1b 10px, transparent 10px), linear-gradient(#1d1d1d 25%, #1a1a1a 25%, #1a1a1a 50%, transparent 50%, transparent 75%, #242424 75%, #242424);
+            background-color: #131313;
+            background-size: 20px 20px;
+            font-family: Arial, Helvetica, sans-serif;
+            color: white;
+        }
+
+        #info-div-table {
+            margin-left: 10%;
+            margin-right: 50%;
+        }
+
+        #info-div-title {
+            margin-left: 7%;
+        }
+
+        #info-div-case {
+            margin-left: 10%;
+            margin-right: 50%;
+        }
+
+        #info td, #info th {
+            padding: 4px;
+        }
+
+        #info tr:hover {
+            background-color: #36486b
+        }
+
+        #info td {
+            padding: 8px;
+            text-align: left;
+            border: 1px, solid#ddd;
+        }
+
+        #info-div-test {
+            margin-left: 8%;
+        }
+
+        #info-div-case {
+            margin-left: 5%;
+        }
+
+        #test-div-test {
+            margin-left: 5%;
+        }
+
+        #test-div-table {
+            margin-left: 10%;
+            margin-right: 40%;
+        }
+
+        #tests-table {
+            color: white;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        #tests-table th {
+            background-color: #034f84;
+            text-align: left;
+            padding: 8px;
+        }
+
+        #tests-table tr:hover {
+            background-color: #36486b
+        }
+
+        #tests-table td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body id="info-body">
+    <header>
+        <h1>Test Results</h1>
+        <h2 style="margin-left: 2%">Unit Tests</h2>
+    </header>
+    <div id="info-div-table">
+        <table id="tests-table">
+            <tr>
+                <th style="background-color: #022140; width: 70%">Unit Test</th>
+                <th style="background-color: #022140; width: 15%">Cases</th>
+                <th style="background-color: #022140; width: 15%">Errors</th>
+            </tr>
+            <colgroup>
+                <col span="1" style="background-color:#034f84; width: 60%" />
+                <col span="1" style="background-color:#034f84; width: 20%" />
+                <col span="1" style="width: 20%" />
+            </colgroup>
+            <tr>
+                <td>ut_conn</td>
+                <td>6</td>
+                <td style="background-color:darkred">2</td>
+            </tr>
+            <tr>
+                <td>ut_critical_section</td>
+                <td>1</td>
+                <td style="background-color:darkgreen">0</td>
+            </tr>
+            <tr>
+                <td>ut_rabbit</td>
+                <td>8</td>
+                <td style="background-color:darkgreen">0</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div id="info-div-case"><h3 id="fail-info">ut_conn - Failed 2/6 </h3></div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestOpenSearchConnConnectionOptions - Passed 2/2 - 39 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>ValidParameters</td>
+                        <td>23 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>MissingParameters</td>
+                        <td>15 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestOpenSearchConnConnectDBStart - Passed 3/3 - 52032 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>ValidParameters</td>
+                        <td>24392 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>InvalidParameters</td>
+                        <td>27623 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>MissingParameters</td>
+                        <td>15 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestOpenSearchConnDropDBConnection - Passed 3/3 - 52033 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>InvalidParameters</td>
+                        <td>27992 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>MissingParameters</td>
+                        <td>15 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ValidParameters</td>
+                        <td>24025 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestOpenSearchExecDirect - Passed 3/3 - 48030 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>ValidQuery</td>
+                        <td>24561 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>MissingQuery</td>
+                        <td>23469 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>MissingConnection</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightcoral">
+            TestConnExecDirect - Failed 1/3 - 72136 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr title="C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\UnitTests\UTConn\test_query_execution.cpp(63): error: Expected equality of these values:
+  all_columns_flights_count
+    Which is: 25
+  result->num_fields
+    Which is: 27
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\UnitTests\UTConn\test_query_execution.cpp(64): error: Expected equality of these values:
+  (size_t)all_columns_flights_count
+    Which is: 25
+  result->column_info.size()
+    Which is: 27">
+                        <td>ValidQueryAllColumns</td>
+                        <td>24025 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                    <tr>
+                        <td>ValidQuerySomeColumns</td>
+                        <td>24006 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>InvalidQuery</td>
+                        <td>24103 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightcoral">
+            TestConnPopResult - Failed 1/2 - 47924 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>PopEmptyQueue</td>
+                        <td>23851 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr title="C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\UnitTests\UTConn\test_query_execution.cpp(115): error: Expected equality of these values:
+  all_columns_flights_count
+    Which is: 25
+  result->num_fields
+    Which is: 27">
+                        <td>PopTwoQueryResults</td>
+                        <td>24072 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-case"><h3 id="pass-info">ut_critical_section - Passed 1/1 </h3></div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestCriticalSection - Passed 5/5 - 2127 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>SingleEnterExit</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>MultipleEntersMultipleExits</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>MultipleEnterExit</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>MultiThreadSingleLock</td>
+                        <td>2011 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>RaceConditions</td>
+                        <td>115 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-case"><h3 id="pass-info">ut_rabbit - Passed 8/8 </h3></div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            StandardDistance - Passed 1/1 - 0 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>ValidIterator</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            ConvertObjectToString - Passed 2/2 - 0 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>IteratorAtStringConvert</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ValidObject</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            ParseSchema - Passed 4/4 - 1 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>ValidSchemaValidDoc</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>InvalidSchemaValidDoc</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ValidSchemaInvalidDoc</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>InvalidSchemaInvalidDoc</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            ParseObj - Passed 2/2 - 0 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>ValidObj</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>InvalidObj</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            ParseArr - Passed 2/2 - 0 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>ValidArr</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>InvalidArr</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            ParseStr - Passed 2/2 - 0 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>ValidStr</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>InvalidStr</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            ParseInt - Passed 2/2 - 0 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>ValidInt</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>InvalidInt</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            Parse - Passed 1/1 - 0 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>InvalidJson</td>
+                        <td>0 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Integration Tests -->
+    <header>
+        <h2 style="margin-left: 2%">Integration Tests</h2>
+    </header>
+    <div id="info-div-table">
+        <table id="tests-table">
+            <tr>
+                <th style="background-color: #022140; width: 70%">Unit Test</th>
+                <th style="background-color: #022140; width: 15%">Cases</th>
+                <th style="background-color: #022140; width: 15%">Errors</th>
+            </tr>
+            <colgroup>
+                <col span="1" style="background-color:#034f84; width: 60%" />
+                <col span="1" style="background-color:#034f84; width: 20%" />
+                <col span="1" style="width: 20%" />
+            </colgroup>
+            <tr>
+                <td>itodbc_catalog</td>
+                <td>4</td>
+                <td style="background-color:darkred">2</td>
+            </tr>
+            <tr>
+                <td>itodbc_connection</td>
+                <td>3</td>
+                <td style="background-color:darkred">2</td>
+            </tr>
+            <tr>
+                <td>itodbc_descriptors</td>
+                <td>3</td>
+                <td style="background-color:darkred">1</td>
+            </tr>
+            <tr>
+                <td>itodbc_execution</td>
+                <td>6</td>
+                <td style="background-color:darkred">1</td>
+            </tr>
+            <tr>
+                <td>itodbc_info</td>
+                <td>1</td>
+                <td style="background-color:darkred">1</td>
+            </tr>
+            <tr>
+                <td>itodbc_pagination</td>
+                <td>1</td>
+                <td style="background-color:darkred">1</td>
+            </tr>
+            <tr>
+                <td>itodbc_results</td>
+                <td>8</td>
+                <td style="background-color:darkred">3</td>
+            </tr>
+            <tr>
+                <td>itodbc_tableau_queries</td>
+                <td>1</td>
+                <td style="background-color:darkgreen">0</td>
+            </tr>
+        </table>
+    </div>
+    
+    <div id="info-div-case"><h3 id="fail-info">itodbc_catalog - Failed 2/4 </h3></div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightcoral">
+            TestSQLTables - Failed 1/10 - 240186 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>Null</td>
+                        <td>24172 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>WildCatalogs</td>
+                        <td>23914 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>WildSchema</td>
+                        <td>24044 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ValidTable</td>
+                        <td>24040 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr title="C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(210): error: Value of: std::any_of(server_tables.begin(), server_tables.end(), [&](const table_data& d) { return d.table_name == expected_table.table_name; })
+  Actual: false
+Expected: true">
+                        <td>SingleTable</td>
+                        <td>24025 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                    <tr>
+                        <td>WildTable</td>
+                        <td>23943 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>InvalidTable</td>
+                        <td>24021 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ValidTableType</td>
+                        <td>24040 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>InvalidTableType</td>
+                        <td>24021 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ExcelSQLTables</td>
+                        <td>23991 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightcoral">
+            TestSQLColumns - Failed 4/10 - 240013 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>Null</td>
+                        <td>24024 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ValidTable</td>
+                        <td>23981 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr title="C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(319): error: Expected equality of these values:
+  ret
+    Which is: -1
+  100">
+                        <td>InvalidTable</td>
+                        <td>24033 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                    <tr>
+                        <td>ValidColumn</td>
+                        <td>23947 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>InvalidColumn</td>
+                        <td>24022 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ValidTable_ValidColumn</td>
+                        <td>24051 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ValidTable_InvalidColumn</td>
+                        <td>23981 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr title="C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(334): error: Expected equality of these values:
+  ret
+    Which is: -1
+  100">
+                        <td>InvalidTable_ValidColumn</td>
+                        <td>23970 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                    <tr title="C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(337): error: Expected equality of these values:
+  ret
+    Which is: -1
+  100">
+                        <td>InvalidTable_InvalidColumn</td>
+                        <td>24033 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                    <tr title="C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "OriginLocation"
+  flights_column_name[column_idx]
+    Which is: "FlightDelay"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(388): error: Expected equality of these values:
+  it.AsString()
+    Which is: "68"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "-7"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(391): error: Expected equality of these values:
+  it.AsString()
+    Which is: "geo_point"
+  flights_data_type[column_idx]
+    Which is: "boolean"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(402): error: Expected equality of these values:
+  it.AsString()
+    Which is: "68"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "-7"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "DestLocation"
+  flights_column_name[column_idx]
+    Which is: "DistanceMiles"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(388): error: Expected equality of these values:
+  it.AsString()
+    Which is: "68"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "7"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(391): error: Expected equality of these values:
+  it.AsString()
+    Which is: "geo_point"
+  flights_data_type[column_idx]
+    Which is: "float"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(402): error: Expected equality of these values:
+  it.AsString()
+    Which is: "68"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "7"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "FlightDelay"
+  flights_column_name[column_idx]
+    Which is: "FlightTimeMin"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(388): error: Expected equality of these values:
+  it.AsString()
+    Which is: "-7"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "7"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(391): error: Expected equality of these values:
+  it.AsString()
+    Which is: "boolean"
+  flights_data_type[column_idx]
+    Which is: "float"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(402): error: Expected equality of these values:
+  it.AsString()
+    Which is: "-7"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "7"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "DistanceMiles"
+  flights_column_name[column_idx]
+    Which is: "OriginWeather"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(388): error: Expected equality of these values:
+  it.AsString()
+    Which is: "7"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "-9"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(391): error: Expected equality of these values:
+  it.AsString()
+    Which is: "float"
+  flights_data_type[column_idx]
+    Which is: "keyword"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(402): error: Expected equality of these values:
+  it.AsString()
+    Which is: "7"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "-9"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "FlightTimeMin"
+  flights_column_name[column_idx]
+    Which is: "dayOfWeek"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(388): error: Expected equality of these values:
+  it.AsString()
+    Which is: "7"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "4"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(391): error: Expected equality of these values:
+  it.AsString()
+    Which is: "float"
+  flights_data_type[column_idx]
+    Which is: "integer"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(402): error: Expected equality of these values:
+  it.AsString()
+    Which is: "7"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "4"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "OriginWeather"
+  flights_column_name[column_idx]
+    Which is: "AvgTicketPrice"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(388): error: Expected equality of these values:
+  it.AsString()
+    Which is: "-9"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "7"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(391): error: Expected equality of these values:
+  it.AsString()
+    Which is: "keyword"
+  flights_data_type[column_idx]
+    Which is: "float"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(402): error: Expected equality of these values:
+  it.AsString()
+    Which is: "-9"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "7"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "dayOfWeek"
+  flights_column_name[column_idx]
+    Which is: "Carrier"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(388): error: Expected equality of these values:
+  it.AsString()
+    Which is: "4"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "-9"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(391): error: Expected equality of these values:
+  it.AsString()
+    Which is: "integer"
+  flights_data_type[column_idx]
+    Which is: "keyword"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(402): error: Expected equality of these values:
+  it.AsString()
+    Which is: "4"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "-9"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "AvgTicketPrice"
+  flights_column_name[column_idx]
+    Which is: "FlightDelayMin"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(388): error: Expected equality of these values:
+  it.AsString()
+    Which is: "7"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "4"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(391): error: Expected equality of these values:
+  it.AsString()
+    Which is: "float"
+  flights_data_type[column_idx]
+    Which is: "integer"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(402): error: Expected equality of these values:
+  it.AsString()
+    Which is: "7"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "4"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "Carrier"
+  flights_column_name[column_idx]
+    Which is: "OriginRegion"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "FlightDelayMin"
+  flights_column_name[column_idx]
+    Which is: "DestAirportID"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(388): error: Expected equality of these values:
+  it.AsString()
+    Which is: "4"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "-9"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(391): error: Expected equality of these values:
+  it.AsString()
+    Which is: "integer"
+  flights_data_type[column_idx]
+    Which is: "keyword"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(402): error: Expected equality of these values:
+  it.AsString()
+    Which is: "4"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "-9"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "OriginRegion"
+  flights_column_name[column_idx]
+    Which is: "FlightDelayType"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "DestAirportID"
+  flights_column_name[column_idx]
+    Which is: "timestamp"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(388): error: Expected equality of these values:
+  it.AsString()
+    Which is: "-9"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "93"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(391): error: Expected equality of these values:
+  it.AsString()
+    Which is: "keyword"
+  flights_data_type[column_idx]
+    Which is: "date"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(402): error: Expected equality of these values:
+  it.AsString()
+    Which is: "-9"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "93"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "FlightDelayType"
+  flights_column_name[column_idx]
+    Which is: "Dest"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "timestamp"
+  flights_column_name[column_idx]
+    Which is: "FlightTimeHour"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(388): error: Expected equality of these values:
+  it.AsString()
+    Which is: "93"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "-9"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(391): error: Expected equality of these values:
+  it.AsString()
+    Which is: "date"
+  flights_data_type[column_idx]
+    Which is: "keyword"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(402): error: Expected equality of these values:
+  it.AsString()
+    Which is: "93"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "-9"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "Dest"
+  flights_column_name[column_idx]
+    Which is: "Cancelled"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(388): error: Expected equality of these values:
+  it.AsString()
+    Which is: "-9"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "-7"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(391): error: Expected equality of these values:
+  it.AsString()
+    Which is: "keyword"
+  flights_data_type[column_idx]
+    Which is: "boolean"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(402): error: Expected equality of these values:
+  it.AsString()
+    Which is: "-9"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "-7"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "FlightTimeHour"
+  flights_column_name[column_idx]
+    Which is: "DistanceKilometers"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(388): error: Expected equality of these values:
+  it.AsString()
+    Which is: "-9"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "7"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(391): error: Expected equality of these values:
+  it.AsString()
+    Which is: "keyword"
+  flights_data_type[column_idx]
+    Which is: "float"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(402): error: Expected equality of these values:
+  it.AsString()
+    Which is: "-9"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "7"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "Cancelled"
+  flights_column_name[column_idx]
+    Which is: "OriginCityName"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(388): error: Expected equality of these values:
+  it.AsString()
+    Which is: "-7"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "-9"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(391): error: Expected equality of these values:
+  it.AsString()
+    Which is: "boolean"
+  flights_data_type[column_idx]
+    Which is: "keyword"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(402): error: Expected equality of these values:
+  it.AsString()
+    Which is: "-7"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "-9"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "DistanceKilometers"
+  flights_column_name[column_idx]
+    Which is: "DestWeather"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(388): error: Expected equality of these values:
+  it.AsString()
+    Which is: "7"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "-9"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(391): error: Expected equality of these values:
+  it.AsString()
+    Which is: "float"
+  flights_data_type[column_idx]
+    Which is: "keyword"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(402): error: Expected equality of these values:
+  it.AsString()
+    Which is: "7"
+  std::to_string(flights_sql_data_type[column_idx])
+    Which is: "-9"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "OriginCityName"
+  flights_column_name[column_idx]
+    Which is: "OriginCountry"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "DestWeather"
+  flights_column_name[column_idx]
+    Which is: "DestCountry"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "OriginCountry"
+  flights_column_name[column_idx]
+    Which is: "DestRegion"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "DestCountry"
+  flights_column_name[column_idx]
+    Which is: "DestCityName"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCCatalog\test_odbc_catalog.cpp(383): error: Expected equality of these values:
+  it.AsString()
+    Which is: "DestRegion"
+  flights_column_name[column_idx]
+    Which is: "OriginAirportID"">
+                        <td>FlightsValidation</td>
+                        <td>23994 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestSQLCatalogKeys - Passed 8/8 - 191940 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>PrimaryKeys_NULL</td>
+                        <td>23936 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ForeignKeys_NULL</td>
+                        <td>23928 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>PrimaryKeys_Catalog</td>
+                        <td>23964 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ForeignKeys_Catalog</td>
+                        <td>24025 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>PrimaryKeys_Table</td>
+                        <td>24003 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ForeignKeys_Table</td>
+                        <td>24033 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>PrimaryKeys_CatalogTable</td>
+                        <td>23964 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ForeignKeys_CatalogTable</td>
+                        <td>24025 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestSQLGetTypeInfo - Passed 4/4 - 96001 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>AllTypes</td>
+                        <td>23977 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SingleTypeMultipleRows</td>
+                        <td>24019 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SingleType</td>
+                        <td>23993 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>UnsupportedType</td>
+                        <td>24011 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-case"><h3 id="fail-info">itodbc_connection - Failed 2/3 </h3></div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightcoral">
+            TestSQLConnect - Failed 1/2 - 10 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr title="SQL_ERROR: No error information
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCConnection\test_odbc_connection.cpp(57): error: Expected equality of these values:
+  0
+  ret
+    Which is: -1">
+                        <td>SqlSuccess</td>
+                        <td>6 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                    <tr>
+                        <td>SqlError</td>
+                        <td>4 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightcoral">
+            TestSQLDriverConnect - Failed 4/19 - 464044 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr title="C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCConnection\test_odbc_connection.cpp(102): error: Expected equality of these values:
+  0
+  ret
+    Which is: -1">
+                        <td>DSNConnectionString</td>
+                        <td>4 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                    <tr>
+                        <td>SqlDriverPrompt</td>
+                        <td>24081 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SqlDriverComplete</td>
+                        <td>24039 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SqlDriverCompleteRequired</td>
+                        <td>24039 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SqlDriverNoprompt</td>
+                        <td>24006 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>InvalidDriver</td>
+                        <td>28004 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>InvalidHost</td>
+                        <td>27902 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>InvalidPort</td>
+                        <td>28043 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>UnsupportedKeyword</td>
+                        <td>28024 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ConnStringAbbrevsUID</td>
+                        <td>24046 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ConnStringAbbrevsPWD</td>
+                        <td>24000 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ConnStringAbbrevsUIDPWD</td>
+                        <td>24046 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ConnStringAbbrevsHost</td>
+                        <td>23960 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ConnStringAbbrevsHostProtocol</td>
+                        <td>23960 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ConnStringAbbrevsServer</td>
+                        <td>24010 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ConnStringAbbrevsServerUIDPWD</td>
+                        <td>24010 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr title="TIME: 27905
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCConnection\test_odbc_connection.cpp(395): error: Expected: (time) < (4500), actual: 27905 vs 4500">
+                        <td>Timeout1Second</td>
+                        <td>27907 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                    <tr title="TIME: 28005
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCConnection\test_odbc_connection.cpp(431): error: Expected: (time) < (4500), actual: 28005 vs 4500">
+                        <td>Timeout3Second</td>
+                        <td>28007 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                    <tr title="TIME: 32002
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCConnection\test_odbc_connection.cpp(467): error: Expected: (time) < (8500), actual: 32002 vs 8500">
+                        <td>Timeout7Second</td>
+                        <td>32003 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestSQLDisconnect - Passed 4/4 - 336068 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>TestSuccess</td>
+                        <td>24042 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestReconnectOnce</td>
+                        <td>47980 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestReconnectMultipleTimes</td>
+                        <td>264043 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestDisconnectWithoutConnect</td>
+                        <td>1 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-case"><h3 id="fail-info">itodbc_descriptors - Failed 1/3 </h3></div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestSQLCopyDesc - Passed 2/2 - 48184 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>TestCopyArdToArd</td>
+                        <td>24145 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestNotCopyArdToIrd</td>
+                        <td>24038 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestSQLSetDescField - Passed 41/41 - 983922 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>Test_SQL_DESC_ALLOC_TYPE</td>
+                        <td>23981 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_ARRAY_SIZE</td>
+                        <td>24035 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_ARRAY_STATUS_PTR</td>
+                        <td>23964 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_BIND_OFFSET_PTR</td>
+                        <td>24004 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_BIND_TYPE</td>
+                        <td>24025 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_COUNT</td>
+                        <td>23985 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_ROWS_PROCESSED_PTR</td>
+                        <td>24013 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_AUTO_UNIQUE_VALUE</td>
+                        <td>23939 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_BASE_COLUMN_NAME</td>
+                        <td>24080 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_BASE_TABLE_NAME</td>
+                        <td>23949 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_CASE_SENSITIVE</td>
+                        <td>23931 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_CATALOG_NAME</td>
+                        <td>24085 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_CONCISE_TYPE</td>
+                        <td>24012 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_DATA_PTR</td>
+                        <td>23926 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_DATETIME_INTERVAL_CODE</td>
+                        <td>24105 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_DATETIME_INTERVAL_PRECISION</td>
+                        <td>23933 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_DISPLAY_SIZE</td>
+                        <td>24009 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_FIXED_PREC_SCALE</td>
+                        <td>23987 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_INDICATOR_PTR</td>
+                        <td>24010 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_LABEL</td>
+                        <td>23979 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_LENGTH</td>
+                        <td>24036 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_LITERAL_PREFIX</td>
+                        <td>23989 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_LITERAL_SUFFIX</td>
+                        <td>23974 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_LOCAL_TYPE_NAME</td>
+                        <td>23996 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_NAME</td>
+                        <td>24022 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_NULLABLE</td>
+                        <td>24006 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_NUM_PREC_RADIX</td>
+                        <td>23931 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_OCTET_LENGTH</td>
+                        <td>24008 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_OCTET_LENGTH_PTR</td>
+                        <td>24008 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_PARAMETER_TYPE</td>
+                        <td>23991 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_PRECISION</td>
+                        <td>24011 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_ROWVER</td>
+                        <td>23988 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_SCALE</td>
+                        <td>24025 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_SCHEMA_NAME</td>
+                        <td>23977 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_SEARCHABLE</td>
+                        <td>24010 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_TABLE_NAME</td>
+                        <td>24030 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_TYPE</td>
+                        <td>23989 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_TYPE_NAME</td>
+                        <td>23989 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_UNNAMED</td>
+                        <td>23995 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_UNSIGNED</td>
+                        <td>24006 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TestUndefinedError_SQL_DESC_UPDATABLE</td>
+                        <td>23955 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightcoral">
+            TestSQLGetDescField - Failed 1/40 - 960043 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>Test_SQL_DESC_ALLOC_TYPE</td>
+                        <td>24059 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_ARRAY_SIZE</td>
+                        <td>23986 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_ARRAY_STATUS_PTR</td>
+                        <td>24007 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_BIND_OFFSET_PTR</td>
+                        <td>24067 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_BIND_TYPE</td>
+                        <td>23915 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr title="C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCDescriptors\test_odbc_descriptors.cpp(429): error: Expected equality of these values:
+  (uint64_t)multi_col_cnt
+    Which is: 25
+  (uint64_t)m_value_ptr
+    Which is: 27">
+                        <td>Test_SQL_DESC_COUNT</td>
+                        <td>24007 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_ROWS_PROCESSED_PTR</td>
+                        <td>23953 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_AUTO_UNIQUE_VALUE</td>
+                        <td>24099 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_BASE_COLUMN_NAME</td>
+                        <td>23941 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_BASE_TABLE_NAME</td>
+                        <td>23949 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_CASE_SENSITIVE</td>
+                        <td>24056 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_CATALOG_NAME</td>
+                        <td>24003 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_CONCISE_TYPE</td>
+                        <td>24017 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_DATA_PTR</td>
+                        <td>23983 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_DATETIME_INTERVAL_CODE</td>
+                        <td>23991 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_DATETIME_INTERVAL_PRECISION</td>
+                        <td>23995 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_DISPLAY_SIZE</td>
+                        <td>24006 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_FIXED_PREC_SCALE</td>
+                        <td>24007 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_INDICATOR_PTR</td>
+                        <td>23988 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_LABEL</td>
+                        <td>24049 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_LENGTH</td>
+                        <td>23912 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_LITERAL_PREFIX</td>
+                        <td>24039 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_LITERAL_SUFFIX</td>
+                        <td>24024 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_LOCAL_TYPE_NAME</td>
+                        <td>23993 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_NAME</td>
+                        <td>24025 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_NULLABLE</td>
+                        <td>23912 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_NUM_PREC_RADIX</td>
+                        <td>24040 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_OCTET_LENGTH</td>
+                        <td>23898 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_OCTET_LENGTH_PTR</td>
+                        <td>23898 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_PRECISION</td>
+                        <td>24057 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_ROWVER</td>
+                        <td>23990 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_SCALE</td>
+                        <td>24018 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_SCHEMA_NAME</td>
+                        <td>23977 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_SEARCHABLE</td>
+                        <td>24003 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_TABLE_NAME</td>
+                        <td>24041 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_TYPE</td>
+                        <td>24022 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_TYPE_NAME</td>
+                        <td>24022 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_UNNAMED</td>
+                        <td>24007 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_UNSIGNED</td>
+                        <td>23979 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Test_SQL_DESC_UPDATABLE</td>
+                        <td>23994 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-case"><h3 id="fail-info">itodbc_execution - Failed 1/6 </h3></div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestSQLExecute - Passed 3/3 - 72167 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>NoPrepareCallError</td>
+                        <td>24068 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>Success</td>
+                        <td>24046 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>ResetPrepareError</td>
+                        <td>24052 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightcoral">
+            TestSQLPrepare - Failed 1/3 - 71930 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>Success</td>
+                        <td>23916 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr title="C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCExecution\test_odbc_execution.cpp(247): error: Expected equality of these values:
+  column_count
+    Which is: 27
+  m_all_col_cnt
+    Which is: 25
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCExecution\test_odbc_execution.cpp(261): error: Expected equality of these values:
+  column_count
+    Which is: 27
+  m_all_col_cnt
+    Which is: 25">
+                        <td>PrepareMetadata</td>
+                        <td>24133 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                    <tr>
+                        <td>NullQueryError</td>
+                        <td>23876 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestSQLExecDirect - Passed 2/2 - 47967 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>Success</td>
+                        <td>24116 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>NullQueryError</td>
+                        <td>23850 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestSQLSetCursorName - Passed 1/1 - 24056 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>Success</td>
+                        <td>24056 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestSQLGetCursorName - Passed 2/2 - 47988 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>Success</td>
+                        <td>24002 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>WrongLengthForCursorName</td>
+                        <td>23986 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestSQLCancel - Passed 3/3 - 72327 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>NULLHandle</td>
+                        <td>23998 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>QueryNotSent</td>
+                        <td>24003 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>QueryFinished</td>
+                        <td>24324 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-case"><h3 id="fail-info">itodbc_info - Failed 1/1 </h3></div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightcoral">
+            TestSQLGetInfo - Failed 1/67 - 1608115 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>SQLDriverName</td>
+                        <td>24074 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLDriverODBCVer</td>
+                        <td>24010 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLDriverVer</td>
+                        <td>24065 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLGetDataExtensions</td>
+                        <td>23955 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLSearchPatternEscape</td>
+                        <td>24009 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLCursorCommitBehavior</td>
+                        <td>23990 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLTxnCapable</td>
+                        <td>24019 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConcatNullBehavior</td>
+                        <td>23988 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLSchemaTerm</td>
+                        <td>24010 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLCatalogTerm</td>
+                        <td>24005 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLDBMSName</td>
+                        <td>24000 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr title="C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCInfo\test_odbc_info.cpp(159): error: Expected equality of these values:
+  Ver1GEVer2(info_value_ptr, L"7.1.1")
+    Which is: 0
+  1">
+                        <td>SQLDBMSVer</td>
+                        <td>23982 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                    <tr>
+                        <td>SQLColumnAlias</td>
+                        <td>24008 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLGroupBy</td>
+                        <td>23990 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLIdentifierQuoteChar</td>
+                        <td>23989 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLOJCapabilities</td>
+                        <td>24022 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLSchemaUsage</td>
+                        <td>24008 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLQuotedIdentifierCase</td>
+                        <td>23990 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLSpecialCharacters</td>
+                        <td>23990 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLODBCInterfaceConformance</td>
+                        <td>23997 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLSQLConformance</td>
+                        <td>24013 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLCatalogUsage</td>
+                        <td>23985 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLCatalogLocation</td>
+                        <td>24010 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLCatalogNameSeparator</td>
+                        <td>24005 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLSQL92Predicates</td>
+                        <td>23997 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLSQL92RelationalJoinOperators</td>
+                        <td>24007 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLSQL92ValueExpressions</td>
+                        <td>24019 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLDatetimeLiterals</td>
+                        <td>23972 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLOrderByColumnsInSelect</td>
+                        <td>24006 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLCatalogName</td>
+                        <td>23995 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertInteger</td>
+                        <td>23999 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertSmallint</td>
+                        <td>23976 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertTinyint</td>
+                        <td>24025 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertBit</td>
+                        <td>23987 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertVarchar</td>
+                        <td>24005 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertBigint</td>
+                        <td>24002 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertDecimal</td>
+                        <td>24001 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertDouble</td>
+                        <td>24012 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertFloat</td>
+                        <td>23986 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertNumeric</td>
+                        <td>23989 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertReal</td>
+                        <td>24012 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertDate</td>
+                        <td>23992 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertTime</td>
+                        <td>24041 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertTimestamp</td>
+                        <td>24041 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertBinary</td>
+                        <td>23981 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertLongvarbinary</td>
+                        <td>24000 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertVarbinary</td>
+                        <td>23997 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertChar</td>
+                        <td>23999 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertLongVarchar</td>
+                        <td>24025 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertWChar</td>
+                        <td>23976 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertWLongVarchar</td>
+                        <td>24017 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertWVarchar</td>
+                        <td>23996 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertGuid</td>
+                        <td>24009 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLConvertFunctions</td>
+                        <td>24001 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLNumericFunctions</td>
+                        <td>23994 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLStringFunctions</td>
+                        <td>23986 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLSystemFunctions</td>
+                        <td>24018 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLTimedateAddIntervals</td>
+                        <td>23974 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLTimedateDiffIntervals</td>
+                        <td>24025 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLTimedateFunctions</td>
+                        <td>23991 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLSQL92DatetimeFunctions</td>
+                        <td>23989 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLSQL92NumericValueFunctions</td>
+                        <td>23992 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLSQL92StringFunctions</td>
+                        <td>24017 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLMaxIdentifierLen</td>
+                        <td>24011 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLMaxColumnsInGroupBy</td>
+                        <td>23990 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLMaxColumnsInOrderBy</td>
+                        <td>23999 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLMaxColumnsInSelect</td>
+                        <td>23988 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-case"><h3 id="fail-info">itodbc_pagination - Failed 1/1 </h3></div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightcoral">
+            TestPagination - Failed 1/2 - 48186 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr title="C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCPagination\test_odbc_pagination.cpp(93): error: Expected equality of these values:
+  total_rows
+    Which is: 13059
+  GetTotalRowsAfterQueryExecution()
+    Which is: 200">
+                        <td>EnablePagination</td>
+                        <td>24153 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                    <tr>
+                        <td>DisablePagination</td>
+                        <td>24032 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-case"><h3 id="fail-info">itodbc_results - Failed 3/8 </h3></div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestSQLBindCol - Passed 4/4 - 96179 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>SingleColumnSingleBind</td>
+                        <td>24098 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>MultiColumnMultiBind</td>
+                        <td>24062 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>InvalidColIndex0</td>
+                        <td>23991 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>InsufficientSpace</td>
+                        <td>24026 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestSQLFetch - Passed 4/4 - 95981 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>SingleCol_SingleRow</td>
+                        <td>23975 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SingleCol_MultiRow</td>
+                        <td>23997 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>MultiCol_SingleRow</td>
+                        <td>24002 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>MultiCol_MultiRow</td>
+                        <td>24005 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestSQLExtendedFetch - Passed 8/8 - 192001 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>SingleCol_SingleRow</td>
+                        <td>24041 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SingleCol_MultiRow_SingleFetch</td>
+                        <td>23962 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SingleCol_MultiRow_MultiFetch_Aligned</td>
+                        <td>24052 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SingleCol_MultiRow_MultiFetch_Misaligned</td>
+                        <td>23922 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>MultiCol_SingleRow</td>
+                        <td>24004 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>MultiCol_MultiRow_SingleFetch</td>
+                        <td>24023 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>MultiCol_MultiRow_MultiFetch_Aligned</td>
+                        <td>24002 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>MultiCol_MultiRow_MultiFetch_Misaligned</td>
+                        <td>23991 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightcoral">
+            TestSQLGetData - Failed 1/22 - 527988 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>GetWVARCHARData</td>
+                        <td>23949 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>GetFloatData</td>
+                        <td>24032 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>GetIntegerData</td>
+                        <td>24025 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>GetBitData</td>
+                        <td>24033 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TypeDataSet_GetBoolData</td>
+                        <td>24044 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TypeDataSet_GetByteData</td>
+                        <td>23935 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr title="C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(360): error: Value of: valid
+  Actual: false
+Expected: true
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(360): error: Value of: valid
+  Actual: false
+Expected: true">
+                        <td>TypeDataSet_GetDateData</td>
+                        <td>24076 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                    <tr>
+                        <td>TypeDataSet_GetShortData</td>
+                        <td>23989 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TypeDataSet_GetIntegerData</td>
+                        <td>23941 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TypeDataSet_GetLongData</td>
+                        <td>24102 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TypeDataSet_GetHalfFloatData</td>
+                        <td>23910 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TypeDataSet_GetFloatData</td>
+                        <td>24016 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TypeDataSet_GetDoubleData</td>
+                        <td>23976 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TypeDataSet_GetScaledFloatData</td>
+                        <td>24029 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TypeDataSet_GetKeywordData</td>
+                        <td>23975 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TypeDataSet_GetKeywordDataMultiReadSingleByte</td>
+                        <td>24017 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TypeDataSet_GetKeywordDataMultiReadMultiByte</td>
+                        <td>23975 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TypeDataSet_GetTextData</td>
+                        <td>24046 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TypeDataSet_GetTextDataMultiReadSingleByte</td>
+                        <td>23917 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>TypeDataSet_GetTextDataMultiReadMultiByte</td>
+                        <td>24046 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLSTATE_01004_StringDataRightTruncated</td>
+                        <td>23913 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>SQLSTATE_07009_InvalidDescriptorIndex</td>
+                        <td>24007 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightcoral">
+            TestSQLNumResultCols - Failed 1/2 - 48013 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>SingleColumn</td>
+                        <td>24050 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr title="C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(909): error: Expected equality of these values:
+  multi_col_cnt
+    Which is: 25
+  (size_t)m_column_count
+    Which is: 27">
+                        <td>MultiColumn</td>
+                        <td>23962 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightcoral">
+            TestSQLDescribeCol - Failed 2/4 - 95984 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>SingleColumnMetadata</td>
+                        <td>24043 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr>
+                        <td>MultiColumnMetadata</td>
+                        <td>23951 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                    <tr title="C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"Origin"
+  std::wstring(m_column_name)
+    Which is: L"FlightNum"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"FlightNum"
+  std::wstring(m_column_name)
+    Which is: L"Origin"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"FlightDelay"
+  std::wstring(m_column_name)
+    Which is: L"OriginLocation"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(951): error: Expected equality of these values:
+  column_data[i - 1].data_type
+    Which is: -7
+  m_data_type
+    Which is: -9
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"DistanceMiles"
+  std::wstring(m_column_name)
+    Which is: L"DestLocation"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(951): error: Expected equality of these values:
+  column_data[i - 1].data_type
+    Which is: 7
+  m_data_type
+    Which is: -9
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"FlightTimeMin"
+  std::wstring(m_column_name)
+    Which is: L"FlightDelay"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(951): error: Expected equality of these values:
+  column_data[i - 1].data_type
+    Which is: 7
+  m_data_type
+    Which is: -7
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"OriginWeather"
+  std::wstring(m_column_name)
+    Which is: L"DistanceMiles"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(951): error: Expected equality of these values:
+  column_data[i - 1].data_type
+    Which is: -9
+  m_data_type
+    Which is: 7
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"dayOfWeek"
+  std::wstring(m_column_name)
+    Which is: L"FlightTimeMin"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(951): error: Expected equality of these values:
+  column_data[i - 1].data_type
+    Which is: 4
+  m_data_type
+    Which is: 7
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"AvgTicketPrice"
+  std::wstring(m_column_name)
+    Which is: L"OriginWeather"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(951): error: Expected equality of these values:
+  column_data[i - 1].data_type
+    Which is: 7
+  m_data_type
+    Which is: -9
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"Carrier"
+  std::wstring(m_column_name)
+    Which is: L"dayOfWeek"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(951): error: Expected equality of these values:
+  column_data[i - 1].data_type
+    Which is: -9
+  m_data_type
+    Which is: 4
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"FlightDelayMin"
+  std::wstring(m_column_name)
+    Which is: L"AvgTicketPrice"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(951): error: Expected equality of these values:
+  column_data[i - 1].data_type
+    Which is: 4
+  m_data_type
+    Which is: 7
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"OriginRegion"
+  std::wstring(m_column_name)
+    Which is: L"Carrier"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"DestAirportID"
+  std::wstring(m_column_name)
+    Which is: L"FlightDelayMin"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(951): error: Expected equality of these values:
+  column_data[i - 1].data_type
+    Which is: -9
+  m_data_type
+    Which is: 4
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"FlightDelayType"
+  std::wstring(m_column_name)
+    Which is: L"OriginRegion"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"timestamp"
+  std::wstring(m_column_name)
+    Which is: L"DestAirportID"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(951): error: Expected equality of these values:
+  column_data[i - 1].data_type
+    Which is: 93
+  m_data_type
+    Which is: -9
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"Dest"
+  std::wstring(m_column_name)
+    Which is: L"FlightDelayType"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"FlightTimeHour"
+  std::wstring(m_column_name)
+    Which is: L"timestamp"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"Cancelled"
+  std::wstring(m_column_name)
+    Which is: L"Dest"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(951): error: Expected equality of these values:
+  column_data[i - 1].data_type
+    Which is: -7
+  m_data_type
+    Which is: -9
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"DistanceKilometers"
+  std::wstring(m_column_name)
+    Which is: L"FlightTimeHour"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(951): error: Expected equality of these values:
+  column_data[i - 1].data_type
+    Which is: 7
+  m_data_type
+    Which is: -9
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"OriginCityName"
+  std::wstring(m_column_name)
+    Which is: L"Cancelled"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(951): error: Expected equality of these values:
+  column_data[i - 1].data_type
+    Which is: -9
+  m_data_type
+    Which is: -7
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"DestWeather"
+  std::wstring(m_column_name)
+    Which is: L"DistanceKilometers"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(951): error: Expected equality of these values:
+  column_data[i - 1].data_type
+    Which is: -9
+  m_data_type
+    Which is: 7
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"OriginCountry"
+  std::wstring(m_column_name)
+    Which is: L"OriginCityName"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"DestCountry"
+  std::wstring(m_column_name)
+    Which is: L"DestWeather"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"DestRegion"
+  std::wstring(m_column_name)
+    Which is: L"OriginCountry"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"OriginAirportID"
+  std::wstring(m_column_name)
+    Which is: L"DestCountry"
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(950): error: Expected equality of these values:
+  column_data[i - 1].column_name
+    Which is: L"DestCityName"
+  std::wstring(m_column_name)
+    Which is: L"DestRegion"">
+                        <td>MultiColumnNameLengthType</td>
+                        <td>24011 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                    <tr title="C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(962): error: Expected equality of these values:
+  (-1)
+    Which is: -1
+  SQLDescribeColW(m_hstmt, multi_col_cnt + 1, m_column_name, (0 == (m_column_name) ? 0 : (sizeof((m_column_name)) / sizeof((m_column_name)[0]))), &m_column_name_length, &m_data_type, &m_column_size, &m_decimal_digits, &m_nullable)
+    Which is: 0
+SQLState : 
+C:\Users\User\Desktop\projects\FlinkSystem\cheetah-sql-odbc\src\IntegrationTests\ITODBCResults\test_odbc_results.cpp(964): error: Value of: CheckSQLSTATE(3, m_hstmt, (SQLWCHAR*)L"07009")
+  Actual: false
+Expected: true">
+                        <td>InvalidColumnMetadata</td>
+                        <td>23977 ms</td>
+                        <td style="background-color:darkred">FAILED</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestSQLMoreResults - Passed 1/1 - 23919 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>NoData</td>
+                        <td>23919 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TestSQLRowCount - Passed 1/1 - 24049 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>RowCountNotAvailable</td>
+                        <td>24049 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div id="info-div-case"><h3 id="pass-info">itodbc_tableau_queries - Passed 1/1 </h3></div>
+    
+    <div id="info-div-test">
+        <button type="button" class="collapsible" style="color:lightgreen">
+            TableauQuery - Passed 1/1 - 24067 ms
+        </button>
+        <div class="content">
+            <div id="info-div-table">
+                <table id="info">
+                    <tr>
+                        <th style="background-color: #022140; width: 70%">Test Name</th>
+                        <th style="background-color: #022140; width: 15%">Time</th>
+                        <th style="background-color: #022140; width: 15%">Result</th>
+                    </tr>
+                    <colgroup>
+                        <col span="1" style="background-color:#034f84; width: 60%" />
+                        <col span="1" style="background-color:#034f84; width: 20%" />
+                        <col span="1" style="width: 20%" />
+                    </colgroup>
+                    <tr>
+                        <td>IssueQueriesAll</td>
+                        <td>24067 ms</td>
+                        <td style="background-color:darkgreen">OK</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Integration Tests -->
+    <header>
+        <h2 style="margin-left: 2%">Integration Tests</h2>
+    </header>
+    <div id="info-div-table">
+        <table id="tests-table">
+            <tr>
+                <th style="background-color: #022140; width: 70%">Unit Test</th>
+                <th style="background-color: #022140; width: 15%">Cases</th>
+                <th style="background-color: #022140; width: 15%">Errors</th>
+            </tr>
+            <colgroup>
+                <col span="1" style="background-color:#034f84; width: 60%" />
+                <col span="1" style="background-color:#034f84; width: 20%" />
+                <col span="1" style="width: 20%" />
+            </colgroup>
+            <tr>
+                <td>itodbc_catalog</td>
+                <td>4</td>
+                <td style="background-color:darkred">2</td>
+            </tr>
+            <tr>
+                <td>itodbc_connection</td>
+                <td>3</td>
+                <td style="background-color:darkred">2</td>
+            </tr>
+            <tr>
+                <td>itodbc_descriptors</td>
+                <td>3</td>
+                <td style="background-color:darkred">1</td>
+            </tr>
+            <tr>
+                <td>itodbc_execution</td>
+                <td>6</td>
+                <td style="background-color:darkred">1</td>
+            </tr>
+            <tr>
+                <td>itodbc_info</td>
+                <td>1</td>
+                <td style="background-color:darkred">1</td>
+            </tr>
+            <tr>
+                <td>itodbc_pagination</td>
+                <td>1</td>
+                <td style="background-color:darkred">1</td>
+            </tr>
+            <tr>
+                <td>itodbc_results</td>
+                <td>8</td>
+                <td style="background-color:darkred">3</td>
+            </tr>
+            <tr>
+                <td>itodbc_tableau_queries</td>
+                <td>1</td>
+                <td style="background-color:darkgreen">0</td>
+            </tr>
+        </table>
+    </div>
+    <!-- Performance Tests -->
+    <header>
+        <h2 style="margin-left: 2%">Performance Info</h2>
+    </header>
+    <div id="info-div-table">
+        <table id="tests-table">
+            <tr>
+                <th style="background-color: #022140; width: 50%">Info</th>
+                <th style="background-color: #022140; width: 50%">Data</th>
+            </tr>
+            <colgroup>
+                <col span="1" style="background-color:#034f84; width: 50%" />
+                <col span="1" style="background-color:#034f84; width: 50%" />
+            </colgroup>
+            <tr>
+                <td>Name</td>
+                <td>os01</td>
+            </tr>
+            <tr>
+                <td>Cluster Name</td>
+                <td>opensearch-cluster</td>
+            </tr>
+            <tr>
+                <td>Cluster Uuid</td>
+                <td>d0gOctxQRaqZDzAORkvzuQ</td>
+            </tr>
+            <tr>
+                <td>Version Number</td>
+                <td>2.11.1</td>
+            </tr>
+        </table>
+    </div>
+    <!-- Performance Tests -->
+    <header>
+        <h2 style="margin-left: 2%">Performance Results</h2>
+    </header>
+    <div id="info-div-table">
+        <table id="tests-table">
+            <tr>
+                <th style="background-color: #022140; width: 25%">Test Case</th>
+                <th style="background-color: #022140; width: 25%">Query</th>
+                <th style="background-color: #022140; width: 12.5%">Min</th>
+                <th style="background-color: #022140; width: 12.5%">Max</th>
+                <th style="background-color: #022140; width: 12.5%">Mean</th>
+                <th style="background-color: #022140; width: 12.5%">Median</th>
+            </tr>
+            <colgroup>
+                <col span="1" style="background-color:#034f84; width: 25%" />
+                <col span="1" style="background-color:#034f84; width: 25%" />
+                <col span="1" style="background-color:#034f84; width: 12.5%" />
+                <col span="1" style="background-color:#034f84; width: 12.5%" />
+                <col span="1" style="background-color:#034f84; width: 12.5%" />
+                <col span="1" style="background-color:#034f84; width: 12.5%" />
+            </colgroup>
+            <tr>
+                <td>Execute Query</td>
+                <td>SELECT * FROM opensearch_dashboards_sample_data_flights limit 10000</td>
+                <td>1753 ms</td>
+                <td>2138 ms</td>
+                <td>1928 ms</td>
+                <td>1968 ms</td>
+            </tr>
+            <tr>
+                <td>Bind and (1 row) Fetch</td>
+                <td>SELECT * FROM opensearch_dashboards_sample_data_flights limit 10000</td>
+                <td>89 ms</td>
+                <td>128 ms</td>
+                <td>96 ms</td>
+                <td>92 ms</td>
+            </tr>
+            <tr>
+                <td>Bind and (5 row) Fetch</td>
+                <td>SELECT * FROM opensearch_dashboards_sample_data_flights limit 10000</td>
+                <td>88 ms</td>
+                <td>105 ms</td>
+                <td>91 ms</td>
+                <td>89 ms</td>
+            </tr>
+            <tr>
+                <td>Bind and (50 row) Fetch</td>
+                <td>SELECT * FROM opensearch_dashboards_sample_data_flights limit 10000</td>
+                <td>88 ms</td>
+                <td>102 ms</td>
+                <td>92 ms</td>
+                <td>89 ms</td>
+            </tr>
+            <tr>
+                <td>Execute Query, Bind and (1 row) Fetch</td>
+                <td>SELECT * FROM opensearch_dashboards_sample_data_flights limit 10000</td>
+                <td>1785 ms</td>
+                <td>2114 ms</td>
+                <td>1935 ms</td>
+                <td>1930 ms</td>
+            </tr>
+        </table>
+    </div>
+</body>
+<script>
+var coll = document.getElementsByClassName("collapsible");
+var i;
+
+for (i = 0; i < coll.length; i++) {
+  coll[i].addEventListener("click", function() {
+    this.classList.toggle("active");
+    var content = this.nextElementSibling;
+    if (content.style.display === "block") {
+      content.style.display = "none";
+    } else {
+      content.style.display = "block";
+    }
+  });
+}
+</script>
+</html>

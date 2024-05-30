@@ -23,36 +23,53 @@
 ## Connect to OpenSearch Project
 1. Open Power BI Desktop.
 
-2. Click on **Home** > **Get Data** > **More** > **Other**. Select **OpenSearch Project**. Click on **Connect**.
+2. If necessary clear the previous permissions.
+
+<img src="img/powerbi_cached.png" width="500">
+
+3. Click on **Home** > **Get Data** > **More** > **Other**. Select **OpenSearch Project**. Click on **Connect**.
 
 <img src="img/pbi_select_connector.png" width="500">
 
-3. You will get a warning for using a third-party service. Click on **Continue**.
+4. You will get a warning for using a third-party service. Click on **Continue**.
 
 <img src="img/pbi_third_party_warning.png" width="500">
 
-4. Enter host and port values and select your preferred SSL and Certificate validation options. Click on **OK**.
+5. Enter host and port values and select your preferred SSL and Certificate validation options. Click on **OK**.
 
 <img src="img/pbi_connection_string_options.png" width="500">
 
-5. Select authentication option. Enter credentials if required and click on **Connect**.
+6. Select authentication option. Enter credentials if required and click on **Connect**.
 
 <img src="img/pbi_auth.png" width="500">
 
-6. Select required table. Data preview will be loaded.
+7. Select required table. Data preview will be loaded.
 
 <img src="img/pbi_data_preview.png">
 
-7. Click on **Load**.
+8. Click on **Load**.
 
-8. Select required columns for creating a graph.
+9. Select required columns for creating a graph.
 
 <img src="img/pbi_simple_graph.png">
 
+## Set up Oauth2
+
+* In the same folder of the source files to build put a JSON file filling the three fields required in the template provided.
+
+## Login with Oauth2
+
+1.  Select the `OAUTH2` authentication and click on **Sign In**
+
+<img src="img/Oauth2_init.png" width="500">
+
+2.  After provided the user-id and the user-secret, click on **Connect**
+
+<img src="img/Oauth2_signedIn.png" width="500">
 
 ## Troubleshooting 
 
-* If you get the following error, please install the [OpenSearch SQL ODBC Driver](https://docs-beta.opensearch.org/search-plugins/sql/odbc/).
+* If you get the following error, please install the [OpenSearch SQL ODBC Driver](https://opensearch.org/docs/latest/search-plugins/sql/sql/odbc/).
 
 <img src="img/pbi_error_driver_not_installed.png" width="350">
 

@@ -50,6 +50,25 @@ char *hide_password(const char *str) {
     return outstr;
 }
 
+char *hide_token(const char *str) {
+    char *outstr, *jwtp;
+
+    if (!str)
+        return NULL;
+    outstr = strdup(str);
+    if (!outstr)
+        return NULL;
+    if (jwtp = strstr(outstr, "JWT="), !jwtp)
+        jwtp = strstr(outstr, "jwt=");
+    if (jwtp) {
+        char *p;
+
+        for (p = jwtp + 4; *p && *p != ';'; p++)
+            *p = 'x';
+    }
+    return outstr;
+}
+
 int paramRequired(const ConnInfo *ci, int reqs) {
     int required = 0;
     const char *pw = SAFE_NAME(ci->password);
@@ -204,7 +223,8 @@ BOOL dconn_get_attributes(copyfunc func, const char *connect_string,
     MYLOG(OPENSEARCH_DEBUG, "our_connect_string = '%s'\n", our_connect_string);
 #else
     if (get_mylog()) {
-        char *hide_str = hide_password(our_connect_string);
+        char *hide_str = hide_password(our_connect_string);        
+        hide_str = hide_token(our_connect_string);
 
         MYLOG(OPENSEARCH_DEBUG, "our_connect_string = '%s'\n", hide_str);
         free(hide_str);

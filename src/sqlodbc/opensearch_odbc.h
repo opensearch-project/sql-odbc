@@ -381,8 +381,8 @@ BOOL isSqlServr(void);
 /* Limits */
 #define MAXESPATH 1024
 
-/* see an easy way round this - DJP 24-1-2001 */
-#define MAX_CONNECT_STRING 4096
+/* see an easy way round this - DJP 24-1-2001 predefined as 4096*/ 
+#define MAX_CONNECT_STRING 20480
 #define FETCH_MAX                            \
     100 /* default number of rows to cache \ \
          * for declare/fetch */
@@ -409,7 +409,9 @@ BOOL isSqlServr(void);
 #define INDEX_KEYS_STORAGE_COUNT 32
 
 /*	Registry length limits */
+#define XLARGE_REGISTRY_LEN 8192 /* used for adapt to the lenght of the JWT token in OAUTH2*/
 #define LARGE_REGISTRY_LEN 4096 /* used for special cases */
+#define MEDIUM_LARGE_REGISTRY_LEN 1536 /* used for adapt to the lenght of the JWT token in OAUTH2 */
 #define MEDIUM_REGISTRY_LEN                        \
     256                       /* normal size for \ \
                                * user,database,etc. */
@@ -611,6 +613,7 @@ typedef struct {
     char authtype[MEDIUM_REGISTRY_LEN];
     char username[MEDIUM_REGISTRY_LEN];
     opensearchNAME password;
+    opensearchNAME access_token;
     char region[MEDIUM_REGISTRY_LEN];
     char tunnel_host[MEDIUM_REGISTRY_LEN];
 

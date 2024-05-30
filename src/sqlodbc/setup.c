@@ -272,8 +272,11 @@ INT_PTR CALLBACK ConfigDlgProc(HWND hdlg, UINT wMsg, WPARAM wParam,
             } else if (!stricmp(ci->authtype, AUTHTYPE_BASIC)) {
                 SendDlgItemMessage(hdlg, IDC_AUTHTYPE, CB_SETCURSEL, 1,
                                    (WPARAM)0);
-            } else { // AUTHTYPE_NONE
+            } else if (!stricmp(ci->authtype, AUTHTYPE_OAUTH2)) {
                 SendDlgItemMessage(hdlg, IDC_AUTHTYPE, CB_SETCURSEL, 2,
+                                   (WPARAM)0);
+            } else { // AUTHTYPE_NONE
+                SendDlgItemMessage(hdlg, IDC_AUTHTYPE, CB_SETCURSEL, 3,
                                    (WPARAM)0);
             }
             

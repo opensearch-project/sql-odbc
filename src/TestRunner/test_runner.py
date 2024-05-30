@@ -18,7 +18,7 @@ EXCLUDE_EXTENSION_LIST = (
     ".py", ".c", ".cmake", ".log", 
     ".pdb", ".dll", ".sln", ".vcxproj", ".user",
     ".tlog", ".lastbuildstate", ".filters", 
-    ".obj", ".exp", ".lib", ".h", ".cpp", ".ilk")
+    ".obj", ".exp", ".lib", ".h", ".cpp", ".ilk", ".recipe",".pyc")
 total_failures = 0
 SYNC_START = "%%__PARSE__SYNC__START__%%"
 SYNC_SEP = "%%__SEP__%%"

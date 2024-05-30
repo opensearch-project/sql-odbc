@@ -26,34 +26,60 @@ static opensearchNAME decode_or_remove_braces(const char *in);
 void makeConnectString(char *connect_string, const ConnInfo *ci, UWORD len) {
     UNUSED(len);
     char got_dsn = (ci->dsn[0] != '\0');
-    char encoded_item[LARGE_REGISTRY_LEN];
+    char encoded_item[XLARGE_REGISTRY_LEN]; // This value can manage a JWT token size
     char *connsetStr = NULL;
     char *esoptStr = NULL;
+
 #ifdef _HANDLE_ENLIST_IN_DTC_
     char xaOptStr[16];
 #endif
     ssize_t hlen, nlen, olen;
-
-    encode(ci->password, encoded_item, sizeof(encoded_item));
-    /* fundamental info */
-    nlen = MAX_CONNECT_STRING;
-    olen = snprintf(
-        connect_string, nlen,
-        "%s=%s;" INI_SERVER
-        "=%s;"
-        "database=OpenSearch;" INI_PORT "=%s;" INI_USERNAME_ABBR
-        "=%s;" INI_PASSWORD_ABBR "=%s;" INI_AUTH_MODE "=%s;" INI_REGION
-        "=%s;" INI_TUNNEL_HOST "=%s;" INI_SSL_USE "=%d;" INI_SSL_HOST_VERIFY
-        "=%d;" INI_LOG_LEVEL "=%d;" INI_LOG_OUTPUT "=%s;" INI_TIMEOUT "=%s;"
-        INI_FETCH_SIZE "=%s;",
-        got_dsn ? "DSN" : "DRIVER", got_dsn ? ci->dsn : ci->drivername,
-        ci->server, ci->port, ci->username, encoded_item, ci->authtype,
-        ci->region, ci->tunnel_host, (int)ci->use_ssl, (int)ci->verify_server,
-        (int)ci->drivers.loglevel, ci->drivers.output_dir,
-        ci->response_timeout, ci->fetch_size);
-    if (olen < 0 || olen >= nlen) {
-        connect_string[0] = '\0';
-        return;
+    // Build the connect string with the JWT token and so encoded_item as ci->access_token
+    if (ci->username[0] == '\0') {
+        encode(ci->access_token, encoded_item, sizeof(encoded_item));
+        /* fundamental info */
+        nlen = MAX_CONNECT_STRING;
+        olen = snprintf(
+            connect_string, nlen,
+            "%s=%s;" INI_SERVER
+            "=%s;"
+            "database=OpenSearch;" INI_PORT "=%s;" INI_USERNAME_ABBR
+            "=%s;" INI_TOKEN_ABBR "=%s;" INI_AUTH_MODE "=%s;" INI_REGION
+            "=%s;" INI_TUNNEL_HOST "=%s;" INI_SSL_USE "=%d;" INI_SSL_HOST_VERIFY
+            "=%d;" INI_LOG_LEVEL "=%d;" INI_LOG_OUTPUT "=%s;" INI_TIMEOUT "=%s;"
+            INI_FETCH_SIZE "=%s;",
+            got_dsn ? "DSN" : "DRIVER", got_dsn ? ci->dsn : ci->drivername,
+            ci->server, ci->port, ci->username, encoded_item, ci->authtype,
+            ci->region, ci->tunnel_host, (int)ci->use_ssl, (int)ci->verify_server,
+            (int)ci->drivers.loglevel, ci->drivers.output_dir,
+            ci->response_timeout, ci->fetch_size);
+        if (olen < 0 || olen >= nlen) {
+            connect_string[0] = '\0';
+            return;
+        }
+    // Build the connect string with password as encoded_item as ci->password
+    } else {
+        encode(ci->password, encoded_item, sizeof(encoded_item));
+        /* fundamental info */
+        nlen = MAX_CONNECT_STRING;
+        olen = snprintf(
+            connect_string, nlen,
+            "%s=%s;" INI_SERVER
+            "=%s;"
+            "database=OpenSearch;" INI_PORT "=%s;" INI_USERNAME_ABBR
+            "=%s;" INI_PASSWORD_ABBR "=%s;" INI_AUTH_MODE "=%s;" INI_REGION
+            "=%s;" INI_TUNNEL_HOST "=%s;" INI_SSL_USE "=%d;" INI_SSL_HOST_VERIFY
+            "=%d;" INI_LOG_LEVEL "=%d;" INI_LOG_OUTPUT "=%s;" INI_TIMEOUT "=%s;"
+            INI_FETCH_SIZE "=%s;",
+            got_dsn ? "DSN" : "DRIVER", got_dsn ? ci->dsn : ci->drivername,
+            ci->server, ci->port, ci->username, encoded_item, ci->authtype,
+            ci->region, ci->tunnel_host, (int)ci->use_ssl, (int)ci->verify_server,
+            (int)ci->drivers.loglevel, ci->drivers.output_dir,
+            ci->response_timeout, ci->fetch_size);
+        if (olen < 0 || olen >= nlen) {
+            connect_string[0] = '\0';
+            return;
+        }
     }
 
     /* extra info */
@@ -106,7 +132,10 @@ BOOL copyConnAttributes(ConnInfo *ci, const char *attribute,
         MYLOG(OPENSEARCH_DEBUG, "key='%s' value='xxxxxxxx'\n", attribute);
         printed = TRUE;
 #endif
-    } else if (stricmp(attribute, INI_AUTH_MODE) == 0)
+    } else if ((stricmp(attribute, INI_TOKEN) == 0)
+             || (stricmp(attribute, INI_TOKEN_ABBR) == 0)) 
+        ci->access_token = decode_or_remove_braces(value);
+    else if (stricmp(attribute, INI_AUTH_MODE) == 0)
         STRCPY_FIXED(ci->authtype, value);
     else if (stricmp(attribute, INI_REGION) == 0)
         STRCPY_FIXED(ci->region, value);
@@ -147,6 +176,9 @@ static void getCiDefaults(ConnInfo *ci) {
     if (ci->password.name != NULL)
         free(ci->password.name);
     ci->password.name = NULL;
+    if (ci->access_token.name != NULL)
+        free(ci->access_token.name);
+    ci->access_token.name = NULL;
     strncpy(ci->username, DEFAULT_USERNAME, MEDIUM_REGISTRY_LEN);
     strncpy(ci->region, DEFAULT_REGION, MEDIUM_REGISTRY_LEN);
     strncpy(ci->tunnel_host, DEFAULT_TUNNEL_HOST, MEDIUM_REGISTRY_LEN);
@@ -246,6 +278,14 @@ void getDSNinfo(ConnInfo *ci, const char *configDrvrname) {
                                    sizeof(temp), ODBC_INI)
         > 0)
         ci->password = decode(temp);
+    if (SQLGetPrivateProfileString(DSN, INI_TOKEN, NULL_STRING, temp,
+                                   sizeof(temp), ODBC_INI)
+        > 0)
+        ci->access_token = decode(temp);
+    if (SQLGetPrivateProfileString(DSN, INI_TOKEN_ABBR, NULL_STRING, temp,
+                                   sizeof(temp), ODBC_INI)
+        > 0)
+        ci->access_token = decode(temp);
     if (SQLGetPrivateProfileString(DSN, INI_AUTH_MODE, NULL_STRING, temp,
                                    sizeof(temp), ODBC_INI)
         > 0)
@@ -310,6 +350,8 @@ void writeDSNinfo(const ConnInfo *ci) {
     SQLWritePrivateProfileString(DSN, INI_USERNAME, ci->username, ODBC_INI);
     encode(ci->password, encoded_item, sizeof(encoded_item));
     SQLWritePrivateProfileString(DSN, INI_PASSWORD, encoded_item, ODBC_INI);
+    encode(ci->access_token, encoded_item, sizeof(encoded_item));
+    SQLWritePrivateProfileString(DSN, INI_TOKEN, encoded_item, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_AUTH_MODE, ci->authtype, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_REGION, ci->region, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_TUNNEL_HOST, ci->tunnel_host, ODBC_INI);
@@ -438,6 +480,7 @@ static opensearchNAME decode_or_remove_braces(const char *in) {
 
 void CC_conninfo_release(ConnInfo *conninfo) {
     NULL_THE_NAME(conninfo->password);
+    NULL_THE_NAME(conninfo->access_token);
     finalize_globals(&conninfo->drivers);
 }
 
@@ -461,6 +504,9 @@ void CC_conninfo_init(ConnInfo *conninfo, UInt4 option) {
     if (conninfo->password.name != NULL)
         free(conninfo->password.name);
     conninfo->password.name = NULL;
+    if (conninfo->access_token.name != NULL)
+        free(conninfo->access_token.name);
+    conninfo->access_token.name = NULL;
     strncpy(conninfo->username, DEFAULT_USERNAME, MEDIUM_REGISTRY_LEN);
     strncpy(conninfo->region, DEFAULT_REGION, MEDIUM_REGISTRY_LEN);
     strncpy(conninfo->tunnel_host, DEFAULT_TUNNEL_HOST, MEDIUM_REGISTRY_LEN);
@@ -506,6 +552,7 @@ void CC_copy_conninfo(ConnInfo *ci, const ConnInfo *sci) {
     CORR_STRCPY(region);
     CORR_STRCPY(tunnel_host);
     NAME_TO_NAME(ci->password, sci->password);
+    NAME_TO_NAME(ci->access_token, sci->access_token);
     CORR_VALCPY(use_ssl);
     CORR_VALCPY(verify_server);
     CORR_STRCPY(port);

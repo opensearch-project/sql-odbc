@@ -5,12 +5,11 @@
 ### Requirements
 
 * Install [cmake](https://cmake.org/install/)
-* Install [Visual Studio 2019](https://visualstudio.microsoft.com/vs/) 
-  * Other versions may work, but only 2019 has been tested
+* Install [Visual Studio 2019](https://visualstudio.microsoft.com/vs/) (works also with Visual Studio 2022)
 
 **NOTE:** All Windows/`.ps1` scripts must be run from a [Developer Powershell](https://devblogs.microsoft.com/visualstudio/the-powershell-you-know-and-love-now-with-a-side-of-visual-studio/).
 
-> A shortcut is installed on your system with Visual Studio (**"Developer Powershell for VS 2019"**)
+> A shortcut is installed on your system with Visual Studio (**"Developer Powershell for VS 2019"**) or (**"Developer Powershell for VS 2022"**)
 
 > Programs launched with this prompt (ex: VS Code) also have access to the Developer shell.
 

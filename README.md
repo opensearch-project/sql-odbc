@@ -1,6 +1,6 @@
 # OpenSearch ODBC Driver
 
-OpenSearchODBC is a read-only ODBC driver for Windows and Mac for connecting to OpenSearch SQL support.
+OpenSearchODBC is a read-only ODBC driver for Windows and Mac for connecting to OpenSearch SQL support. This driver version allows to levereage on Oauth2 authentication/authorization. 
 
 ### ODBC Driver
 

@@ -254,6 +254,7 @@ typedef struct authentication_options {
     std::string auth_type;
     std::string username;
     std::string password;
+    std::string access_token;
     std::string region;
     std::string tunnel_host;
 } authentication_options;

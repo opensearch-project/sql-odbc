@@ -1,0 +1,5 @@
+{
+	"ClientId": "<User ID>",
+	"ClientSecret": "<User secret>",
+	"IDPurl": "<Endpoint of the IdP>"
+}
