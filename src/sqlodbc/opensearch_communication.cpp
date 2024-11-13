@@ -352,7 +352,7 @@ bool OpenSearchCommunication::CheckConnectionOptions() {
             SetErrorDetails("Auth error", m_error_message,
                             ConnErrorType::CONN_ERROR_INVALID_AUTH);
         }
-    } else if (m_rt_opts.conn.server == "") {
+    } else if (m_rt_opts.conn.server.empty()) {
         m_error_message = "Host connection option was not specified.";
         SetErrorDetails("Connection error", m_error_message,
                         ConnErrorType::CONN_ERROR_UNABLE_TO_ESTABLISH);
@@ -370,14 +370,14 @@ bool OpenSearchCommunication::CheckConnectionOptions() {
                         ConnErrorType::CONN_ERROR_UNABLE_TO_ESTABLISH);
     }
 
-    if (m_error_message != "") {
+    if (!m_error_message.empty()) {
         LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
         m_valid_connection_options = false;
         return false;
-    } else {
-        LogMsg(OPENSEARCH_DEBUG, "Required connection option are valid.");
-        m_valid_connection_options = true;
     }
+
+    LogMsg(OPENSEARCH_DEBUG, "Required connection option are valid.");
+    m_valid_connection_options = true;
     return m_valid_connection_options;
 }
 
@@ -406,8 +406,8 @@ OpenSearchCommunication::IssueRequest(
     const std::string& fetch_size, const std::string& cursor) {
     // Generate http request
     Aws::Http::URI host(m_rt_opts.conn.server.c_str());
-    if (m_rt_opts.conn.port.length() > 0) {
-        host.SetPort((uint16_t) atoi(m_rt_opts.conn.port.c_str()));
+    if (!m_rt_opts.conn.port.empty()) {
+        host.SetPort((uint16_t)atoi(m_rt_opts.conn.port.c_str()));
     }
     host.SetPath(endpoint.c_str());
 
@@ -469,7 +469,7 @@ OpenSearchCommunication::IssueRequest(
                                             service_name.c_str(),
                                             m_rt_opts.auth.region.c_str());
 
-        if (m_rt_opts.auth.tunnel_host.length() > 0) {
+        if (!m_rt_opts.auth.tunnel_host.empty()) {
             request->SetHeaderValue("host",
                                     Aws::Http::URI(m_rt_opts.auth.tunnel_host.c_str())
                                         .GetAuthority()
