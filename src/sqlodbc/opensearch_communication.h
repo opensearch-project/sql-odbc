@@ -97,6 +97,9 @@ class OpenSearchCommunication {
     std::string m_response_str;
     std::shared_ptr< Aws::Http::HttpClient > m_http_client;
     std::string m_error_message_to_user;
+
+    // TODO #70 - Support serverless
+    bool isServerless();
 };
 
 #endif
