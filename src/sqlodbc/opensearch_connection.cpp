@@ -117,6 +117,7 @@ int LIBOPENSEARCH_connect(ConnectionClass *self) {
     }
     rt_opts.conn.port.assign(self->connInfo.port);
     rt_opts.conn.timeout.assign(self->connInfo.response_timeout);
+    rt_opts.conn.is_serverless.assign(self->connInfo.is_serverless);
 
     // Authentication
     rt_opts.auth.auth_type.assign(self->connInfo.authtype);

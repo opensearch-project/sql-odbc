@@ -27,9 +27,10 @@
 | Option                 | Description                                                                                                                              | Type    | Acceptable Values               | Default     |
 |------------------------|------------------------------------------------------------------------------------------------------------------------------------------|---------|---------------------------------|-------------|
 | `UseSSL`               | Whether to establish the connection over SSL/TLS                                                                                         | boolean | `0` or `1`                      | `0` (false) |
-| `HostnameVerification` | Indicate whether certificate hostname verification should be performed for an SSL/TLS connection.                                        | boolean | `0` or `1`                      | `1` (true)  |
+| `HostnameVerification` | Whether certificate hostname verification should be performed for an SSL/TLS connection.                                                 | boolean | `0` or `1`                      | `1` (true)  |
 | `ResponseTimeout`      | The maximum time to wait for responses from the `Host`, in seconds.                                                                      | integer |                                 | `10`        |
 | `FetchSize`            | The page size for all cursor requests. The default value (-1) uses server-defined page size. Set FetchSize to 0 for non-cursor behavior. | integer | `-1`, `0` or any positive value | `-1`        |
+| `IsServerless`         | Whether the connection is to an OpenSearch Serverless cluster. The default value (-1) means it is determined by parsing the server URL.  | integer | `-1`, `0` or `1`                | `-1`        | 
 
 #### Logging Options
 

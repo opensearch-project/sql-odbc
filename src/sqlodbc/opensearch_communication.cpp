@@ -1076,7 +1076,7 @@ std::string OpenSearchCommunication::GetClusterName() {
  */
 void OpenSearchCommunication::SetSqlEndpoint() {
 
-    // TODO #70: Support serverless
+    // Serverless Elasticsearch is not supported.
     if (isServerless()) {
         sql_endpoint = SQL_ENDPOINT_OPENSEARCH;
         return;
@@ -1094,17 +1094,16 @@ void OpenSearchCommunication::SetSqlEndpoint() {
 
 /**
  * Returns whether this is connecting to an OpenSearch Serverless cluster.
- * @see
- * https://docs.aws.amazon.com/opensearch-service/latest/developerguide/serverless-overview.html
  */
 bool OpenSearchCommunication::isServerless() {
 
-    // TODO #70: Support serverless
+    // Specified in DSN configuration
+    const std::string& is_serverless = m_rt_opts.conn.is_serverless;
 
-    // Parse the server URL.
-    if(m_rt_opts.conn.server.find("aoss.amazonaws.com") != std::string::npos) {
-        return true;
+    if(is_serverless != DEFAULT_IS_SERVERLESS) {
+        return std::stoi(is_serverless);
     }
 
-    return false;
+    // Parsed from server URL.
+    return m_rt_opts.conn.server.find("aoss.amazonaws.com") != std::string::npos;
 }

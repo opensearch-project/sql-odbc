@@ -606,6 +606,7 @@ typedef struct {
     char port[SMALL_REGISTRY_LEN];
     char response_timeout[SMALL_REGISTRY_LEN];
     char fetch_size[SMALL_REGISTRY_LEN];
+    char is_serverless[SMALL_REGISTRY_LEN];;
 
     // Authentication
     char authtype[MEDIUM_REGISTRY_LEN];

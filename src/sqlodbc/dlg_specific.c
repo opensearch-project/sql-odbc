@@ -37,20 +37,44 @@ void makeConnectString(char *connect_string, const ConnInfo *ci, UWORD len) {
     encode(ci->password, encoded_item, sizeof(encoded_item));
     /* fundamental info */
     nlen = MAX_CONNECT_STRING;
+
+    // Format string
+    const char* connect_string_format =
+        "%s=%s;"
+        INI_SERVER "=%s;"
+        "database=OpenSearch;"
+        INI_PORT "=%s;"
+        INI_USERNAME_ABBR "=%s;"
+        INI_PASSWORD_ABBR "=%s;"
+        INI_AUTH_MODE "=%s;"
+        INI_REGION "=%s;"
+        INI_TUNNEL_HOST "=%s;"
+        INI_IS_SERVERLESS "=%d"
+        INI_SSL_USE "=%d;"
+        INI_SSL_HOST_VERIFY "=%d;"
+        INI_LOG_LEVEL "=%d;"
+        INI_LOG_OUTPUT "=%s;"
+        INI_TIMEOUT "=%s;"
+        INI_FETCH_SIZE "=%s;";
+
     olen = snprintf(
         connect_string, nlen,
-        "%s=%s;" INI_SERVER
-        "=%s;"
-        "database=OpenSearch;" INI_PORT "=%s;" INI_USERNAME_ABBR
-        "=%s;" INI_PASSWORD_ABBR "=%s;" INI_AUTH_MODE "=%s;" INI_REGION
-        "=%s;" INI_TUNNEL_HOST "=%s;" INI_SSL_USE "=%d;" INI_SSL_HOST_VERIFY
-        "=%d;" INI_LOG_LEVEL "=%d;" INI_LOG_OUTPUT "=%s;" INI_TIMEOUT "=%s;"
-        INI_FETCH_SIZE "=%s;",
+        connect_string_format,
         got_dsn ? "DSN" : "DRIVER", got_dsn ? ci->dsn : ci->drivername,
-        ci->server, ci->port, ci->username, encoded_item, ci->authtype,
-        ci->region, ci->tunnel_host, (int)ci->use_ssl, (int)ci->verify_server,
-        (int)ci->drivers.loglevel, ci->drivers.output_dir,
-        ci->response_timeout, ci->fetch_size);
+        ci->server,
+        ci->port,
+        ci->username,
+        encoded_item,
+        ci->authtype,
+        ci->region,
+        ci->tunnel_host,
+        (int)ci->is_serverless,
+        (int)ci->use_ssl,
+        (int)ci->verify_server,
+        (int)ci->drivers.loglevel,
+        ci->drivers.output_dir,
+        ci->response_timeout,
+        ci->fetch_size);
     if (olen < 0 || olen >= nlen) {
         connect_string[0] = '\0';
         return;
@@ -112,6 +136,8 @@ BOOL copyConnAttributes(ConnInfo *ci, const char *attribute,
         STRCPY_FIXED(ci->region, value);
     else if (stricmp(attribute, INI_TUNNEL_HOST) == 0)
         STRCPY_FIXED(ci->tunnel_host, value);
+    else if (stricmp(attribute, INI_IS_SERVERLESS) == 0)
+        STRCPY_FIXED(ci->is_serverless, value);
     else if (stricmp(attribute, INI_SSL_USE) == 0)
         ci->use_ssl = (char)atoi(value);
     else if (stricmp(attribute, INI_SSL_HOST_VERIFY) == 0)
@@ -141,7 +167,7 @@ static void getCiDefaults(ConnInfo *ci) {
     strncpy(ci->port, DEFAULT_PORT, SMALL_REGISTRY_LEN);
     strncpy(ci->response_timeout, DEFAULT_RESPONSE_TIMEOUT_STR,
             SMALL_REGISTRY_LEN);
-    strncpy(ci->fetch_size, DEFAULT_FETCH_SIZE_STR,
+    strncpy(ci->fetch_size, DEFAULT_FETCH_SIZE,
             SMALL_REGISTRY_LEN);
     strncpy(ci->authtype, DEFAULT_AUTHTYPE, MEDIUM_REGISTRY_LEN);
     if (ci->password.name != NULL)
@@ -150,6 +176,7 @@ static void getCiDefaults(ConnInfo *ci) {
     strncpy(ci->username, DEFAULT_USERNAME, MEDIUM_REGISTRY_LEN);
     strncpy(ci->region, DEFAULT_REGION, MEDIUM_REGISTRY_LEN);
     strncpy(ci->tunnel_host, DEFAULT_TUNNEL_HOST, MEDIUM_REGISTRY_LEN);
+    strncpy(ci->is_serverless, DEFAULT_IS_SERVERLESS, SMALL_REGISTRY_LEN);
     ci->use_ssl = DEFAULT_USE_SSL;
     ci->verify_server = DEFAULT_VERIFY_SERVER;
     strcpy(ci->drivers.output_dir, "C:\\");
@@ -258,6 +285,10 @@ void getDSNinfo(ConnInfo *ci, const char *configDrvrname) {
                                    sizeof(temp), ODBC_INI)
         > 0)
         STRCPY_FIXED(ci->tunnel_host, temp);
+    if (SQLGetPrivateProfileString(DSN, INI_IS_SERVERLESS, NULL_STRING, temp,
+                                   sizeof(temp), ODBC_INI)
+        > 0)
+        STRCPY_FIXED(ci->is_serverless, temp);
     if (SQLGetPrivateProfileString(DSN, INI_SSL_USE, NULL_STRING, temp,
                                    sizeof(temp), ODBC_INI)
         > 0)
@@ -313,6 +344,7 @@ void writeDSNinfo(const ConnInfo *ci) {
     SQLWritePrivateProfileString(DSN, INI_AUTH_MODE, ci->authtype, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_REGION, ci->region, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_TUNNEL_HOST, ci->tunnel_host, ODBC_INI);
+    SQLWritePrivateProfileString(DSN, INI_IS_SERVERLESS, ci->is_serverless, ODBC_INI);
     ITOA_FIXED(temp, ci->use_ssl);
     SQLWritePrivateProfileString(DSN, INI_SSL_USE, temp, ODBC_INI);
     ITOA_FIXED(temp, ci->verify_server);
@@ -455,7 +487,7 @@ void CC_conninfo_init(ConnInfo *conninfo, UInt4 option) {
     strncpy(conninfo->port, DEFAULT_PORT, SMALL_REGISTRY_LEN);
     strncpy(conninfo->response_timeout, DEFAULT_RESPONSE_TIMEOUT_STR,
             SMALL_REGISTRY_LEN);
-    strncpy(conninfo->fetch_size, DEFAULT_FETCH_SIZE_STR,
+    strncpy(conninfo->fetch_size, DEFAULT_FETCH_SIZE,
             SMALL_REGISTRY_LEN);
     strncpy(conninfo->authtype, DEFAULT_AUTHTYPE, MEDIUM_REGISTRY_LEN);
     if (conninfo->password.name != NULL)
@@ -464,6 +496,7 @@ void CC_conninfo_init(ConnInfo *conninfo, UInt4 option) {
     strncpy(conninfo->username, DEFAULT_USERNAME, MEDIUM_REGISTRY_LEN);
     strncpy(conninfo->region, DEFAULT_REGION, MEDIUM_REGISTRY_LEN);
     strncpy(conninfo->tunnel_host, DEFAULT_TUNNEL_HOST, MEDIUM_REGISTRY_LEN);
+    strncpy(conninfo->is_serverless, DEFAULT_IS_SERVERLESS, SMALL_REGISTRY_LEN);
     conninfo->use_ssl = DEFAULT_USE_SSL;
     conninfo->verify_server = DEFAULT_VERIFY_SERVER;
 
@@ -505,6 +538,7 @@ void CC_copy_conninfo(ConnInfo *ci, const ConnInfo *sci) {
     CORR_STRCPY(authtype);
     CORR_STRCPY(region);
     CORR_STRCPY(tunnel_host);
+    CORR_STRCPY(is_serverless);
     NAME_TO_NAME(ci->password, sci->password);
     CORR_VALCPY(use_ssl);
     CORR_VALCPY(verify_server);

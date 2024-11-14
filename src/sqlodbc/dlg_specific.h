@@ -51,9 +51,9 @@ extern "C" {
 #define INI_LOG_OUTPUT "logOutput"
 #define INI_TIMEOUT "responseTimeout"
 #define INI_FETCH_SIZE "fetchSize"
+#define INI_IS_SERVERLESS "isServerless"
 
-#define DEFAULT_FETCH_SIZE -1
-#define DEFAULT_FETCH_SIZE_STR "-1"
+#define DEFAULT_FETCH_SIZE "-1"
 #define DEFAULT_RESPONSE_TIMEOUT 10  // Seconds
 #define DEFAULT_RESPONSE_TIMEOUT_STR "10"
 #define DEFAULT_AUTHTYPE "NONE"
@@ -65,6 +65,7 @@ extern "C" {
 #define DEFAULT_DESC ""
 #define DEFAULT_DSN ""
 #define DEFAULT_VERIFY_SERVER 1
+#define DEFAULT_IS_SERVERLESS "-1"
 
 #define AUTHTYPE_NONE "NONE"
 #define AUTHTYPE_BASIC "BASIC"
