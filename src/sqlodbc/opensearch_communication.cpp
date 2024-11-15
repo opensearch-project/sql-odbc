@@ -407,7 +407,7 @@ OpenSearchCommunication::IssueRequest(
     // Generate http request
     Aws::Http::URI host(m_rt_opts.conn.server.c_str());
     if (!m_rt_opts.conn.port.empty()) {
-        host.SetPort((uint16_t)atoi(m_rt_opts.conn.port.c_str()));
+        host.SetPort((uint16_t) atoi(m_rt_opts.conn.port.c_str()));
     }
     host.SetPath(endpoint.c_str());
 
@@ -439,7 +439,7 @@ OpenSearchCommunication::IssueRequest(
     }
 
     // Handle authentication
-    std::string& auth_type = m_rt_opts.auth.auth_type;
+    const std::string& auth_type = m_rt_opts.auth.auth_type;
 
     if (auth_type == AUTHTYPE_BASIC) {
         std::string userpw_str =
@@ -452,7 +452,6 @@ OpenSearchCommunication::IssueRequest(
         request->SetAuthorization("Basic " + hashed_userpw);
     }
 
-    // TODO #70: Handle serverless
     else if (auth_type == AUTHTYPE_IAM) {
         std::shared_ptr< Aws::Auth::ProfileConfigFileAWSCredentialsProvider >
             credential_provider = Aws::MakeShared<
@@ -1097,7 +1096,7 @@ void OpenSearchCommunication::SetSqlEndpoint() {
  */
 bool OpenSearchCommunication::isServerless() {
 
-    // Specified in DSN configuration
+    // Specified in DSN configuration.
     const std::string& is_serverless = m_rt_opts.conn.is_serverless;
 
     if(!is_serverless.empty()) {

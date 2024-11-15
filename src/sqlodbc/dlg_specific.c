@@ -38,8 +38,7 @@ void makeConnectString(char *connect_string, const ConnInfo *ci, UWORD len) {
     /* fundamental info */
     nlen = MAX_CONNECT_STRING;
 
-    // Format string
-    const char* connect_string_format =
+    const char* connect_format_string =
         "%s=%s;"
         INI_SERVER "=%s;"
         "database=OpenSearch;"
@@ -59,7 +58,7 @@ void makeConnectString(char *connect_string, const ConnInfo *ci, UWORD len) {
 
     olen = snprintf(
         connect_string, nlen,
-        connect_string_format,
+        connect_format_string,
         got_dsn ? "DSN" : "DRIVER", got_dsn ? ci->dsn : ci->drivername,
         ci->server,
         ci->port,

@@ -81,6 +81,7 @@ class OpenSearchCommunication {
     void SetErrorDetails(std::string reason, std::string message,
                          ConnErrorType error_type);
     void SetErrorDetails(ErrorDetails details);
+    bool isServerless();
 
     // TODO #35 - Go through and add error messages on exit conditions
     std::string m_error_message;
@@ -97,9 +98,6 @@ class OpenSearchCommunication {
     std::string m_response_str;
     std::shared_ptr< Aws::Http::HttpClient > m_http_client;
     std::string m_error_message_to_user;
-
-    // TODO #70 - Support serverless
-    bool isServerless();
 };
 
 #endif
