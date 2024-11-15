@@ -15,7 +15,7 @@ PERFORMANCE_TYPE = "performance"
 PERFORMANCE_INFO = "performance_info"
 PERFORMANCE_RESULTS = "performance_results"
 EXCLUDE_EXTENSION_LIST = (
-    ".py", ".c", ".cmake", ".log", 
+    ".py", ".pyc", ".c", ".cmake", ".log",
     ".pdb", ".dll", ".sln", ".vcxproj", ".user",
     ".tlog", ".lastbuildstate", ".filters", 
     ".obj", ".exp", ".lib", ".h", ".cpp", ".ilk")
