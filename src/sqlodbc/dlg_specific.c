@@ -48,7 +48,7 @@ void makeConnectString(char *connect_string, const ConnInfo *ci, UWORD len) {
         INI_AUTH_MODE "=%s;"
         INI_REGION "=%s;"
         INI_TUNNEL_HOST "=%s;"
-        INI_IS_SERVERLESS "=%d"
+        INI_IS_SERVERLESS "=%s"
         INI_SSL_USE "=%d;"
         INI_SSL_HOST_VERIFY "=%d;"
         INI_LOG_LEVEL "=%d;"
