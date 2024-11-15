@@ -1100,7 +1100,7 @@ bool OpenSearchCommunication::isServerless() {
     // Specified in DSN configuration
     const std::string& is_serverless = m_rt_opts.conn.is_serverless;
 
-    if(is_serverless != DEFAULT_IS_SERVERLESS) {
+    if(!is_serverless.empty()) {
         return std::stoi(is_serverless);
     }
 

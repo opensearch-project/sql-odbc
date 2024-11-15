@@ -68,7 +68,7 @@ void makeConnectString(char *connect_string, const ConnInfo *ci, UWORD len) {
         ci->authtype,
         ci->region,
         ci->tunnel_host,
-        (int)ci->is_serverless,
+        ci->is_serverless,
         (int)ci->use_ssl,
         (int)ci->verify_server,
         (int)ci->drivers.loglevel,

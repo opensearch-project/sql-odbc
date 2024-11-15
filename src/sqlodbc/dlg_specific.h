@@ -65,7 +65,7 @@ extern "C" {
 #define DEFAULT_DESC ""
 #define DEFAULT_DSN ""
 #define DEFAULT_VERIFY_SERVER 1
-#define DEFAULT_IS_SERVERLESS "-1"
+#define DEFAULT_IS_SERVERLESS ""
 
 #define AUTHTYPE_NONE "NONE"
 #define AUTHTYPE_BASIC "BASIC"
