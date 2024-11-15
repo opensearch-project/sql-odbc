@@ -460,7 +460,7 @@ OpenSearchCommunication::IssueRequest(
                 CREDENTIALS_PROFILE.c_str());
 
         const std::string& service_name =
-            isServerless()
+            is_serverless
             ? SERVICE_NAME_SERVERLESS
             : SERVICE_NAME_DEFAULT;
 
@@ -491,7 +491,7 @@ bool OpenSearchCommunication::IsSQLPluginEnabled(std::shared_ptr< ErrorDetails >
 
 /**
  * @brief Queries server to determine SQL plugin availability.
- * 
+ *
  * @return true : Successfully queried server for SQL plugin
  * @return false : Failed to query server, no plugin available, exception was caught
  */
@@ -572,10 +572,8 @@ bool OpenSearchCommunication::EstablishConnection() {
         InitializeConnection();
     }
 
-    // Check if the endpoint can be determined.
-    if (sql_endpoint.empty()) {
-        SetSqlEndpoint();
-    }
+    SetIsServerless();
+    SetSqlEndpoint();
 
     if (sql_endpoint == SQL_ENDPOINT_ERROR) {
         LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
@@ -952,7 +950,7 @@ std::string OpenSearchCommunication::GetServerVersion() {
 /**
  * @brief Queries supplied URL to validate Server Distribution. Maintains
  * backwards compatibility with opendistro distribution.
- * 
+ *
  * @return std::string : Server distribution name, returns "" on error
  */
 std::string OpenSearchCommunication::GetServerDistribution() {
@@ -1069,14 +1067,14 @@ std::string OpenSearchCommunication::GetClusterName() {
 }
 
 /**
- * @brief Sets URL endpoint for SQL plugin. On failure to
- * determine appropriate endpoint, value is set to SQL_ENDPOINT_ERROR_STR
- *
+ * @brief Sets URL endpoint for the SQL plugin.
+ * Sets it to SQL_ENDPOINT_ERROR if an appropriate
+ * endpoint could not be determined.
  */
 void OpenSearchCommunication::SetSqlEndpoint() {
 
     // Serverless Elasticsearch is not supported.
-    if (isServerless()) {
+    if (is_serverless) {
         sql_endpoint = SQL_ENDPOINT_OPENSEARCH;
         return;
     }
@@ -1092,17 +1090,18 @@ void OpenSearchCommunication::SetSqlEndpoint() {
 }
 
 /**
- * Returns whether this is connecting to an OpenSearch Serverless cluster.
+ * @brief Sets flag indicating whether this is
+ * connecting to an OpenSearch Serverless cluster.
  */
-bool OpenSearchCommunication::isServerless() {
+void OpenSearchCommunication::SetIsServerless() {
 
-    // Specified in DSN configuration.
-    const std::string& is_serverless = m_rt_opts.conn.is_serverless;
+    // If it is not specified in the DSN configuration,
+    // determine whether this is connected to a serverless
+    // cluster by parsing the server URL.
+    const std::string& is_serverless_config_value = m_rt_opts.conn.is_serverless;
 
-    if(!is_serverless.empty()) {
-        return std::stoi(is_serverless);
-    }
-
-    // Parsed from server URL.
-    return m_rt_opts.conn.server.find("aoss.amazonaws.com") != std::string::npos;
+    is_serverless =
+        is_serverless_config_value.empty()
+        ? (m_rt_opts.conn.server.find("aoss.amazonaws.com") != std::string::npos)
+        : std::stoi(is_serverless_config_value);
 }

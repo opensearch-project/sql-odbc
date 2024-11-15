@@ -64,7 +64,6 @@ class OpenSearchCommunication {
     void StopResultRetrieval();
     std::vector< std::string > GetColumnsWithSelectQuery(
         const std::string table_name);
-    void SetSqlEndpoint();
 
     // the endpoint is set according to distribution (ES/OpenSearch)
     std::string sql_endpoint;
@@ -81,7 +80,9 @@ class OpenSearchCommunication {
     void SetErrorDetails(std::string reason, std::string message,
                          ConnErrorType error_type);
     void SetErrorDetails(ErrorDetails details);
-    bool isServerless();
+
+    void SetIsServerless();
+    void SetSqlEndpoint();
 
     // TODO #35 - Go through and add error messages on exit conditions
     std::string m_error_message;
@@ -90,6 +91,7 @@ class OpenSearchCommunication {
     ConnStatusType m_status;
     ConnErrorType m_error_type;
     std::shared_ptr< ErrorDetails > m_error_details;
+    bool is_serverless;
     bool m_valid_connection_options;
     bool m_is_retrieving;
     OpenSearchResultQueue m_result_queue;
