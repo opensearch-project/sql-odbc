@@ -48,7 +48,7 @@ void makeConnectString(char *connect_string, const ConnInfo *ci, UWORD len) {
         INI_AUTH_MODE "=%s;"
         INI_REGION "=%s;"
         INI_TUNNEL_HOST "=%s;"
-        INI_IS_SERVERLESS "=%s"
+        INI_SERVERLESS_OVERRIDE "=%s"
         INI_SSL_USE "=%d;"
         INI_SSL_HOST_VERIFY "=%d;"
         INI_LOG_LEVEL "=%d;"
@@ -135,7 +135,7 @@ BOOL copyConnAttributes(ConnInfo *ci, const char *attribute,
         STRCPY_FIXED(ci->region, value);
     else if (stricmp(attribute, INI_TUNNEL_HOST) == 0)
         STRCPY_FIXED(ci->tunnel_host, value);
-    else if (stricmp(attribute, INI_IS_SERVERLESS) == 0)
+    else if (stricmp(attribute, INI_SERVERLESS_OVERRIDE) == 0)
         STRCPY_FIXED(ci->is_serverless, value);
     else if (stricmp(attribute, INI_SSL_USE) == 0)
         ci->use_ssl = (char)atoi(value);
@@ -284,7 +284,7 @@ void getDSNinfo(ConnInfo *ci, const char *configDrvrname) {
                                    sizeof(temp), ODBC_INI)
         > 0)
         STRCPY_FIXED(ci->tunnel_host, temp);
-    if (SQLGetPrivateProfileString(DSN, INI_IS_SERVERLESS, NULL_STRING, temp,
+    if (SQLGetPrivateProfileString(DSN, INI_SERVERLESS_OVERRIDE, NULL_STRING, temp,
                                    sizeof(temp), ODBC_INI)
         > 0)
         STRCPY_FIXED(ci->is_serverless, temp);
@@ -343,7 +343,7 @@ void writeDSNinfo(const ConnInfo *ci) {
     SQLWritePrivateProfileString(DSN, INI_AUTH_MODE, ci->authtype, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_REGION, ci->region, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_TUNNEL_HOST, ci->tunnel_host, ODBC_INI);
-    SQLWritePrivateProfileString(DSN, INI_IS_SERVERLESS, ci->is_serverless, ODBC_INI);
+    SQLWritePrivateProfileString(DSN, INI_SERVERLESS_OVERRIDE, ci->is_serverless, ODBC_INI);
     ITOA_FIXED(temp, ci->use_ssl);
     SQLWritePrivateProfileString(DSN, INI_SSL_USE, temp, ODBC_INI);
     ITOA_FIXED(temp, ci->verify_server);

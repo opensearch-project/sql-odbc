@@ -51,7 +51,7 @@ extern "C" {
 #define INI_LOG_OUTPUT "logOutput"
 #define INI_TIMEOUT "responseTimeout"
 #define INI_FETCH_SIZE "fetchSize"
-#define INI_IS_SERVERLESS "isServerless"
+#define INI_SERVERLESS_OVERRIDE "ServerlessOverride"
 
 #define DEFAULT_FETCH_SIZE "-1"
 #define DEFAULT_RESPONSE_TIMEOUT 10  // Seconds
