@@ -63,9 +63,6 @@ class TestOpenSearchConnConnectDBStart : public testing::Test {
 TEST_F(TestOpenSearchConnConnectDBStart, ValidParameters) {
     ASSERT_NE(false, m_conn.ConnectionOptions(valid_opt_val, 1, 1,
                                               valid_option_count));
-    // TODO
-    bool res = m_conn.ConnectDBStart();
-
     EXPECT_EQ(true, m_conn.ConnectDBStart());
     EXPECT_EQ(CONNECTION_OK, m_conn.GetConnectionStatus());
 }
