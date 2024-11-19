@@ -27,6 +27,8 @@ static const std::string CREDENTIALS_PROFILE = "opensearchodbc";
 static const std::string CREDENTIALS_PROVIDER_ALLOCATION_TAG =
     "CREDENTIAL_PROVIDER";
 
+static const std::string DISTRIBUTION_OPENSEARCH = "opensearch";
+
 static const std::string ctype = "application/json";
 static const std::string ERROR_MSG_PREFIX =
     "[OpenSearch][SQL ODBC Driver][SQL Plugin] ";
@@ -1090,7 +1092,7 @@ void OpenSearchCommunication::SetSqlEndpoint() {
     std::string distribution = GetServerDistribution();
     if (distribution.empty()) {
         sql_endpoint = SQL_ENDPOINT_ERROR;
-    } else if (distribution == "opensearch") {
+    } else if (distribution == DISTRIBUTION_OPENSEARCH) {
         sql_endpoint = SQL_ENDPOINT_OPENSEARCH;
     } else {
         sql_endpoint = SQL_ENDPOINT_ELASTICSEARCH;
