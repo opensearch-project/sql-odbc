@@ -48,7 +48,7 @@ void makeConnectString(char *connect_string, const ConnInfo *ci, UWORD len) {
         INI_AUTH_MODE "=%s;"
         INI_REGION "=%s;"
         INI_TUNNEL_HOST "=%s;"
-        INI_SERVERLESS_OVERRIDE "=%s"
+        INI_SERVERLESS_OVERRIDE "=%d"
         INI_SSL_USE "=%d;"
         INI_SSL_HOST_VERIFY "=%d;"
         INI_LOG_LEVEL "=%d;"
@@ -67,7 +67,7 @@ void makeConnectString(char *connect_string, const ConnInfo *ci, UWORD len) {
         ci->authtype,
         ci->region,
         ci->tunnel_host,
-        ci->is_aoss_serverless,
+        (int)ci->is_aoss_serverless,
         (int)ci->use_ssl,
         (int)ci->verify_server,
         (int)ci->drivers.loglevel,
@@ -136,7 +136,7 @@ BOOL copyConnAttributes(ConnInfo *ci, const char *attribute,
     else if (stricmp(attribute, INI_TUNNEL_HOST) == 0)
         STRCPY_FIXED(ci->tunnel_host, value);
     else if (stricmp(attribute, INI_SERVERLESS_OVERRIDE) == 0)
-        STRCPY_FIXED(ci->is_aoss_serverless, value);
+        ci->is_aoss_serverless = (char)atoi(value);
     else if (stricmp(attribute, INI_SSL_USE) == 0)
         ci->use_ssl = (char)atoi(value);
     else if (stricmp(attribute, INI_SSL_HOST_VERIFY) == 0)
@@ -175,7 +175,7 @@ static void getCiDefaults(ConnInfo *ci) {
     strncpy(ci->username, DEFAULT_USERNAME, MEDIUM_REGISTRY_LEN);
     strncpy(ci->region, DEFAULT_REGION, MEDIUM_REGISTRY_LEN);
     strncpy(ci->tunnel_host, DEFAULT_TUNNEL_HOST, MEDIUM_REGISTRY_LEN);
-    strncpy(ci->is_aoss_serverless, DEFAULT_IS_AOSS_SERVERLESS, SMALL_REGISTRY_LEN);
+    ci->is_aoss_serverless = DEFAULT_IS_AOSS_SERVERLESS;
     ci->use_ssl = DEFAULT_USE_SSL;
     ci->verify_server = DEFAULT_VERIFY_SERVER;
     strcpy(ci->drivers.output_dir, "C:\\");
@@ -287,7 +287,7 @@ void getDSNinfo(ConnInfo *ci, const char *configDrvrname) {
     if (SQLGetPrivateProfileString(DSN, INI_SERVERLESS_OVERRIDE, NULL_STRING, temp,
                                    sizeof(temp), ODBC_INI)
         > 0)
-        STRCPY_FIXED(ci->is_aoss_serverless, temp);
+        ci->is_aoss_serverless = (char)atoi(temp);
     if (SQLGetPrivateProfileString(DSN, INI_SSL_USE, NULL_STRING, temp,
                                    sizeof(temp), ODBC_INI)
         > 0)
@@ -343,7 +343,7 @@ void writeDSNinfo(const ConnInfo *ci) {
     SQLWritePrivateProfileString(DSN, INI_AUTH_MODE, ci->authtype, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_REGION, ci->region, ODBC_INI);
     SQLWritePrivateProfileString(DSN, INI_TUNNEL_HOST, ci->tunnel_host, ODBC_INI);
-    SQLWritePrivateProfileString(DSN, INI_SERVERLESS_OVERRIDE, ci->is_aoss_serverless, ODBC_INI);
+    ITOA_FIXED(temp, ci->is_aoss_serverless);
     ITOA_FIXED(temp, ci->use_ssl);
     SQLWritePrivateProfileString(DSN, INI_SSL_USE, temp, ODBC_INI);
     ITOA_FIXED(temp, ci->verify_server);
@@ -495,7 +495,7 @@ void CC_conninfo_init(ConnInfo *conninfo, UInt4 option) {
     strncpy(conninfo->username, DEFAULT_USERNAME, MEDIUM_REGISTRY_LEN);
     strncpy(conninfo->region, DEFAULT_REGION, MEDIUM_REGISTRY_LEN);
     strncpy(conninfo->tunnel_host, DEFAULT_TUNNEL_HOST, MEDIUM_REGISTRY_LEN);
-    strncpy(conninfo->is_aoss_serverless, DEFAULT_IS_AOSS_SERVERLESS, SMALL_REGISTRY_LEN);
+    conninfo->is_aoss_serverless = DEFAULT_IS_AOSS_SERVERLESS;
     conninfo->use_ssl = DEFAULT_USE_SSL;
     conninfo->verify_server = DEFAULT_VERIFY_SERVER;
 
@@ -537,7 +537,7 @@ void CC_copy_conninfo(ConnInfo *ci, const ConnInfo *sci) {
     CORR_STRCPY(authtype);
     CORR_STRCPY(region);
     CORR_STRCPY(tunnel_host);
-    CORR_STRCPY(is_aoss_serverless);
+    CORR_VALCPY(is_aoss_serverless);
     NAME_TO_NAME(ci->password, sci->password);
     CORR_VALCPY(use_ssl);
     CORR_VALCPY(verify_server);

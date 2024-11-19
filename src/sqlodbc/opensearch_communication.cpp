@@ -1105,13 +1105,11 @@ void OpenSearchCommunication::SetSqlEndpoint() {
  */
 void OpenSearchCommunication::SetIsAossServerless() {
 
-    // If it is not specified in the DSN configuration,
-    // determine whether this is connected to a serverless
-    // cluster by parsing the server URL.
-    const std::string& is_aoss_serverless_config_value = m_rt_opts.conn.is_aoss_serverless;
-
+    // Try to determine whether this connects to Serverless by parsing the
+    // server URL, otherwise use the configuration option, which defaults
+    // to false if not provided.
     is_aoss_serverless =
-        is_aoss_serverless_config_value.empty()
-        ? (m_rt_opts.conn.server.find("aoss.amazonaws.com") != std::string::npos)
-        : std::stoi(is_aoss_serverless_config_value);
+        ( m_rt_opts.conn.server.find("aoss.amazonaws.com") != std::string::npos )
+        ? true
+        : m_rt_opts.conn.is_aoss_serverless;
 }

@@ -117,7 +117,7 @@ int LIBOPENSEARCH_connect(ConnectionClass *self) {
     }
     rt_opts.conn.port.assign(self->connInfo.port);
     rt_opts.conn.timeout.assign(self->connInfo.response_timeout);
-    rt_opts.conn.is_aoss_serverless.assign(self->connInfo.is_aoss_serverless);
+    rt_opts.conn.is_aoss_serverless = (self->connInfo.is_aoss_serverless == '1');
 
     // Authentication
     rt_opts.auth.auth_type.assign(self->connInfo.authtype);
@@ -127,8 +127,8 @@ int LIBOPENSEARCH_connect(ConnectionClass *self) {
     rt_opts.auth.tunnel_host.assign(self->connInfo.tunnel_host);
 
     // Encryption
-    rt_opts.crypt.verify_server = (self->connInfo.verify_server == 1);
-    rt_opts.crypt.use_ssl = (self->connInfo.use_ssl == 1);
+    rt_opts.crypt.verify_server = (self->connInfo.verify_server == '1');
+    rt_opts.crypt.use_ssl = (self->connInfo.use_ssl == '1');
 
     void *opensearchconn = OpenSearchConnectDBParams(rt_opts, FALSE, OPTION_COUNT);
     if (opensearchconn == NULL) {
