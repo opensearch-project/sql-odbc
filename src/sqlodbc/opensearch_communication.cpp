@@ -21,7 +21,7 @@ static const std::string SQL_ENDPOINT_ELASTICSEARCH = "/_opendistro/_sql";
 static const std::string SQL_ENDPOINT_ERROR = "Error";
 
 static const std::string SERVICE_NAME_DEFAULT = "es";
-static const std::string SERVICE_NAME_SERVERLESS = "aoss";
+static const std::string SERVICE_NAME_AOSS_SERVERLESS = "aoss";
 
 static const std::string CREDENTIALS_PROFILE = "opensearchodbc";
 static const std::string CREDENTIALS_PROVIDER_ALLOCATION_TAG =
@@ -462,8 +462,8 @@ OpenSearchCommunication::IssueRequest(
                 CREDENTIALS_PROFILE.c_str());
 
         const std::string& service_name =
-            is_serverless
-            ? SERVICE_NAME_SERVERLESS
+            is_aoss_serverless
+            ? SERVICE_NAME_AOSS_SERVERLESS
             : SERVICE_NAME_DEFAULT;
 
         Aws::Client::AWSAuthV4Signer signer(credential_provider,
@@ -577,7 +577,7 @@ bool OpenSearchCommunication::EstablishConnection() {
     // Set whether the connection is to OpenSearch serverless cluster.
     // This can be specified explicitly via a configuration option, or
     // determined by parsing the server URL.
-    SetIsServerless();
+    SetIsAossServerless();
 
     // Set the SQL endpoint to connect to. If this is a serverless connection,
     // the SQL endpoint can be determined directly; if not, the endpoint is
@@ -585,7 +585,7 @@ bool OpenSearchCommunication::EstablishConnection() {
     // error.
     SetSqlEndpoint();
 
-    if (is_serverless && (sql_endpoint == SQL_ENDPOINT_ERROR)) {
+    if (is_aoss_serverless && (sql_endpoint == SQL_ENDPOINT_ERROR)) {
         LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
         return false;
     }
@@ -1084,7 +1084,7 @@ std::string OpenSearchCommunication::GetClusterName() {
 void OpenSearchCommunication::SetSqlEndpoint() {
 
     // Serverless Elasticsearch is not supported.
-    if (is_serverless) {
+    if (is_aoss_serverless) {
         sql_endpoint = SQL_ENDPOINT_OPENSEARCH;
         return;
     }
@@ -1103,15 +1103,15 @@ void OpenSearchCommunication::SetSqlEndpoint() {
  * @brief Sets flag indicating whether this is
  * connecting to an OpenSearch Serverless cluster.
  */
-void OpenSearchCommunication::SetIsServerless() {
+void OpenSearchCommunication::SetIsAossServerless() {
 
     // If it is not specified in the DSN configuration,
     // determine whether this is connected to a serverless
     // cluster by parsing the server URL.
-    const std::string& is_serverless_config_value = m_rt_opts.conn.is_serverless;
+    const std::string& is_aoss_serverless_config_value = m_rt_opts.conn.is_aoss_serverless;
 
-    is_serverless =
-        is_serverless_config_value.empty()
+    is_aoss_serverless =
+        is_aoss_serverless_config_value.empty()
         ? (m_rt_opts.conn.server.find("aoss.amazonaws.com") != std::string::npos)
-        : std::stoi(is_serverless_config_value);
+        : std::stoi(is_aoss_serverless_config_value);
 }

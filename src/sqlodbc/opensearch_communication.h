@@ -81,7 +81,7 @@ class OpenSearchCommunication {
                          ConnErrorType error_type);
     void SetErrorDetails(ErrorDetails details);
 
-    void SetIsServerless();
+    void SetIsAossServerless();
     void SetSqlEndpoint();
 
     // TODO #35 - Go through and add error messages on exit conditions
@@ -91,7 +91,7 @@ class OpenSearchCommunication {
     ConnStatusType m_status;
     ConnErrorType m_error_type;
     std::shared_ptr< ErrorDetails > m_error_details;
-    bool is_serverless;
+    bool is_aoss_serverless;
     bool m_valid_connection_options;
     bool m_is_retrieving;
     OpenSearchResultQueue m_result_queue;

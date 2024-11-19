@@ -272,7 +272,7 @@ typedef struct connection_options {
     std::string port;
     std::string timeout;
     std::string fetch_size;
-    std::string is_serverless;
+    std::string is_aoss_serverless;
 } connection_options;
 
 typedef struct runtime_options {
