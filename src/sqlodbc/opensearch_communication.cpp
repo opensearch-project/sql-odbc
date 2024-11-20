@@ -1105,11 +1105,9 @@ void OpenSearchCommunication::SetSqlEndpoint() {
  */
 void OpenSearchCommunication::SetIsAossServerless() {
 
-    // Try to determine whether this connects to Serverless by parsing the
-    // server URL, otherwise use the configuration option, which defaults
-    // to false if not provided.
+    // Treat the connection as serverless if the configuration option is true
+    // or the server URL corresponds to Amazon OpenSearch Serverless.
     is_aoss_serverless =
-        ( m_rt_opts.conn.server.find("aoss.amazonaws.com") != std::string::npos )
-        ? true
-        : m_rt_opts.conn.is_aoss_serverless;
+        m_rt_opts.conn.is_aoss_serverless ||
+        ( m_rt_opts.conn.server.find("aoss.amazonaws.com") != std::string::npos );
 }
