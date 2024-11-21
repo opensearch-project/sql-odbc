@@ -64,7 +64,6 @@ class OpenSearchCommunication {
     void StopResultRetrieval();
     std::vector< std::string > GetColumnsWithSelectQuery(
         const std::string table_name);
-    void SetSqlEndpoint();
 
     // the endpoint is set according to distribution (ES/OpenSearch)
     std::string sql_endpoint;
@@ -82,6 +81,9 @@ class OpenSearchCommunication {
                          ConnErrorType error_type);
     void SetErrorDetails(ErrorDetails details);
 
+    void SetIsAossServerless();
+    void SetSqlEndpoint();
+
     // TODO #35 - Go through and add error messages on exit conditions
     std::string m_error_message;
     const std::vector< std::string > m_supported_client_encodings = {"UTF8"};
@@ -89,6 +91,7 @@ class OpenSearchCommunication {
     ConnStatusType m_status;
     ConnErrorType m_error_type;
     std::shared_ptr< ErrorDetails > m_error_details;
+    bool is_aoss_serverless;
     bool m_valid_connection_options;
     bool m_is_retrieving;
     OpenSearchResultQueue m_result_queue;

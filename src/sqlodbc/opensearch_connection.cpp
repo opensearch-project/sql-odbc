@@ -126,8 +126,8 @@ int LIBOPENSEARCH_connect(ConnectionClass *self) {
     rt_opts.auth.tunnel_host.assign(self->connInfo.tunnel_host);
 
     // Encryption
-    rt_opts.crypt.verify_server = (self->connInfo.verify_server == 1);
-    rt_opts.crypt.use_ssl = (self->connInfo.use_ssl == 1);
+    rt_opts.crypt.verify_server = (self->connInfo.verify_server == '1');
+    rt_opts.crypt.use_ssl = (self->connInfo.use_ssl == '1');
 
     void *opensearchconn = OpenSearchConnectDBParams(rt_opts, FALSE, OPTION_COUNT);
     if (opensearchconn == NULL) {

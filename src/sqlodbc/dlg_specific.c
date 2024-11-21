@@ -37,20 +37,41 @@ void makeConnectString(char *connect_string, const ConnInfo *ci, UWORD len) {
     encode(ci->password, encoded_item, sizeof(encoded_item));
     /* fundamental info */
     nlen = MAX_CONNECT_STRING;
+
+    const char* connect_format_string =
+        "%s=%s;"
+        INI_SERVER "=%s;"
+        "database=OpenSearch;"
+        INI_PORT "=%s;"
+        INI_USERNAME_ABBR "=%s;"
+        INI_PASSWORD_ABBR "=%s;"
+        INI_AUTH_MODE "=%s;"
+        INI_REGION "=%s;"
+        INI_TUNNEL_HOST "=%s;"
+        INI_SSL_USE "=%d;"
+        INI_SSL_HOST_VERIFY "=%d;"
+        INI_LOG_LEVEL "=%d;"
+        INI_LOG_OUTPUT "=%s;"
+        INI_TIMEOUT "=%s;"
+        INI_FETCH_SIZE "=%s;";
+
     olen = snprintf(
         connect_string, nlen,
-        "%s=%s;" INI_SERVER
-        "=%s;"
-        "database=OpenSearch;" INI_PORT "=%s;" INI_USERNAME_ABBR
-        "=%s;" INI_PASSWORD_ABBR "=%s;" INI_AUTH_MODE "=%s;" INI_REGION
-        "=%s;" INI_TUNNEL_HOST "=%s;" INI_SSL_USE "=%d;" INI_SSL_HOST_VERIFY
-        "=%d;" INI_LOG_LEVEL "=%d;" INI_LOG_OUTPUT "=%s;" INI_TIMEOUT "=%s;"
-        INI_FETCH_SIZE "=%s;",
+        connect_format_string,
         got_dsn ? "DSN" : "DRIVER", got_dsn ? ci->dsn : ci->drivername,
-        ci->server, ci->port, ci->username, encoded_item, ci->authtype,
-        ci->region, ci->tunnel_host, (int)ci->use_ssl, (int)ci->verify_server,
-        (int)ci->drivers.loglevel, ci->drivers.output_dir,
-        ci->response_timeout, ci->fetch_size);
+        ci->server,
+        ci->port,
+        ci->username,
+        encoded_item,
+        ci->authtype,
+        ci->region,
+        ci->tunnel_host,
+        (int)ci->use_ssl,
+        (int)ci->verify_server,
+        (int)ci->drivers.loglevel,
+        ci->drivers.output_dir,
+        ci->response_timeout,
+        ci->fetch_size);
     if (olen < 0 || olen >= nlen) {
         connect_string[0] = '\0';
         return;
@@ -141,7 +162,7 @@ static void getCiDefaults(ConnInfo *ci) {
     strncpy(ci->port, DEFAULT_PORT, SMALL_REGISTRY_LEN);
     strncpy(ci->response_timeout, DEFAULT_RESPONSE_TIMEOUT_STR,
             SMALL_REGISTRY_LEN);
-    strncpy(ci->fetch_size, DEFAULT_FETCH_SIZE_STR,
+    strncpy(ci->fetch_size, DEFAULT_FETCH_SIZE,
             SMALL_REGISTRY_LEN);
     strncpy(ci->authtype, DEFAULT_AUTHTYPE, MEDIUM_REGISTRY_LEN);
     if (ci->password.name != NULL)
@@ -455,7 +476,7 @@ void CC_conninfo_init(ConnInfo *conninfo, UInt4 option) {
     strncpy(conninfo->port, DEFAULT_PORT, SMALL_REGISTRY_LEN);
     strncpy(conninfo->response_timeout, DEFAULT_RESPONSE_TIMEOUT_STR,
             SMALL_REGISTRY_LEN);
-    strncpy(conninfo->fetch_size, DEFAULT_FETCH_SIZE_STR,
+    strncpy(conninfo->fetch_size, DEFAULT_FETCH_SIZE,
             SMALL_REGISTRY_LEN);
     strncpy(conninfo->authtype, DEFAULT_AUTHTYPE, MEDIUM_REGISTRY_LEN);
     if (conninfo->password.name != NULL)

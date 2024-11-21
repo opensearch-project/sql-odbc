@@ -16,12 +16,20 @@
 #include <aws/core/http/HttpClient.h>
 // clang-format on
 
-#define SQL_ENDPOINT_ERROR_STR "Error"
+static const std::string SQL_ENDPOINT_OPENSEARCH = "/_plugins/_sql";
+static const std::string SQL_ENDPOINT_ELASTICSEARCH = "/_opendistro/_sql";
+static const std::string SQL_ENDPOINT_ERROR = "Error";
+
+static const std::string SERVICE_NAME_DEFAULT = "es";
+static const std::string SERVICE_NAME_AOSS_SERVERLESS = "aoss";
+
+static const std::string CREDENTIALS_PROFILE = "opensearchodbc";
+static const std::string CREDENTIALS_PROVIDER_ALLOCATION_TAG =
+    "CREDENTIAL_PROVIDER";
+
+static const std::string DISTRIBUTION_OPENSEARCH = "opensearch";
 
 static const std::string ctype = "application/json";
-static const std::string ALLOCATION_TAG = "AWS_SIGV4_AUTH";
-static const std::string SERVICE_NAME = "es";
-static const std::string ESODBC_PROFILE_NAME = "opensearchodbc";
 static const std::string ERROR_MSG_PREFIX =
     "[OpenSearch][SQL ODBC Driver][SQL Plugin] ";
 static const std::string JSON_SCHEMA =
@@ -346,7 +354,7 @@ bool OpenSearchCommunication::CheckConnectionOptions() {
             SetErrorDetails("Auth error", m_error_message,
                             ConnErrorType::CONN_ERROR_INVALID_AUTH);
         }
-    } else if (m_rt_opts.conn.server == "") {
+    } else if (m_rt_opts.conn.server.empty()) {
         m_error_message = "Host connection option was not specified.";
         SetErrorDetails("Connection error", m_error_message,
                         ConnErrorType::CONN_ERROR_UNABLE_TO_ESTABLISH);
@@ -364,14 +372,14 @@ bool OpenSearchCommunication::CheckConnectionOptions() {
                         ConnErrorType::CONN_ERROR_UNABLE_TO_ESTABLISH);
     }
 
-    if (m_error_message != "") {
+    if (!m_error_message.empty()) {
         LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
         m_valid_connection_options = false;
         return false;
-    } else {
-        LogMsg(OPENSEARCH_DEBUG, "Required connection option are valid.");
-        m_valid_connection_options = true;
     }
+
+    LogMsg(OPENSEARCH_DEBUG, "Required connection option are valid.");
+    m_valid_connection_options = true;
     return m_valid_connection_options;
 }
 
@@ -400,7 +408,7 @@ OpenSearchCommunication::IssueRequest(
     const std::string& fetch_size, const std::string& cursor) {
     // Generate http request
     Aws::Http::URI host(m_rt_opts.conn.server.c_str());
-    if (m_rt_opts.conn.port.length() > 0) {
+    if (!m_rt_opts.conn.port.empty()) {
         host.SetPort((uint16_t) atoi(m_rt_opts.conn.port.c_str()));
     }
     host.SetPath(endpoint.c_str());
@@ -433,7 +441,9 @@ OpenSearchCommunication::IssueRequest(
     }
 
     // Handle authentication
-    if (m_rt_opts.auth.auth_type == AUTHTYPE_BASIC) {
+    const std::string& auth_type = m_rt_opts.auth.auth_type;
+
+    if (auth_type == AUTHTYPE_BASIC) {
         std::string userpw_str =
             m_rt_opts.auth.username + ":" + m_rt_opts.auth.password;
         Aws::Utils::Array< unsigned char > userpw_arr(
@@ -442,17 +452,25 @@ OpenSearchCommunication::IssueRequest(
         Aws::String hashed_userpw =
             Aws::Utils::HashingUtils::Base64Encode(userpw_arr);
         request->SetAuthorization("Basic " + hashed_userpw);
-    } else if (m_rt_opts.auth.auth_type == AUTHTYPE_IAM) {
+    }
+
+    else if (auth_type == AUTHTYPE_IAM) {
         std::shared_ptr< Aws::Auth::ProfileConfigFileAWSCredentialsProvider >
             credential_provider = Aws::MakeShared<
                 Aws::Auth::ProfileConfigFileAWSCredentialsProvider >(
-                ALLOCATION_TAG.c_str(), ESODBC_PROFILE_NAME.c_str());
+                CREDENTIALS_PROVIDER_ALLOCATION_TAG.c_str(),
+                CREDENTIALS_PROFILE.c_str());
+
+        const std::string& service_name =
+            is_aoss_serverless
+            ? SERVICE_NAME_AOSS_SERVERLESS
+            : SERVICE_NAME_DEFAULT;
 
         Aws::Client::AWSAuthV4Signer signer(credential_provider,
-                                            SERVICE_NAME.c_str(),
+                                            service_name.c_str(),
                                             m_rt_opts.auth.region.c_str());
 
-        if (m_rt_opts.auth.tunnel_host.length() > 0) {
+        if (!m_rt_opts.auth.tunnel_host.empty()) {
             request->SetHeaderValue("host",
                                     Aws::Http::URI(m_rt_opts.auth.tunnel_host.c_str())
                                         .GetAuthority()
@@ -475,7 +493,7 @@ bool OpenSearchCommunication::IsSQLPluginEnabled(std::shared_ptr< ErrorDetails >
 
 /**
  * @brief Queries server to determine SQL plugin availability.
- * 
+ *
  * @return true : Successfully queried server for SQL plugin
  * @return false : Failed to query server, no plugin available, exception was caught
  */
@@ -548,26 +566,37 @@ bool OpenSearchCommunication::CheckSQLPluginAvailability() {
 }
 
 bool OpenSearchCommunication::EstablishConnection() {
-    // Generate HttpClient Connection class if it does not exist
+
     LogMsg(OPENSEARCH_ALL, "Attempting to establish DB connection.");
+
+    // Generate HttpClient Connection class if it does not exist
     if (!m_http_client) {
         InitializeConnection();
     }
 
-    // check if the endpoint is initialized
-    if (sql_endpoint.empty()) {
-        SetSqlEndpoint();
+    // Set whether the connection is to OpenSearch serverless cluster.
+    SetIsAossServerless();
+
+    // Set the SQL endpoint to connect to. If this is a serverless connection,
+    // the SQL endpoint is always set correctly; if not, the endpoint is
+    // determined by sending a request to OpenSearch, which may result in an
+    // error.
+    SetSqlEndpoint();
+
+    if (is_aoss_serverless && (sql_endpoint == SQL_ENDPOINT_ERROR)) {
+        LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
+        return false;
     }
 
     // Check whether SQL plugin has been installed and enabled in the
     // OpenSearch server since the SQL plugin is a prerequisite to
     // use this driver.
-    if((sql_endpoint != SQL_ENDPOINT_ERROR_STR) && CheckSQLPluginAvailability()) {
-        return true;
+    if(!CheckSQLPluginAvailability()) {
+        LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
+        return false;
     }
 
-    LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
-    return false;
+    return true;
 }
 
 std::vector< std::string > OpenSearchCommunication::GetColumnsWithSelectQuery(
@@ -929,7 +958,8 @@ std::string OpenSearchCommunication::GetServerVersion() {
 /**
  * @brief Queries supplied URL to validate Server Distribution. Maintains
  * backwards compatibility with opendistro distribution.
- * 
+ * Not compatible with OpenSearch Serverless.
+ *
  * @return std::string : Server distribution name, returns "" on error
  */
 std::string OpenSearchCommunication::GetServerDistribution() {
@@ -1046,17 +1076,36 @@ std::string OpenSearchCommunication::GetClusterName() {
 }
 
 /**
- * @brief Sets URL endpoint for SQL plugin. On failure to
- * determine appropriate endpoint, value is set to SQL_ENDPOINT_ERROR_STR
- * 
+ * @brief Sets URL endpoint for the SQL plugin.
+ * Sets it to SQL_ENDPOINT_ERROR if an appropriate
+ * endpoint could not be determined.
  */
 void OpenSearchCommunication::SetSqlEndpoint() {
+
+    // Serverless Elasticsearch is not supported.
+    if (is_aoss_serverless) {
+        sql_endpoint = SQL_ENDPOINT_OPENSEARCH;
+        return;
+    }
+
     std::string distribution = GetServerDistribution();
     if (distribution.empty()) {
-        sql_endpoint = SQL_ENDPOINT_ERROR_STR;
-    } else if (distribution.compare("opensearch") == 0) {
-        sql_endpoint = "/_plugins/_sql";
+        sql_endpoint = SQL_ENDPOINT_ERROR;
+    } else if (distribution == DISTRIBUTION_OPENSEARCH) {
+        sql_endpoint = SQL_ENDPOINT_OPENSEARCH;
     } else {
-        sql_endpoint = "/_opendistro/_sql";
+        sql_endpoint = SQL_ENDPOINT_ELASTICSEARCH;
     }
+}
+
+/**
+ * @brief Sets flag indicating whether this is
+ * connecting to an OpenSearch Serverless cluster.
+ */
+void OpenSearchCommunication::SetIsAossServerless() {
+
+    // Treat the connection as serverless if the server URL corresponds to
+    // Amazon OpenSearch Serverless. Limitation: does not support serverless
+    // with proxy server URL.
+    is_aoss_serverless = m_rt_opts.conn.server.find("aoss.amazonaws.com") != std::string::npos;
 }
