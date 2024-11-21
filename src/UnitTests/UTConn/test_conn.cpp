@@ -18,14 +18,14 @@ const std::string invalid_port = "920";
 const std::string invalid_user = "amin";
 const std::string invalid_pw = "amin";
 const std::string invalid_region = "bad-region";
-runtime_options valid_opt_val = {{valid_host, valid_port, "1", "0", false},
+runtime_options valid_opt_val = {{valid_host, valid_port, "1", "0"},
                                  {"BASIC", valid_user, valid_pw, valid_region, valid_tunnel_host},
                                  {use_ssl, false, "", "", "", ""}};
 runtime_options invalid_opt_val = {
-    {invalid_host, invalid_port, "1", "0", false},
+    {invalid_host, invalid_port, "1", "0"},
     {"BASIC", invalid_user, invalid_pw, valid_region, valid_tunnel_host},
     {use_ssl, false, "", "", "", ""}};
-runtime_options missing_opt_val = {{"", "", "1", "0", false},
+runtime_options missing_opt_val = {{"", "", "1", "0"},
                                    {"BASIC", "", invalid_pw, valid_region, valid_tunnel_host},
                                    {use_ssl, false, "", "", "", ""}};
 

@@ -960,6 +960,7 @@ std::string OpenSearchCommunication::GetServerVersion() {
 /**
  * @brief Queries supplied URL to validate Server Distribution. Maintains
  * backwards compatibility with opendistro distribution.
+ * Not compatible with OpenSearch Serverless.
  *
  * @return std::string : Server distribution name, returns "" on error
  */
@@ -1105,9 +1106,8 @@ void OpenSearchCommunication::SetSqlEndpoint() {
  */
 void OpenSearchCommunication::SetIsAossServerless() {
 
-    // Treat the connection as serverless if the configuration option is true
-    // or the server URL corresponds to Amazon OpenSearch Serverless.
-    is_aoss_serverless =
-        m_rt_opts.conn.is_aoss_serverless ||
-        ( m_rt_opts.conn.server.find("aoss.amazonaws.com") != std::string::npos );
+    // Treat the connection as serverless if the server URL corresponds to
+    // Amazon OpenSearch Serverless. Limitation: does not support serverless
+    // with proxy server URL.
+    is_aoss_serverless = m_rt_opts.conn.server.find("aoss.amazonaws.com") != std::string::npos;
 }
