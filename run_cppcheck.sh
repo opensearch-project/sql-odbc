@@ -5,7 +5,7 @@ RESULTS_FILE=cppcheck-results.log
 # --force: force checks all define combinations (default max is 12)
 # -iaws-sdk-cpp: avoid checking AWS C++ SDK source files in our repo
 # -UWIN32: do not check WIN32-defined codepaths; this would throw errors on Mac
-# --check-level: use exhaustive checking for pipeline jobs; can disable during active development for quicker results
+# --check-level: use exhaustive checking for pipeline jobs; should be set to `normal` during active development
 # --inline-suppr: enable inline error suppression
 # -i: ignore CMake and installed files
 
