@@ -575,12 +575,10 @@ bool OpenSearchCommunication::EstablishConnection() {
     }
 
     // Set whether the connection is to OpenSearch serverless cluster.
-    // This can be specified explicitly via a configuration option, or
-    // determined by parsing the server URL.
     SetIsAossServerless();
 
     // Set the SQL endpoint to connect to. If this is a serverless connection,
-    // the SQL endpoint can be determined directly; if not, the endpoint is
+    // the SQL endpoint is always set correctly; if not, the endpoint is
     // determined by sending a request to OpenSearch, which may result in an
     // error.
     SetSqlEndpoint();
