@@ -26,7 +26,7 @@ jobs:
           exclude-workflow-initiator-as-approver: true
 
       - name: Download artifacts
-        uses: dawidd6/action-download-artifact@v2.27.0
+        uses: dawidd6/action-download-artifact@v6
         with:
           workflow: sql-odbc-main.yml
           commit: ${{github.sha}}
