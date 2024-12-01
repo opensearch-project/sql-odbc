@@ -2,9 +2,9 @@
 [Version = "1.0.1"]
 section OpenSearchProject;
 
-// When set to true, additional trace information will be written out to the User log. 
-// This should be set to false before release. Tracing is done through a call to 
-// Diagnostics.LogValue(). When EnableTraceOutput is set to false, the call becomes a 
+// When set to true, additional trace information will be written out to the User log.
+// This should be set to false before release. Tracing is done through a call to
+// Diagnostics.LogValue(). When EnableTraceOutput is set to false, the call becomes a
 // no-op and simply returns the original value.
 EnableTraceOutput = false;
 
@@ -32,13 +32,18 @@ OpenSearchProjectType = type function (
             Documentation.FieldCaption = "Certificate validation",
             Documentation.FieldDescription = "Certificate validation",
             Documentation.AllowedValues = { true, false }
+        ]),
+        optional FetchSize as (type number meta [
+            Documentation.FieldCaption = "Fetch size",
+            Documentation.FieldDescription = "Used for pagination, use 0 to disable, use -1 for the server to decide (default)",
+            Documentation.SampleValues = { 200 }
         ])
     )
     as table meta [
         Documentation.Name = "OpenSearch Project"
     ];
 
-OpenSearchProjectImpl = (Server as text, Port as number, UseSSL as logical, HostnameVerification as logical) as table =>
+OpenSearchProjectImpl = (Server as text, Port as number, UseSSL as logical, HostnameVerification as logical, optional FetchSize as number) as table =>
     let
         Credential = Extension.CurrentCredential(),
         AuthenticationMode = Credential[AuthenticationKind],
@@ -56,7 +61,7 @@ OpenSearchProjectImpl = (Server as text, Port as number, UseSSL as logical, Host
                     Auth = "AWS_SIGV4",
                     Region = Credential[Key]
                 ]
-            else 
+            else
                 [
                     Auth = "NONE"
                 ],
@@ -82,7 +87,8 @@ OpenSearchProjectImpl = (Server as text, Port as number, UseSSL as logical, Host
         ConnectionString = [
             Driver = "OpenSearch SQL ODBC Driver",
             Host = FinalServerString,
-            HostnameVerification = if HostnameVerification then 1 else 0
+            HostnameVerification = if HostnameVerification then 1 else 0,
+            FetchSize = if (FetchSize = null) then -1 else FetchSize
         ],
 
         SQLGetInfo = Diagnostics.LogValue("SQLGetInfo_Options", [
@@ -90,7 +96,7 @@ OpenSearchProjectImpl = (Server as text, Port as number, UseSSL as logical, Host
             SQL_SQL_CONFORMANCE = ODBC[SQL_SC][SQL_SC_SQL92_INTERMEDIATE]
         ]),
 
-        SQLGetTypeInfo = (types) => 
+        SQLGetTypeInfo = (types) =>
             if (EnableTraceOutput <> true) then types else
             let
                 // Outputting the entire table might be too large, and result in the value being truncated.
@@ -114,7 +120,7 @@ OpenSearchProjectImpl = (Server as text, Port as number, UseSSL as logical, Host
                     Value.ReplaceType(toTable, Value.Type(source))
             else
                 source,
-        
+
         SQLGetFunctions = Diagnostics.LogValue("SQLGetFunctions_Options", [
             SQL_API_SQLBINDPARAMETER = false
         ]),
@@ -165,28 +171,28 @@ OpenSearchProjectImpl = (Server as text, Port as number, UseSSL as logical, Host
 OnOdbcError = (errorRecord as record) =>
     let
         ErrorMessage = errorRecord[Message],
-        ConnectionServer = errorRecord[Detail][DataSourcePath], 
-        
+        ConnectionServer = errorRecord[Detail][DataSourcePath],
+
         IsDriverNotInstalled = Text.Contains(ErrorMessage, "doesn't correspond to an installed ODBC driver"),
-        
+
         OdbcError = errorRecord[Detail][OdbcErrors]{0},
         OdbcErrorCode = OdbcError[NativeError],
-        
+
         // Failed to connect to given host
-        IsHostUnreachable = 
+        IsHostUnreachable =
             OdbcErrorCode = 202
     in
         if IsDriverNotInstalled then
             error Error.Record("DataSource.Error", "The OpenSearch SQL ODBC driver is not installed. Please install the driver")
-        else if IsHostUnreachable then 
+        else if IsHostUnreachable then
             error Error.Record("DataSource.Error", "Couldn't reach server. Please double-check the server and auth. [" & ConnectionServer & "]")
-        else 
+        else
             error errorRecord;
 
 // Data Source Kind description
 OpenSearchProject = [
     // Required for use with Power BI Service.
-    TestConnection = (dataSourcePath) => 
+    TestConnection = (dataSourcePath) =>
         let
             json = Json.Document(dataSourcePath),
             Server = json[Server],
@@ -213,10 +219,10 @@ OpenSearchProject = [
     // PBIDS Handler
     DSRHandlers = [
       opensearchproject = [
-        GetDSR = (Server, Port, UseSSL, HostnameVerification, optional Options) => [ protocol = "opensearchproject-odbc", address = [ server = Server, port = Port, useSSL = UseSSL, hostnameVerification = HostnameVerification ] ],
+        GetDSR = (Server, Port, UseSSL, HostnameVerification, FetchSize, optional Options) => [ protocol = "opensearchproject-odbc", address = [ server = Server, port = Port, useSSL = UseSSL, hostnameVerification = HostnameVerification, fetchSize = FetchSize ] ],
         GetFormula = (dsr, optional options) => () =>
           let
-            db = OpenSearchProject.Contents(dsr[address][server], dsr[address][port], dsr[address][useSSL], dsr[address][hostnameVerification])
+            db = OpenSearchProject.Contents(dsr[address][server], dsr[address][port], dsr[address][useSSL], dsr[address][hostnameVerification], dsr[address][fetchSize])
           in
             db,
         GetFriendlyName = (dsr) => "OpenSearch Project"
@@ -235,7 +241,7 @@ OpenSearchProject.Publish = [
     Category = "Other",
     ButtonText = { Extension.LoadString("ButtonTitle"), Extension.LoadString("ButtonHelp") },
     LearnMoreUrl = "https://github.com/opensearch-project/sql-odbc/blob/main/bi-connectors/PowerBIConnector/OpenSearchProject.md",
-    
+
     SupportsDirectQuery = true,
 
     SourceImage = OpenSearch.Icons,
