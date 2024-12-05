@@ -3,8 +3,8 @@
 ## Prerequisites
 
 * Microsoft Excel 2016 and higher
-* [OpenSearch](https://docs-beta.opensearch.org/opensearch/install/index/)
-* [OpenSearch SQL ODBC driver](https://docs-beta.opensearch.org/search-plugins/sql/odbc/)
+* [OpenSearch](https://opensearch.org/docs/latest/install-and-configure/install-opensearch/index/)
+* [OpenSearch SQL ODBC driver](https://opensearch.org/docs/latest/search-plugins/sql/sql/odbc/)
 * A preconfigured [User or System DSN](../../README.md)
 
 ## Test Successful Connection
@@ -70,7 +70,7 @@ Alternately, **Data** > **Refresh** option can also be used to refresh the data.
 
 ## Troubleshooting
 
-* If the table has large number of datarows, increase [the keepalive](https://github.com/opensearch-project/sql/blob/main/docs/dev/Pagination.md#opendistrosqlcursorkeep_alive) value accordlingly. 
+* If the table has large number of datarows, increase [the keepalive](https://github.com/opensearch-project/sql/blob/main/docs/dev/Pagination-v2.md#Cursor-Keep-Alive-Timeout) value accordlingly. 
 
 * If the table has nested or object type column, you might get an error as below.
 
@@ -81,8 +81,4 @@ If you ignore the error and try to load the data, column name and values might n
 In this case, please use advanced options while connecting to the data source.
 
 <img src="img/excel_advanced_option.png" width=500>
-
-Also, make sure query doesn't include the name of nested or object type column name. For example, `SELECT products FROM opensearch_dashboards_sample_data_ecommerce` where product is nested type column might have data loss.
-
-This issue will be resolved when [Object field is missing in SELECT result](https://github.com/opendistro-for-elasticsearch/sql/issues/564) is fixed.
 
