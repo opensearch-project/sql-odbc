@@ -2,7 +2,7 @@
 
 ## Requirements
 
-* Latest version of [OpenSearch](https://docs-beta.opensearch.org/opensearch/install/index/)
+* Latest version of [OpenSearch](https://opensearch.org/docs/latest/install-and-configure/install-opensearch/index/)
 * [Required datasets loaded](#set-up-test-datasets)
 * [DSN configured](#set-up-dsn)
 
