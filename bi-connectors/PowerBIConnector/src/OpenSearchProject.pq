@@ -87,7 +87,7 @@ OpenSearchProjectImpl = (Server as text, Port as number, UseSSL as logical, Host
 
         SQLGetInfo = Diagnostics.LogValue("SQLGetInfo_Options", [
             SQL_AGGREGATE_FUNCTIONS = ODBC[SQL_AF][All],
-            SQL_SQL_CONFORMANCE = ODBC[SQL_SC][SQL_SC_SQL92_INTERMEDIATE]
+            SQL_SQL_CONFORMANCE = ODBC[SQL_SC][SQL_SC_SQL92_ENTRY]
         ]),
 
         SQLGetTypeInfo = (types) => 
