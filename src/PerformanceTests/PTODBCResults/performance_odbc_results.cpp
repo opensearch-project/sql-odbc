@@ -118,7 +118,6 @@ TEST_F(TestPerformance, Time_Execute) {
 
 TEST_F(TestPerformance, Time_BindColumn_FetchSingleRow) {
     SQLSMALLINT total_columns = 0;
-    int row_count = 0;
 
     std::vector< long long > times;
     for (size_t iter = 0; iter < ITERATION_COUNT; iter++) {
@@ -138,8 +137,7 @@ TEST_F(TestPerformance, Time_BindColumn_FetchSingleRow) {
             ret = SQLBindCol(m_hstmt, (SQLUSMALLINT)i + 1, SQL_C_CHAR,
                              (SQLPOINTER)&cols[i][0].data_dat[i], 255,
                              &cols[i][0].data_len);
-        while (SQLFetch(m_hstmt) == SQL_SUCCESS)
-            row_count++;
+        while (SQLFetch(m_hstmt) == SQL_SUCCESS) {}
         auto end = std::chrono::steady_clock::now();
         ASSERT_TRUE(SQL_SUCCEEDED(SQLCloseCursor(m_hstmt)));
         times.push_back(
@@ -230,7 +228,6 @@ TEST_F(TestPerformance, Time_BindColumn_Fetch50Rows) {
 
 TEST_F(TestPerformance, Time_Execute_FetchSingleRow) {
     SQLSMALLINT total_columns = 0;
-    int row_count = 0;
 
     std::vector< long long > times;
     for (size_t iter = 0; iter < ITERATION_COUNT; iter++) {
@@ -250,8 +247,7 @@ TEST_F(TestPerformance, Time_Execute_FetchSingleRow) {
             ret = SQLBindCol(m_hstmt, (SQLUSMALLINT)i + 1, SQL_C_CHAR,
                              (SQLPOINTER)&cols[i][0].data_dat[i], BIND_SIZE,
                              &cols[i][0].data_len);
-        while (SQLFetch(m_hstmt) == SQL_SUCCESS)
-            row_count++;
+        while (SQLFetch(m_hstmt) == SQL_SUCCESS) {}
 
         auto end = std::chrono::steady_clock::now();
         ASSERT_TRUE(SQL_SUCCEEDED(SQLCloseCursor(m_hstmt)));
