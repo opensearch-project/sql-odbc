@@ -19,7 +19,7 @@ env:
 # Keeping them for the brighten future when we can re-activate them
 jobs:    
   build-mac:
-    runs-on: macos-12
+    runs-on: macos-13
     steps:
     - uses: actions/checkout@v3
     - name: Run cppcheck

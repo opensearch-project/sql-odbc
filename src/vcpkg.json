@@ -1,6 +1,6 @@
 {
     "name": "sql-odbc",
-    "version-string": "1.1.0.1",
+    "version-string": "1.6.0.0",
     "dependencies": [
         "aws-sdk-cpp",
         "rapidjson",
@@ -8,5 +8,5 @@
         "gtest",
         "curl"
     ],
-    "builtin-baseline": "a325228200d7f229f3337e612e0077f2a5307090"
+    "builtin-baseline": "d5ec528843d29e3a52d745a64b469f810b2cedbf"
 }
