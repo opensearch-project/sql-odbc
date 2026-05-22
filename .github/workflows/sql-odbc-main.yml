@@ -21,14 +21,14 @@ jobs:
   build-mac:
     runs-on: macos-13
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
     - name: Run cppcheck
       run: |
         brew install cppcheck
         sh run_cppcheck.sh
     - name: Upload cppcheck results
       if: failure()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: cppcheck-results
         path: cppcheck-results.log
@@ -45,7 +45,7 @@ jobs:
 
     - name: Restore vcpkg cache
       id: cache-restore
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@6f8efc29b200d32929f49075959781ed54ec270c # v3
       with:
         path: src/vcpkg_installed
         key: ${{ steps.get-key.outputs.key }}
@@ -55,7 +55,7 @@ jobs:
         ./build_mac_release64.sh
 
     - name: Save vcpkg cache
-      uses: actions/cache/save@v3
+      uses: actions/cache/save@6f8efc29b200d32929f49075959781ed54ec270c # v3
       with:
         path: src/vcpkg_installed
         key: ${{ steps.get-key.outputs.key }}
@@ -85,19 +85,19 @@ jobs:
     #    cp ./bin64/*.log test-output
     - name: Upload build
       if: success()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: mac64-build
         path: build-output
     - name: Upload installer
       if: success()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: mac64-installer
         path: installer
     #- name: Upload test results
     #  if: always()
-    #  uses: actions/upload-artifact@v4
+    #  uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
     #  with:
     #    name: mac-test-results
     #    path: test-output
@@ -105,11 +105,11 @@ jobs:
   build-windows32:
     runs-on: windows-2019
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
     - name: Get specific version CMake, v3.26.3
-      uses: lukka/get-cmake@v3.26.3
+      uses: lukka/get-cmake@69b648272af7ac11ac053e77cf7a476676c38208 # v3.26.3
     - name: Add msbuild to path
-      uses: microsoft/setup-msbuild@v1.3.1
+      uses: microsoft/setup-msbuild@1ff57057b5cfdc39105cd07a01d78e9b0ea0c14c # v1.3.1
 
     - name: Get vcpkg config fingerprint
       id: get-key
@@ -118,7 +118,7 @@ jobs:
 
     - name: Restore vcpkg cache
       id: cache-restore
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@6f8efc29b200d32929f49075959781ed54ec270c # v3
       with:
         path: src/vcpkg_installed
         key: ${{ steps.get-key.outputs.key }}
@@ -129,7 +129,7 @@ jobs:
 
     - name: Save vcpkg cache
       if: steps.cache-restore.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v3
+      uses: actions/cache/save@6f8efc29b200d32929f49075959781ed54ec270c # v3
       with:
         path: src/vcpkg_installed
         key: ${{ steps.get-key.outputs.key }}
@@ -149,19 +149,19 @@ jobs:
         .\scripts\prepare_ci_output.ps1 $Env:ODBC_BIN_PATH $Env:ODBC_LIB_PATH $Env:ODBC_BUILD_PATH
     - name: Upload build
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: windows32-build
         path: ci-output/build
     - name: Upload installer
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: windows32-installer
         path: ci-output/installer
     #- name: Upload test results
     #  if: always()
-    #  uses: actions/upload-artifact@v4
+    #  uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
     #  with:
     #    name: windows-test-results
     #    path: $CI_OUTPUT_PATH/test
@@ -169,11 +169,11 @@ jobs:
   build-windows64:
     runs-on: windows-2019
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
     - name: Get specific version CMake, v3.26.3
-      uses: lukka/get-cmake@v3.26.3
+      uses: lukka/get-cmake@69b648272af7ac11ac053e77cf7a476676c38208 # v3.26.3
     - name: Add msbuild to path
-      uses: microsoft/setup-msbuild@v1.3.1
+      uses: microsoft/setup-msbuild@1ff57057b5cfdc39105cd07a01d78e9b0ea0c14c # v1.3.1
 
     - name: Get vcpkg config fingerprint
       id: get-key
@@ -182,7 +182,7 @@ jobs:
 
     - name: Restore vcpkg cache
       id: cache-restore
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@6f8efc29b200d32929f49075959781ed54ec270c # v3
       with:
         path: src/vcpkg_installed
         key: ${{ steps.get-key.outputs.key }}
@@ -193,7 +193,7 @@ jobs:
 
     - name: Save vcpkg cache
       if: steps.cache-restore.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v3
+      uses: actions/cache/save@6f8efc29b200d32929f49075959781ed54ec270c # v3
       with:
         path: src/vcpkg_installed
         key: ${{ steps.get-key.outputs.key }}
@@ -213,19 +213,19 @@ jobs:
         .\scripts\prepare_ci_output.ps1 $Env:ODBC_BIN_PATH $Env:ODBC_LIB_PATH $Env:ODBC_BUILD_PATH
     - name: Upload build
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: windows64-build
         path: ci-output/build
     - name: Upload installer
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: windows64-installer
         path: ci-output/installer
     #- name: Upload test results
     #  if: always()
-    #  uses: actions/upload-artifact@v4
+    #  uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
     #  with:
     #    name: windows-test-results
     #    path: ci-output/test-output

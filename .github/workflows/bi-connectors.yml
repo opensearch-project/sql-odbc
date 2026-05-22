@@ -11,7 +11,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
     - name: Prepare Power BI ODBC connector for 'OpenSearch Project'
       run: |
         cp OpenSearchProject.pq OpenSearchProject.m
@@ -37,7 +37,7 @@ jobs:
       working-directory: bi-connectors/PowerBIConnector/src
     - name: Upload Power BI ODBC connectors
       if: steps.pack-powerbi-odbc-os-proj.outcome == 'success' || (steps.prep-powerbi-odbc-amz-os-svc.outcome == 'success' && steps.pack-powerbi-odbc-amz-os-svc.outcome == 'success')
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: PBIConnectors
         path: 'bi-connectors/PowerBIConnector/src/*.mez'
