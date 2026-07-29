@@ -21,7 +21,6 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Max Ksyunz        | [MaxKsyunz](https://github.com/MaxKsyunz)           | Improving   |
 | Yury Fridlyand    | [Yury-Fridlyand](https://github.com/Yury-Fridlyand) | Improving   |
 | Andrew Carbonetto | [acarbonetto](https://github.com/acarbonetto)       | Improving   |
-| Forest Vey        | [forestmvey](https://github.com/forestmvey)         | Improving   |
 | Guian Gumpac      | [GumpacG](https://github.com/GumpacG)               | Improving   |
 
 ## Emeritus Maintainers
@@ -34,3 +33,4 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Eugene Lee        | [eugenesk24](https://github.com/eugenesk24)             | Amazon      |
 | Zhongnan Su       | [zhongnansu](https://github.com/zhongnansu)             | Amazon      |
 | Chloe Zhang       | [chloe-zh](https://github.com/chloe-zh)                 | Amazon      |
+| Forest Vey        | [forestmvey](https://github.com/forestmvey)             | Improving   |
