@@ -1248,6 +1248,57 @@ int copy_and_convert_field(StatementClass *stmt, OID field_type, int atttypmod,
         MYLOG(OPENSEARCH_DEBUG, ", SQL_C_DEFAULT: fCType = %d\n", fCType);
     }
 
+    /*
+     * A character value asked for as a datetime C type has to be parsed here.
+     * The field_type switch above fills std_time only for the server's own
+     * date/time types; for keyword/text (and for the SQL plugin's `timestamp`,
+     * which the result-set type map does not know, so it too arrives as a
+     * character type) std_time is still all zeroes, and the SQL_C_TYPE_DATE /
+     * _TIME / _TIMESTAMP cases below backfill every zero field from
+     * SC_get_localtime().  That turned any string at all -- a timestamp, a
+     * date, "hello" -- into today's date under SQL_SUCCESS, so an application
+     * could not tell a converted value from a fabricated one.
+     *
+     * ODBC asks for the stored value when the string is a valid datetime and
+     * 22018 (invalid character value for cast specification) when it is not.
+     * timestamp2stime() accepts "2024-02-29 13:45:10.123456" and "2024-02-29"
+     * and rejects anything it cannot read, which is exactly the distinction.
+     */
+    switch (field_type) {
+        case OPENSEARCH_TYPE_CHAR:
+        case OPENSEARCH_TYPE_NAME:
+        case OPENSEARCH_TYPE_TEXT:
+        case OPENSEARCH_TYPE_KEYWORD:
+        case OPENSEARCH_TYPE_UNKNOWN:
+        case OPENSEARCH_TYPE_BPCHAR:
+        case OPENSEARCH_TYPE_VARCHAR:
+            switch (fCType) {
+                case SQL_C_DATE:
+                case SQL_C_TYPE_DATE:
+                case SQL_C_TIME:
+                case SQL_C_TYPE_TIME:
+                case SQL_C_TIMESTAMP:
+                case SQL_C_TYPE_TIMESTAMP: {
+                    BOOL bZone = FALSE;
+                    int zone;
+
+                    if (NULL == value
+                        || !timestamp2stime(value, &std_time, &bZone, &zone)) {
+                        MYLOG(OPENSEARCH_DEBUG,
+                              "character value '%s' is not a datetime\n",
+                              (value == NULL) ? "<NULL>" : value);
+                        return COPY_INVALID_STRING_CONVERSION;
+                    }
+                    break;
+                }
+                default:
+                    break;
+            }
+            break;
+        default:
+            break;
+    }
+
     text_bin_handling = FALSE;
     switch (fCType) {
         case INTERNAL_ASIS_TYPE:
