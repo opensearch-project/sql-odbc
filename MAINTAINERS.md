@@ -10,7 +10,6 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Joshua Li         | [joshuali925](https://github.com/joshuali925)       | Amazon      |
 | Shenoy Pratik     | [ps48](https://github.com/ps48)                     | Amazon      |
 | Kavitha Mohan     | [kavithacm](https://github.com/kavithacm)           | Amazon      |
-| Derek Ho          | [derek-ho](https://github.com/derek-ho)             | Amazon      |
 | Lior Perry        | [YANG-DB](https://github.com/YANG-DB)               | Amazon      |
 | Simeon Widdis     | [Swiddis](https://github.com/Swiddis)               | Amazon      |
 | Chen Dai          | [dai-chen](https://github.com/dai-chen)             | Amazon      |
@@ -34,3 +33,4 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Zhongnan Su       | [zhongnansu](https://github.com/zhongnansu)             | Amazon      |
 | Chloe Zhang       | [chloe-zh](https://github.com/chloe-zh)                 | Amazon      |
 | Forest Vey        | [forestmvey](https://github.com/forestmvey)             | Improving   |
+| Derek Ho          | [derek-ho](https://github.com/derek-ho)                 | Amazon      |
