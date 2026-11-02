@@ -6,7 +6,6 @@ set(HEADER_FILES it_odbc_helper.h)
 include_directories(	
                         ${UT_HELPER}
                         ${OPENSEARCHODBC_SRC}
-						${VLD_SRC}  
                     )
 
 # Generate dll (SHARED)

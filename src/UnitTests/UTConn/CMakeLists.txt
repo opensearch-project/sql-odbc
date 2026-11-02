@@ -7,7 +7,7 @@ include_directories(	${UT_HELPER}
 						${RAPIDJSON_SRC} 
 						${RABBIT_SRC}		
 						${LIBCURL_SRC}
-						${VLD_SRC} )
+ )
 
 # Generate executable
 add_executable(ut_conn ${SOURCE_FILES})

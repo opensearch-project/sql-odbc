@@ -5,7 +5,7 @@ set(SOURCE_FILES performance_odbc_results.cpp)
 include_directories(	${UT_HELPER}
 						${IT_HELPER}
 						${OPENSEARCHODBC_SRC}
-						${VLD_SRC}  )
+  )
 
 # Generate executable
 add_executable(performance_results ${SOURCE_FILES})
