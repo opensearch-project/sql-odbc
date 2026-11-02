@@ -54,7 +54,7 @@ if(WIN32)
 	target_link_libraries(sqlodbc optimized msvcrt)
 elseif(APPLE)
 	# Apple specific
-	target_link_libraries(sqlodbc iodbc iodbcinst aws-cpp-sdk-core)
+	target_link_libraries(sqlodbc ${IODBC_LIB} ${IODBCINST_LIB} aws-cpp-sdk-core)
 elseif(UNIX)
 	# Unix specific
 	find_library(UNIXODBC_LIB odbc REQUIRED)

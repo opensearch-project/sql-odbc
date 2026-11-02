@@ -126,8 +126,15 @@ elseif(APPLE)
 	add_compile_definitions	(	WITH_IODBC
 								SQLCOLATTRIBUTE_SQLLEN
 							)
-	# iODBC includes
-	include_directories(/usr/local/opt/libiodbc/include)
+	# iODBC from Homebrew: /usr/local on Intel, /opt/homebrew on Apple Silicon
+	execute_process(COMMAND brew --prefix libiodbc
+					OUTPUT_VARIABLE IODBC_BREW_PREFIX
+					OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+	set(IODBC_HINTS ${IODBC_BREW_PREFIX} /opt/homebrew/opt/libiodbc /usr/local/opt/libiodbc)
+	find_path(IODBC_INCLUDE_DIR iodbcext.h HINTS ${IODBC_HINTS} PATH_SUFFIXES include REQUIRED)
+	find_library(IODBC_LIB iodbc HINTS ${IODBC_HINTS} PATH_SUFFIXES lib REQUIRED)
+	find_library(IODBCINST_LIB iodbcinst HINTS ${IODBC_HINTS} PATH_SUFFIXES lib REQUIRED)
+	include_directories(${IODBC_INCLUDE_DIR})
 elseif(UNIX)
 	# Unix specific
 	add_compile_definitions	(	WITH_UNIXODBC
