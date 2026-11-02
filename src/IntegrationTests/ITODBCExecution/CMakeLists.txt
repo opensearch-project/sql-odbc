@@ -5,7 +5,7 @@ set(SOURCE_FILES test_odbc_execution.cpp)
 include_directories(	${UT_HELPER}
 						${IT_HELPER}
 						${OPENSEARCHODBC_SRC}
-						${VLD_SRC}  )
+  )
 
 # Generate executable
 add_executable(itodbc_execution ${SOURCE_FILES})
