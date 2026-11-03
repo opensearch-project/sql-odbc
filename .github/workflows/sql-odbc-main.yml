@@ -191,7 +191,7 @@ jobs:
     - name: Prepare output
       if: always()
       run: |
-        .\scripts\prepare_ci_output.ps1 $Env:ODBC_BIN_PATH $Env:ODBC_LIB_PATH $Env:ODBC_BUILD_PATH
+        .\scripts\prepare_ci_output.ps1 "$Env:ODBC_BIN_PATH\Release" "$Env:ODBC_LIB_PATH\Release" $Env:ODBC_BUILD_PATH
     - name: Upload build
       if: always()
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -251,7 +251,7 @@ jobs:
     - name: Prepare output
       if: always()
       run: |
-        .\scripts\prepare_ci_output.ps1 $Env:ODBC_BIN_PATH $Env:ODBC_LIB_PATH $Env:ODBC_BUILD_PATH
+        .\scripts\prepare_ci_output.ps1 "$Env:ODBC_BIN_PATH\Release" "$Env:ODBC_LIB_PATH\Release" $Env:ODBC_BUILD_PATH
     - name: Upload build
       if: always()
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
