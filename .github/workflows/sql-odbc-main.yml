@@ -28,7 +28,10 @@ jobs:
     - name: Get dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y autoconf autoconf-archive automake libtool libltdl-dev
+        # autotools + libltdl: build vcpkg's unixodbc port.
+        # unixodbc: the driver has no RPATH and loads libodbcinst.so.2 from the
+        # system at runtime, as it would on a user machine.
+        sudo apt-get install -y autoconf autoconf-archive automake libtool libltdl-dev unixodbc
 
     - name: Get vcpkg config fingerprint
       id: get-key
