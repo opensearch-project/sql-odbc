@@ -112,11 +112,13 @@ const char *GetExeProgramName() {
         CSTR flist[] = {"/proc/self/exe", "/proc/curproc/file",
                         "/proc/curproc/exe"};
         unsigned long i;
-        char path_name[256];
+        char path_name[PATH_MAX];
 
         for (i = 0; i < sizeof(flist) / sizeof(flist[0]); i++) {
-            if (readlink(flist[i], path_name, sizeof(path_name)) > 0) {
-                /* fprintf(stderr, "i=%d pathname=%s\n", i, path_name); */
+            /* readlink() does not NUL-terminate; a full buffer may mean truncation */
+            ssize_t len = readlink(flist[i], path_name, sizeof(path_name) - 1);
+            if (len > 0) {
+                path_name[len] = '\0';
                 STRCPY_FIXED(exename, po_basename(path_name));
                 break;
             }
@@ -229,7 +231,7 @@ static DWORD start_time = 0;
 static FILE *MLOGFP = NULL;
 
 static void MLOG_open() {
-    char filebuf[80], errbuf[160];
+    char filebuf[PATH_MAX], errbuf[PATH_MAX + 80];
     BOOL open_error = FALSE;
 
     // TODO (#585): Add option to log to stderr stream
@@ -338,7 +340,7 @@ static void mylog_finalize(void) {
 static FILE *QLOGFP = NULL;
 
 static int qlog_misc(unsigned int option, const char *fmt, va_list args) {
-    char filebuf[80];
+    char filebuf[PATH_MAX];
     int gerrno;
 
     if (!qlog_on)

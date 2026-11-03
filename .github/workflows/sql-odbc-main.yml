@@ -31,7 +31,8 @@ jobs:
         # autotools + libltdl: build vcpkg's unixodbc port.
         # unixodbc: the driver has no RPATH and loads libodbcinst.so.2 from the
         # system at runtime, as it would on a user machine.
-        sudo apt-get install -y autoconf autoconf-archive automake libtool libltdl-dev unixodbc
+        # valgrind: memcheck for ut_mylog.
+        sudo apt-get install -y autoconf autoconf-archive automake libtool libltdl-dev unixodbc valgrind
 
     - name: Get vcpkg config fingerprint
       id: get-key
@@ -60,6 +61,8 @@ jobs:
       run: |
         ./build/odbc/bin/ut_rabbit
         ./build/odbc/bin/ut_critical_section
+        # Reads of uninitialised memory only fail reliably under memcheck
+        valgrind --error-exitcode=1 ./build/odbc/bin/ut_mylog
 
     - name: Upload build
       uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
