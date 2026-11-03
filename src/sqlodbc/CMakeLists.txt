@@ -57,7 +57,11 @@ elseif(APPLE)
 	target_link_libraries(sqlodbc ${IODBC_LIB} ${IODBCINST_LIB} aws-cpp-sdk-core)
 elseif(UNIX)
 	# Unix specific
-	find_library(UNIXODBC_LIB odbc REQUIRED)
-	find_library(UNIXODBCINST_LIB odbcinst REQUIRED)
-	target_link_libraries(sqlodbc aws-cpp-sdk-core ${UNIXODBC_LIB} ${UNIXODBCINST_LIB})
+	# unixODBC is LGPL: link only the shared odbcinst (the driver never calls
+	# into the driver manager itself), never a static archive.
+	find_library(UNIXODBCINST_LIB NAMES libodbcinst.so odbcinst REQUIRED)
+	if(UNIXODBCINST_LIB MATCHES "\\.a$")
+		message(FATAL_ERROR "Refusing to statically link LGPL unixODBC (${UNIXODBCINST_LIB}); use a shared libodbcinst")
+	endif()
+	target_link_libraries(sqlodbc aws-cpp-sdk-core ${UNIXODBCINST_LIB})
 endif()

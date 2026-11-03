@@ -33,7 +33,7 @@ jobs:
     - name: Get vcpkg config fingerprint
       id: get-key
       run: |
-        echo key=`md5sum src/vcpkg.json | cut -d ' ' -f 1`-linux >> $GITHUB_OUTPUT
+        echo key=`cat src/vcpkg.json src/vcpkg-configuration.json src/vcpkg-triplets/* | md5sum | cut -d ' ' -f 1`-linux >> $GITHUB_OUTPUT
 
     - name: Restore vcpkg cache
       id: cache-restore
