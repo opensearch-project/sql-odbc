@@ -82,16 +82,15 @@ set(PERFORMANCE_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/PerformanceTests")
 set(UT_HELPER "${UNIT_TESTS}/UTHelper")
 set(IT_HELPER "${INTEGRATION_TESTS}/ITODBCHelper")
 set(RABBIT_SRC ${LIBRARY_DIRECTORY}/rabbit/include)
-if(WIN32)
-    set(RAPIDJSON_SRC ${LIBRARY_DIRECTORY}/rapidjson/include)
-endif ()
 # Without this symbols will be exporting to Unix but not Windows
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 
 find_package(aws-cpp-sdk-core CONFIG REQUIRED)
+# RapidJSON comes from vcpkg on every platform (see vcpkg.json)
+find_package(RapidJSON CONFIG REQUIRED)
+set(RAPIDJSON_SRC ${RapidJSON_INCLUDE_DIRS})
 if(APPLE)
     find_package(ZLIB REQUIRED)
-    find_package(RapidJSON CONFIG REQUIRED)
 endif()
 
 # General compiler definitions
