@@ -64,4 +64,8 @@ elseif(UNIX)
 		message(FATAL_ERROR "Refusing to statically link LGPL unixODBC (${UNIXODBCINST_LIB}); use a shared libodbcinst")
 	endif()
 	target_link_libraries(sqlodbc aws-cpp-sdk-core ${UNIXODBCINST_LIB})
+	# No RPATH/RUNPATH: a build-tree path is meaningless on user machines, and
+	# an empty entry would make glibc search the app's working directory.
+	# libodbcinst.so.2 is resolved from the system unixODBC at runtime.
+	set_target_properties(sqlodbc PROPERTIES SKIP_BUILD_RPATH TRUE)
 endif()
