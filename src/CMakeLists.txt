@@ -40,10 +40,18 @@ else()
 	option(BUILD_WITH_TESTS "Enable testing" ON)
 endif()
 
+option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
 if(MSVC)
-  add_compile_options(/W4 /WX)
+  add_compile_options(/W4)
+  if(WARNINGS_AS_ERRORS)
+    add_compile_options(/WX)
+  endif()
 else()
-  add_compile_options(-Wall -Wextra -pedantic -Werror -Wno-strict-prototypes -Wno-deprecated-declarations)
+  add_compile_options(-Wall -Wextra -pedantic -Wno-deprecated-declarations
+                      $<$<COMPILE_LANGUAGE:C>:-Wno-strict-prototypes>)
+  if(WARNINGS_AS_ERRORS)
+    add_compile_options(-Werror)
+  endif()
 endif()
 
 if(NOT WIN32)
@@ -74,7 +82,6 @@ set(PERFORMANCE_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/PerformanceTests")
 set(UT_HELPER "${UNIT_TESTS}/UTHelper")
 set(IT_HELPER "${INTEGRATION_TESTS}/ITODBCHelper")
 set(RABBIT_SRC ${LIBRARY_DIRECTORY}/rabbit/include)
-set(VLD_SRC ${LIBRARY_DIRECTORY}/VisualLeakDetector/include)
 if(WIN32)
     set(RAPIDJSON_SRC ${LIBRARY_DIRECTORY}/rapidjson/include)
 endif ()
@@ -119,8 +126,15 @@ elseif(APPLE)
 	add_compile_definitions	(	WITH_IODBC
 								SQLCOLATTRIBUTE_SQLLEN
 							)
-	# iODBC includes
-	include_directories(/usr/local/opt/libiodbc/include)
+	# iODBC from Homebrew: /usr/local on Intel, /opt/homebrew on Apple Silicon
+	execute_process(COMMAND brew --prefix libiodbc
+					OUTPUT_VARIABLE IODBC_BREW_PREFIX
+					OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+	set(IODBC_HINTS ${IODBC_BREW_PREFIX} /opt/homebrew/opt/libiodbc /usr/local/opt/libiodbc)
+	find_path(IODBC_INCLUDE_DIR iodbcext.h HINTS ${IODBC_HINTS} PATH_SUFFIXES include REQUIRED)
+	find_library(IODBC_LIB iodbc HINTS ${IODBC_HINTS} PATH_SUFFIXES lib REQUIRED)
+	find_library(IODBCINST_LIB iodbcinst HINTS ${IODBC_HINTS} PATH_SUFFIXES lib REQUIRED)
+	include_directories(${IODBC_INCLUDE_DIR})
 elseif(UNIX)
 	# Unix specific
 	add_compile_definitions	(	WITH_UNIXODBC

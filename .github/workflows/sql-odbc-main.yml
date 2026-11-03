@@ -2,6 +2,9 @@ name: OpenSearch ODBC Driver
 
 on:
   workflow_dispatch:
+  schedule:
+    # Weekly, so runner-image drift shows up as a failure instead of going unnoticed
+    - cron: '0 6 * * 1'
   pull_request:
   push:
     branches-ignore:
@@ -17,9 +20,55 @@ env:
 
 # Tests are disabled (commented out) in all jobs because they are fail and/or outdated
 # Keeping them for the brighten future when we can re-activate them
-jobs:    
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+    - name: Get dependencies
+      run: |
+        sudo apt-get update
+        # autotools + libltdl: build vcpkg's unixodbc port.
+        # unixodbc: the driver has no RPATH and loads libodbcinst.so.2 from the
+        # system at runtime, as it would on a user machine.
+        sudo apt-get install -y autoconf autoconf-archive automake libtool libltdl-dev unixodbc
+
+    - name: Get vcpkg config fingerprint
+      id: get-key
+      run: |
+        echo key=`cat src/vcpkg.json src/vcpkg-configuration.json src/vcpkg-triplets/* | md5sum | cut -d ' ' -f 1`-linux >> $GITHUB_OUTPUT
+
+    - name: Restore vcpkg cache
+      id: cache-restore
+      uses: actions/cache/restore@6f8efc29b200d32929f49075959781ed54ec270c # v3
+      with:
+        path: src/vcpkg_installed
+        key: ${{ steps.get-key.outputs.key }}
+
+    - name: Configure and build driver
+      run: |
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT ./build_linux_release64.sh
+
+    - name: Save vcpkg cache
+      if: steps.cache-restore.outputs.cache-hit != 'true'
+      uses: actions/cache/save@6f8efc29b200d32929f49075959781ed54ec270c # v3
+      with:
+        path: src/vcpkg_installed
+        key: ${{ steps.get-key.outputs.key }}
+
+    - name: Unit tests (no cluster needed)
+      run: |
+        ./build/odbc/bin/ut_rabbit
+        ./build/odbc/bin/ut_critical_section
+
+    - name: Upload build
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      with:
+        name: linux64-build
+        path: build/odbc/lib/libsqlodbc.so
+
   build-mac:
-    runs-on: macos-13
+    runs-on: macos-latest
     steps:
     - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
     - name: Run cppcheck
@@ -103,11 +152,9 @@ jobs:
     #    path: test-output
 
   build-windows32:
-    runs-on: windows-2019
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
-    - name: Get specific version CMake, v3.26.3
-      uses: lukka/get-cmake@69b648272af7ac11ac053e77cf7a476676c38208 # v3.26.3
     - name: Add msbuild to path
       uses: microsoft/setup-msbuild@1ff57057b5cfdc39105cd07a01d78e9b0ea0c14c # v1.3.1
 
@@ -140,8 +187,6 @@ jobs:
         .\scripts\build_installer.ps1 Release Win32 .\src $Env:ODBC_BUILD_PATH $Env:VCPKG_X86_INSTALL_PATH
     #- name: test
     #  run: |
-    #    cp .\\libraries\\VisualLeakDetector\\bin32\\*.* .\\bin32\\Release
-    #    cp .\\libraries\\VisualLeakDetector\\lib32\\*.lib .\\lib32\\Release
     #    .\run_test_runner.bat
     - name: Prepare output
       if: always()
@@ -167,11 +212,9 @@ jobs:
     #    path: $CI_OUTPUT_PATH/test
 
   build-windows64:
-    runs-on: windows-2019
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
-    - name: Get specific version CMake, v3.26.3
-      uses: lukka/get-cmake@69b648272af7ac11ac053e77cf7a476676c38208 # v3.26.3
     - name: Add msbuild to path
       uses: microsoft/setup-msbuild@1ff57057b5cfdc39105cd07a01d78e9b0ea0c14c # v1.3.1
 
@@ -204,8 +247,6 @@ jobs:
         .\scripts\build_installer.ps1 Release x64 .\src $Env:ODBC_BUILD_PATH $Env:VCPKG_X64_INSTALL_PATH
     #- name: test
     #  run: |
-    #    cp .\\libraries\\VisualLeakDetector\\bin64\\*.* .\\bin64\\Release
-    #    cp .\\libraries\\VisualLeakDetector\\lib64\\*.lib .\\lib64\\Release
     #    .\run_test_runner.bat
     - name: Prepare output
       if: always()

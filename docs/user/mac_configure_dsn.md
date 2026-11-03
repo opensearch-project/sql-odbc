@@ -7,7 +7,7 @@
 
 ## Adding a Driver Entry
 
-Note: In order to use the OpenSearch SQL ODBC driver with the [Tableau Connector](), the **Description of the Driver** field *must* start with `OpenSearch SQL ODBC`. 
+Note: In order to use the OpenSearch SQL ODBC driver with the [Tableau Connector](../../src/installer/Resources/opensearch_sql_odbc.tdc), the **Description of the Driver** field *must* start with `OpenSearch SQL ODBC`. 
 
 1. Go to the **ODBC Drivers** tab.
 2. Click **Add a Driver**.

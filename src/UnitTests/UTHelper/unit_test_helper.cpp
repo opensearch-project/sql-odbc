@@ -1,5 +1,6 @@
 #include "unit_test_helper.h"
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 
