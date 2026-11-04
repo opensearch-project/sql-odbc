@@ -17,6 +17,26 @@
 typedef rabbit::array json_arr;
 typedef json_arr::iterator::result_type json_arr_it;
 
+// Text handed to the ODBC conversion layer for one result cell; nullopt = NULL.
+template < typename Value >
+static std::optional< std::string > CellText(const Value &value) {
+    if (value.is_null())
+        return std::nullopt;
+    return value.str();
+}
+
+std::vector< row_text_type > GetDataRowsText(json_doc &opensearch_result_doc) {
+    std::vector< row_text_type > rows;
+    json_arr data = opensearch_result_doc["datarows"];
+    for (auto row : data) {
+        row_text_type cells;
+        for (auto cell = row.value_begin(); cell != row.value_end(); ++cell)
+            cells.push_back(CellText(*cell));
+        rows.push_back(cells);
+    }
+    return rows;
+}
+
 bool _CC_from_OpenSearchResult(QResultClass *q_res, ConnectionClass *conn,
                        const char *cursor,
                                OpenSearchResult &opensearch_result);
@@ -343,12 +363,13 @@ bool AssignRowData(const json_arr_it &row, size_t row_schema_size,
     size_t i = 0;
     for (auto row_column = row.value_begin(); i < row_schema_size;
          ++row_column, ++i) {
-        if (row_column->is_null()) {
+        std::optional< std::string > cell = CellText(*row_column);
+        if (!cell) {
             tuple[i].len = SQL_NULL_DATA;
             tuple[i].value = NULL;
         } else {
             // Copy string over to tuple
-            const std::string data = row_column->str();
+            const std::string &data = *cell;
             tuple[i].len = static_cast< int >(data.length());
             QR_MALLOC_return_with_error(
                 tuple[i].value, char, data.length() + 1, q_res,

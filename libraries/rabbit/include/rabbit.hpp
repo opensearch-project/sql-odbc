@@ -884,7 +884,16 @@ public:
         else if (is_uint())   ss << as_uint();
         else if (is_int64())  ss << as_int64();
         else if (is_uint64()) ss << as_uint64();
-        else if (is_double()) ss << as_double();
+        else if (is_double()) {
+          // Shortest round-trip representation; the default stream
+          // precision (6 significant digits) silently truncated doubles.
+          typedef rapidjson::GenericStringBuffer<encoding_type> buffer_t;
+          typedef rapidjson::Writer<buffer_t, encoding_type> writer_t;
+          buffer_t buffer;
+          writer_t writer(buffer);
+          value_->Accept(writer);
+          return buffer.GetString();
+        }
         return ss.str();
       }
 
