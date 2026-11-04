@@ -9,15 +9,8 @@
 #include "opensearch_types.h"
 #include "opensearch_result_queue.h"
 
-//Keep rabbit at top otherwise it gives build error because of some variable names like max, min
-#ifdef __APPLE__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-#endif // __APPLE__
-#include "rabbit.hpp"
-#ifdef __APPLE__
-#pragma clang diagnostic pop
-#endif // __APPLE__
+// Keep JSON at top: <windows.h> min/max macros break it otherwise
+#include "opensearch_json.h"
 #include <map>
 #include <string>
 #include <aws/core/Aws.h>

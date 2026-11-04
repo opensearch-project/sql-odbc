@@ -158,9 +158,9 @@ SQLRETURN GetNextResultSet(StatementClass *stmt) {
     OpenSearchResult *es_res = OpenSearchGetResult(conn->opensearchconn);
     if (es_res != NULL) {
         // Save server cursor id to fetch more pages later
-        if (es_res->opensearch_result_doc.has("cursor")) {
+        if (es_res->opensearch_result_doc.contains("cursor")) {
             QR_set_server_cursor_id(
-                q_res, es_res->opensearch_result_doc["cursor"].as_string().c_str());
+                q_res, es_res->opensearch_result_doc.at("cursor").get< std::string >().c_str());
         } else {
             QR_set_server_cursor_id(q_res, NULL);
         }

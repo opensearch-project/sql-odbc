@@ -11,8 +11,7 @@
 namespace {
 
 schema_type SchemaOf(const std::string &response) {
-    json_doc doc;
-    doc.parse(response);
+    json_doc doc = json_doc::parse(response);
     schema_type schema;
     GetSchemaInfo(schema, doc);
     return schema;
@@ -57,9 +56,9 @@ TEST(GetSchemaInfo, BaseNameIsUnderlyingColumnName) {
 namespace {
 
 row_text_type SingleRowOf(const std::string &row_json) {
-    json_doc doc;
-    doc.parse("{\"schema\": [], \"datarows\": [" + row_json
-              + "], \"total\": 1, \"size\": 1, \"status\": 200}");
+    json_doc doc = json_doc::parse(
+        "{\"schema\": [], \"datarows\": [" + row_json
+        + "], \"total\": 1, \"size\": 1, \"status\": 200}");
     std::vector< row_text_type > rows = GetDataRowsText(doc);
     EXPECT_EQ((size_t)1, rows.size());
     return rows.empty() ? row_text_type() : rows[0];

@@ -6,7 +6,7 @@
             "name": "aws-sdk-cpp",
             "default-features": false
         },
-        "rapidjson",
+        "nlohmann-json",
         "zlib",
         "gtest",
         "curl",
@@ -18,8 +18,9 @@
     "builtin-baseline": "d5ec528843d29e3a52d745a64b469f810b2cedbf",
     "overrides": [
         {
-            "name": "rapidjson",
-            "version-date": "2025-02-26"
+            "name": "nlohmann-json",
+            "version": "3.12.0",
+            "port-version": 2
         }
     ]
 }

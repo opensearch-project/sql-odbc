@@ -4,9 +4,8 @@ project(ut_critical_section)
 set(SOURCE_FILES test_critical_section.cpp)
 include_directories(	${UT_HELPER}
 						${OPENSEARCHODBC_SRC}
-						${RAPIDJSON_SRC}
 
-						${RABBIT_SRC}  )
+)
 
 # Generate executable
 add_executable(ut_critical_section ${SOURCE_FILES})

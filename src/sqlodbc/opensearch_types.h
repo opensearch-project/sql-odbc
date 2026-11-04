@@ -238,14 +238,7 @@ typedef enum {
 #ifdef __cplusplus
 #include <stdint.h>
 
-#ifdef __APPLE__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-#endif  // __APPLE__
-#include "rabbit.hpp"
-#ifdef __APPLE__
-#pragma clang diagnostic pop
-#endif  // __APPLE__
+#include "opensearch_json.h"
 
 #include <string>
 #include <vector>
@@ -328,7 +321,7 @@ typedef struct OpenSearchResult {
     std::string cursor;
     std::string result_json;
     std::string command_type;  // SELECT / FETCH / etc
-    rabbit::document opensearch_result_doc;
+    json_doc opensearch_result_doc;
     OpenSearchResult() {
         ref_count = 0;
         num_fields = 0;
