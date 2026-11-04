@@ -62,6 +62,19 @@ Tests can be executed directly using **Visual Studio** by setting the desired te
 
 For more information, see the [Visual Studio Console Application documentation](https://docs.microsoft.com/en-us/cpp/build/vscpp-step-2-build?view=vs-2019).
 
+#### Linux
+
+`scripts/start_test_cluster.sh` starts a security-enabled OpenSearch in Docker (published on `127.0.0.1` only) and loads the sample datasets, the same way CI does:
+
+```
+export OPENSEARCH_INITIAL_ADMIN_PASSWORD='<a strong password>'   # generate one; don't commit it
+./build_linux_release64.sh
+./scripts/start_test_cluster.sh                                 # OPENSEARCH_VERSION=2 for 2.x
+ODBC_TEST_USE_SSL=1 ODBC_TEST_PASSWORD="$OPENSEARCH_INITIAL_ADMIN_PASSWORD" ./build/odbc/bin/ut_conn
+```
+
+`ODBC_TEST_PORT` (default `9200`) and `ODBC_TEST_USER` (default `admin`) are also read. Without them set, the tests target an unsecured local cluster on `localhost:9200` with `admin`/`admin`. Remove the test cluster with `docker rm -f odbc-test-opensearch; docker network rm odbc-test`.
+
 #### Mac
 
 Tests can be executed using a command line interface. From the project root directory, enter:

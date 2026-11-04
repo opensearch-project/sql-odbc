@@ -71,6 +71,63 @@ jobs:
         name: linux64-build
         path: build/odbc/lib/libsqlodbc.so
 
+  # End-to-end: the driver against a real, security-enabled OpenSearch with the
+  # Dashboards sample datasets loaded. Runs after build-linux so the vcpkg cache
+  # it saved is warm.
+  e2e-linux:
+    needs: build-linux
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        opensearch: ['2', '3']
+    steps:
+    - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+    - name: Get dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y autoconf autoconf-archive automake libtool libltdl-dev unixodbc
+
+    - name: Get vcpkg config fingerprint
+      id: get-key
+      run: |
+        echo key=`cat src/vcpkg.json src/vcpkg-configuration.json src/vcpkg-triplets/* | md5sum | cut -d ' ' -f 1`-linux >> $GITHUB_OUTPUT
+
+    - name: Restore vcpkg cache
+      uses: actions/cache/restore@6f8efc29b200d32929f49075959781ed54ec270c # v3
+      with:
+        path: src/vcpkg_installed
+        key: ${{ steps.get-key.outputs.key }}
+
+    - name: Configure and build driver
+      run: |
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT ./build_linux_release64.sh
+
+    - name: Generate cluster admin password
+      run: |
+        # Fresh per run, masked in logs; meets OpenSearch's strength rules
+        pw="Aa1!$(openssl rand -hex 16)"
+        echo "::add-mask::$pw"
+        echo "OPENSEARCH_INITIAL_ADMIN_PASSWORD=$pw" >> $GITHUB_ENV
+        echo "ODBC_TEST_PASSWORD=$pw" >> $GITHUB_ENV
+
+    - name: Start OpenSearch ${{ matrix.opensearch }} and load sample data
+      env:
+        OPENSEARCH_VERSION: ${{ matrix.opensearch }}
+      run: |
+        ./scripts/start_test_cluster.sh
+
+    - name: Connection and query tests
+      env:
+        ODBC_TEST_USE_SSL: '1'
+      run: |
+        ./build/odbc/bin/ut_conn
+
+    - name: OpenSearch logs
+      if: failure()
+      run: |
+        docker logs --tail 200 odbc-test-opensearch
+
   build-mac:
     runs-on: macos-latest
     steps:
