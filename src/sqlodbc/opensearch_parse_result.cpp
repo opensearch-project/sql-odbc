@@ -14,7 +14,6 @@
 #endif  // __APPLE__
 #include "statement.h"
 
-typedef std::vector< std::pair< std::string, OID > > schema_type;
 typedef rabbit::array json_arr;
 typedef json_arr::iterator::result_type json_arr_it;
 
@@ -46,6 +45,7 @@ void ClearError();
 // Not all of these are being used at the moment, but these are the keywords in the json
 static const std::string JSON_KW_SCHEMA = "schema";
 static const std::string JSON_KW_NAME = "name";
+static const std::string JSON_KW_ALIAS = "alias";
 static const std::string JSON_KW_TYPE = "type";
 static const std::string JSON_KW_TOTAL = "total";
 static const std::string JSON_KW_SIZE = "size";
@@ -253,8 +253,11 @@ void GetSchemaInfo(schema_type &schema, json_doc &opensearch_result_doc) {
         OID type_oid = (mapped_oid == type_to_oid_map.end())
                            ? SQL_WVARCHAR
                            : mapped_oid->second;
-        schema.push_back(
-            std::make_pair(it[JSON_KW_NAME].as_string(), type_oid));
+        // "alias" is only present when the query aliases the column
+        // (SELECT x AS y); it is the name the user asked for.
+        const std::string &key =
+            it.has(JSON_KW_ALIAS) ? JSON_KW_ALIAS : JSON_KW_NAME;
+        schema.push_back(std::make_pair(it[key].as_string(), type_oid));
     }
 }
 

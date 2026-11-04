@@ -77,6 +77,23 @@ TEST(TestConnExecDirect, ValidQuerySomeColumns) {
     EXPECT_EQ((size_t)some_columns_flights_count, result->column_info.size());
 }
 
+TEST(TestConnExecDirect, ColumnAliasesAreUsedAsColumnNames) {
+    OpenSearchCommunication conn;
+    ASSERT_TRUE(conn.ConnectionOptions(valid_conn_opt_val, false, 0, 0));
+    ASSERT_TRUE(conn.ConnectDBStart());
+
+    conn.ExecDirect(
+        "SELECT Origin AS o, OriginWeather FROM "
+        "opensearch_dashboards_sample_data_flights LIMIT 1",
+        fetch_size.c_str());
+    OpenSearchResult* result = conn.PopResult();
+    ASSERT_NE(nullptr, result);
+    ASSERT_EQ((size_t)2, result->column_info.size());
+    EXPECT_EQ("o", result->column_info[0].field_name);
+    // Unaliased columns keep their name
+    EXPECT_EQ("OriginWeather", result->column_info[1].field_name);
+}
+
 TEST(TestConnExecDirect, InvalidQuery) {
     OpenSearchCommunication conn;
     ASSERT_TRUE(conn.ConnectionOptions(valid_conn_opt_val, false, 0, 0));
