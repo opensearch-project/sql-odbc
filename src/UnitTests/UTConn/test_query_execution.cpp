@@ -6,9 +6,9 @@
 // clang-format on
 
 const std::string valid_host = (use_ssl ? "https://localhost" : "localhost");
-const std::string valid_port = "9200";
-const std::string valid_user = "admin";
-const std::string valid_pw = "admin";
+const std::string valid_port = test_port;
+const std::string valid_user = test_user;
+const std::string valid_pw = test_password;
 const std::string valid_region = "us-west-3";
 const std::string valid_tunnel_host = "";
 const std::string query =
@@ -21,7 +21,7 @@ const std::string invalid_query = "SELECT";
 const int EXECUTION_SUCCESS = 0;
 const int EXECUTION_ERROR = -1;
 const std::string fetch_size = "0";
-const int all_columns_flights_count = 25;
+const int all_columns_flights_count = 27;
 const int some_columns_flights_count = 2;
 runtime_options valid_conn_opt_val = {
     {valid_host, valid_port, "1", "0"},
@@ -58,6 +58,7 @@ TEST(TestConnExecDirect, ValidQueryAllColumns) {
 
     conn.ExecDirect(all_columns_flights_query.c_str(), fetch_size.c_str());
     OpenSearchResult* result = conn.PopResult();
+    ASSERT_NE(nullptr, result);
     EXPECT_EQ("SELECT", result->command_type);
     EXPECT_FALSE(result->result_json.empty());
     EXPECT_EQ(all_columns_flights_count, result->num_fields);
@@ -71,6 +72,7 @@ TEST(TestConnExecDirect, ValidQuerySomeColumns) {
 
     conn.ExecDirect(some_columns_flights_query.c_str(), fetch_size.c_str());
     OpenSearchResult* result = conn.PopResult();
+    ASSERT_NE(nullptr, result);
     EXPECT_EQ("SELECT", result->command_type);
     EXPECT_FALSE(result->result_json.empty());
     EXPECT_EQ(some_columns_flights_count, result->num_fields);
@@ -125,9 +127,11 @@ TEST(TestConnPopResult, PopTwoQueryResults) {
 
     // Pop some_columns
     OpenSearchResult* result = conn.PopResult();
+    ASSERT_NE(nullptr, result);
     EXPECT_EQ(some_columns_flights_count, result->num_fields);
 
     // Pop all_columns
     result = conn.PopResult();
+    ASSERT_NE(nullptr, result);
     EXPECT_EQ(all_columns_flights_count, result->num_fields);
 }
