@@ -8,7 +8,8 @@ struct ColumnInfoClass_ {
                      * several qresults. */
     Int2 num_fields;
     struct srvr_info {
-        char *name;        /* field name */
+        char *name;        /* field name (label: the alias, if aliased) */
+        char *base_name;   /* underlying column name if it differs, else NULL */
         OID adtid;         /* type oid */
         Int2 adtsize;      /* type size */
         Int4 display_size; /* the display size (longest row) */
@@ -21,6 +22,10 @@ struct ColumnInfoClass_ {
 #define CI_get_num_fields(self) (self->num_fields)
 #define CI_get_oid(self, col) (self->coli_array[col].adtid)
 #define CI_get_fieldname(self, col) (self->coli_array[col].name)
+#define CI_get_basename(self, col)                       \
+    (self->coli_array[col].base_name                     \
+         ? self->coli_array[col].base_name               \
+         : self->coli_array[col].name)
 #define CI_get_fieldsize(self, col) (self->coli_array[col].adtsize)
 #define CI_get_display_size(self, col) (self->coli_array[col].display_size)
 #define CI_get_atttypmod(self, col) (self->coli_array[col].atttypmod)
@@ -42,6 +47,8 @@ extern "C" {
 void CI_set_field_info(ColumnInfoClass *self, int field_num,
                        const char *new_name, OID new_adtid, Int2 new_adtsize,
                        Int4 atttypmod, OID new_relid, OID new_attid);
+void CI_set_base_name(ColumnInfoClass *self, int field_num,
+                      const char *base_name);
 #ifdef __cplusplus
 }
 #endif

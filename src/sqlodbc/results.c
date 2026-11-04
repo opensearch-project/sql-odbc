@@ -639,9 +639,9 @@ RETCODE SQL_API OPENSEARCHAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
             MYLOG(OPENSEARCH_DEBUG, "%s: UPDATEABLE = " FORMAT_LEN "\n", func, value);
             break;
         case SQL_DESC_BASE_COLUMN_NAME:
-
+            /* the underlying column, not its alias (SQL_DESC_LABEL) */
             p = fi ? SAFE_NAME(fi->column_name)
-                   : QR_get_fieldname(res, col_idx);
+                   : QR_get_basename(res, col_idx);
 
             MYLOG(OPENSEARCH_DEBUG, "BASE_COLUMN_NAME = '%s'\n", p);
             break;
