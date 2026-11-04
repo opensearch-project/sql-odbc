@@ -37,7 +37,7 @@ jobs:
     - name: Get vcpkg config fingerprint
       id: get-key
       run: |
-        echo key=`cat src/vcpkg.json src/vcpkg-configuration.json src/vcpkg-triplets/* | md5sum | cut -d ' ' -f 1`-linux >> $GITHUB_OUTPUT
+        echo key=`cat src/vcpkg.json src/vcpkg-configuration.json src/vcpkg-triplets/* | md5sum | cut -d ' ' -f 1`-linux-$ImageOS-$ImageVersion >> $GITHUB_OUTPUT
 
     - name: Restore vcpkg cache
       id: cache-restore
@@ -72,8 +72,8 @@ jobs:
         path: build/odbc/lib/libsqlodbc.so
 
   # End-to-end: the driver against a real, security-enabled OpenSearch with the
-  # Dashboards sample datasets loaded. Runs after build-linux so the vcpkg cache
-  # it saved is warm.
+  # Dashboards sample datasets loaded. Runs after build-linux, so compile and
+  # unit-test failures surface first and the vcpkg cache is usually warm.
   e2e-linux:
     needs: build-linux
     runs-on: ubuntu-latest
@@ -91,9 +91,10 @@ jobs:
     - name: Get vcpkg config fingerprint
       id: get-key
       run: |
-        echo key=`cat src/vcpkg.json src/vcpkg-configuration.json src/vcpkg-triplets/* | md5sum | cut -d ' ' -f 1`-linux >> $GITHUB_OUTPUT
+        echo key=`cat src/vcpkg.json src/vcpkg-configuration.json src/vcpkg-triplets/* | md5sum | cut -d ' ' -f 1`-linux-$ImageOS-$ImageVersion >> $GITHUB_OUTPUT
 
     - name: Restore vcpkg cache
+      id: cache-restore
       uses: actions/cache/restore@6f8efc29b200d32929f49075959781ed54ec270c # v3
       with:
         path: src/vcpkg_installed
@@ -102,6 +103,14 @@ jobs:
     - name: Configure and build driver
       run: |
         VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT ./build_linux_release64.sh
+
+    # A matrix leg can land on a newer runner image than build-linux did
+    - name: Save vcpkg cache
+      if: steps.cache-restore.outputs.cache-hit != 'true'
+      uses: actions/cache/save@6f8efc29b200d32929f49075959781ed54ec270c # v3
+      with:
+        path: src/vcpkg_installed
+        key: ${{ steps.get-key.outputs.key }}
 
     - name: Generate cluster admin password
       run: |
@@ -151,7 +160,7 @@ jobs:
     - name: Get vcpkg config fingerprint
       id: get-key
       run:  |
-        echo key=`md5 src/vcpkg.json | cut -d ' ' -f 4`-mac >> $GITHUB_OUTPUT
+        echo key=`md5 src/vcpkg.json | cut -d ' ' -f 4`-mac-$ImageOS-$ImageVersion >> $GITHUB_OUTPUT
 
     - name: Restore vcpkg cache
       id: cache-restore
@@ -222,7 +231,7 @@ jobs:
     - name: Get vcpkg config fingerprint
       id: get-key
       run:  |
-        "key=" + (Get-FileHash -Algorithm MD5 .\src\vcpkg.json).Hash + "-w32" >> $Env:GITHUB_OUTPUT
+        "key=" + (Get-FileHash -Algorithm MD5 .\src\vcpkg.json).Hash + "-w32-$Env:ImageOS-$Env:ImageVersion" >> $Env:GITHUB_OUTPUT
 
     - name: Restore vcpkg cache
       id: cache-restore
@@ -282,7 +291,7 @@ jobs:
     - name: Get vcpkg config fingerprint
       id: get-key
       run: |
-        "key=" + (Get-FileHash -Algorithm MD5 .\src\vcpkg.json).Hash + "-w64" >> $Env:GITHUB_OUTPUT
+        "key=" + (Get-FileHash -Algorithm MD5 .\src\vcpkg.json).Hash + "-w64-$Env:ImageOS-$Env:ImageVersion" >> $Env:GITHUB_OUTPUT
 
     - name: Restore vcpkg cache
       id: cache-restore
