@@ -253,11 +253,13 @@ void GetSchemaInfo(schema_type &schema, json_doc &opensearch_result_doc) {
         OID type_oid = (mapped_oid == type_to_oid_map.end())
                            ? SQL_WVARCHAR
                            : mapped_oid->second;
-        // "alias" is only present when the query aliases the column
-        // (SELECT x AS y); it is the name the user asked for.
-        const std::string &key =
-            it.has(JSON_KW_ALIAS) ? JSON_KW_ALIAS : JSON_KW_NAME;
-        schema.push_back(std::make_pair(it[key].as_string(), type_oid));
+        // The SQL plugin adds "alias" when the query aliases the column
+        // (SELECT x AS y), and may send alias == name. The alias is the label
+        // the user asked for; "name" stays the underlying (base) column name.
+        std::string base_name = it[JSON_KW_NAME].as_string();
+        std::string label =
+            it.has(JSON_KW_ALIAS) ? it[JSON_KW_ALIAS].as_string() : base_name;
+        schema.push_back(ColumnSchema{label, base_name, type_oid});
     }
 }
 
@@ -274,16 +276,19 @@ bool AssignColumnHeaders(const schema_type &doc_schema, QResultClass *q_res,
 
     // Assign column info
     for (size_t i = 0; i < doc_schema.size(); i++) {
-        auto type_size_ptr = oid_to_size_map.find(doc_schema[i].second);
+        auto type_size_ptr = oid_to_size_map.find(doc_schema[i].type_oid);
         int16_t type_size = (type_size_ptr == oid_to_size_map.end())
                                 ? OPENSEARCH_ADT_UNSET
                                 : type_size_ptr->second;
         CI_set_field_info(QR_get_fields(q_res), (int)i,
-                          doc_schema[i].first.c_str(), doc_schema[i].second,
+                          doc_schema[i].label.c_str(), doc_schema[i].type_oid,
                           type_size,
                           opensearch_result.column_info[i].length_of_str,
                           opensearch_result.column_info[i].relation_id,
                           opensearch_result.column_info[i].attribute_number);
+        if (doc_schema[i].base_name != doc_schema[i].label)
+            CI_set_base_name(QR_get_fields(q_res), (int)i,
+                             doc_schema[i].base_name.c_str());
         QR_set_rstatus(q_res, PORES_FIELDS_OK);
     }
     q_res->num_fields = CI_get_num_fields(QR_get_fields(q_res));

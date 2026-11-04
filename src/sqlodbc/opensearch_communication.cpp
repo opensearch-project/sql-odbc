@@ -840,8 +840,9 @@ void OpenSearchCommunication::ConstructOpenSearchResult(OpenSearchResult& result
     rabbit::array schema_array = result.opensearch_result_doc["schema"];
     for (rabbit::array::iterator it = schema_array.begin();
          it != schema_array.end(); ++it) {
-        // "alias" is only present when the query aliases the column
-        // (SELECT x AS y); it is the name the user asked for.
+        // The SQL plugin adds "alias" when the query aliases the column
+        // (SELECT x AS y), and may send alias == name; it is the label the
+        // user asked for.
         std::string column_name = it->has("alias")
                                       ? it->at("alias").as_string()
                                       : it->at("name").as_string();

@@ -28,8 +28,13 @@ BOOL CC_No_Metadata_from_OpenSearchResult(QResultClass *q_res, ConnectionClass *
 BOOL CC_Append_Table_Data(json_doc &opensearch_result_doc, QResultClass *q_res,
                           size_t doc_schema_size, ColumnInfoClass &fields);
 
-// (column label, type OID) for each entry of a response's "schema" array
-typedef std::vector< std::pair< std::string, OID > > schema_type;
+// One entry of a response's "schema" array
+struct ColumnSchema {
+    std::string label;      // alias if the query aliased the column, else name
+    std::string base_name;  // underlying column name ("name")
+    OID type_oid;
+};
+typedef std::vector< ColumnSchema > schema_type;
 void GetSchemaInfo(schema_type &schema, json_doc &opensearch_result_doc);
 #endif
 #endif
