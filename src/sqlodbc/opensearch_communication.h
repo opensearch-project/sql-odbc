@@ -64,6 +64,13 @@ class OpenSearchCommunication {
                                             size_t max_bytes = 256);
     // TruncateResponseBody(body), after logging the whole body at TRACE
     std::string ResponseBodyForMessage(const std::string& body);
+    // Sets the error for a non-OK HTTP response: the server's own reason
+    // when the body is an OpenSearch error, else the status code and a
+    // bounded body (an HTML 502 from a proxy, a plain-text 429, nothing).
+    // Doesn't throw on any body.
+    void SetErrorFromResponse(long response_code,
+                              const std::string& client_error,
+                              const std::string& body);
     void AwsHttpResponseToString(
         std::shared_ptr< Aws::Http::HttpResponse > response,
         std::string& output);
@@ -82,8 +89,9 @@ class OpenSearchCommunication {
     void ConstructOpenSearchResult(OpenSearchResult& result);
     void GetJsonSchema(OpenSearchResult& opensearch_result);
     void PrepareCursorResult(OpenSearchResult& opensearch_result);
+    // nullptr if body isn't an OpenSearch error response
     std::shared_ptr< ErrorDetails > ParseErrorResponse(
-        OpenSearchResult& opensearch_result);
+        const std::string& body);
     void SetErrorDetails(std::string reason, std::string message,
                          ConnErrorType error_type);
     void SetErrorDetails(ErrorDetails details);
