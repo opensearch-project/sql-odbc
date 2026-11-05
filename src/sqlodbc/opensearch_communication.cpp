@@ -399,6 +399,26 @@ void OpenSearchCommunication::InitializeConnection() {
     m_http_client = Aws::Http::CreateHttpClient(config);
 }
 
+std::optional< std::string > OpenSearchCommunication::BuildRequestBody(
+    const std::string& query, const std::string& fetch_size,
+    const std::string& cursor) {
+    json_doc body = json_doc::object();
+    if (!query.empty()) {
+        body["query"] = query;
+        if (!fetch_size.empty() && fetch_size != "-1")
+            body["fetch_size"] = fetch_size;
+    } else if (!cursor.empty()) {
+        body["cursor"] = cursor;
+    }
+    // Strict: an ANSI app on a non-UTF-8 codepage passes e.g. Latin-1 bytes
+    // straight through, and replacing them would silently change the query
+    try {
+        return body.dump();
+    } catch (const nlohmann::json::type_error&) {
+        return std::nullopt;
+    }
+}
+
 std::shared_ptr< Aws::Http::HttpResponse >
 OpenSearchCommunication::IssueRequest(
     const std::string& endpoint, const Aws::Http::HttpMethod request_type,
@@ -423,17 +443,14 @@ OpenSearchCommunication::IssueRequest(
 
     // Set body
     if (!query.empty() || !cursor.empty()) {
-        json_doc body = json_doc::object();
-        if (!query.empty()) {
-            body["query"] = query;
-            if (!fetch_size.empty() && fetch_size != "-1")
-                body["fetch_size"] = fetch_size;
-        } else if (!cursor.empty()) {
-            body["cursor"] = cursor;
+        std::optional< std::string > body =
+            BuildRequestBody(query, fetch_size, cursor);
+        if (!body) {
+            LogMsg(OPENSEARCH_ERROR,
+                   "Not sending request: query text is not valid UTF-8.");
+            return nullptr;
         }
-        // Replace (not throw on) invalid UTF-8 in the query text
-        const std::string body_str =
-            body.dump(-1, ' ', false, json_doc::error_handler_t::replace);
+        const std::string& body_str = *body;
         std::shared_ptr< Aws::StringStream > aws_ss =
             Aws::MakeShared< Aws::StringStream >("RequestBodyStream");
         *aws_ss << body_str;
@@ -686,6 +703,17 @@ int OpenSearchCommunication::ExecDirect(const char* query, const char* fetch_siz
     std::string fetch_size(fetch_size_);
     std::string msg = "Attempting to execute a query \"" + statement + "\"";
     LogMsg(OPENSEARCH_DEBUG, msg.c_str());
+
+    // Checked here (IssueRequest also refuses) so the user gets a clear error
+    if (!BuildRequestBody(statement, fetch_size, "")) {
+        m_error_message =
+            "Query text is not valid UTF-8. Use the wide-character (W) ODBC "
+            "functions or a UTF-8 client encoding.";
+        SetErrorDetails("Execution error", m_error_message,
+                        ConnErrorType::CONN_ERROR_QUERY_SYNTAX);
+        LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
+        return -1;
+    }
 
     // Issue request
     std::shared_ptr< Aws::Http::HttpResponse > response =

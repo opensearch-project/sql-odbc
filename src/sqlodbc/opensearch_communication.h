@@ -12,6 +12,7 @@
 // Keep JSON at top: <windows.h> min/max macros break it otherwise
 #include "opensearch_json.h"
 #include <map>
+#include <optional>
 #include <string>
 #include <aws/core/Aws.h>
 #include <aws/core/http/HttpRequest.h>
@@ -50,6 +51,11 @@ class OpenSearchCommunication {
         const std::string& endpoint, const Aws::Http::HttpMethod request_type,
         const std::string& content_type, const std::string& query,
         const std::string& fetch_size = "", const std::string& cursor = "");
+    // JSON body for a query or cursor request; nullopt if the query text
+    // isn't valid UTF-8 (sent unchanged it would be silently altered)
+    static std::optional< std::string > BuildRequestBody(
+        const std::string& query, const std::string& fetch_size,
+        const std::string& cursor);
     void AwsHttpResponseToString(
         std::shared_ptr< Aws::Http::HttpResponse > response,
         std::string& output);
