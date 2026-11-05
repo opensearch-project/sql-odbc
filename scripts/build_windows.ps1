@@ -31,9 +31,3 @@ $DRIVER_BIN_DIR = "${BUILD_DIR}\odbc\bin\$CONFIGURATION"
 New-Item -Path $DRIVER_BIN_DIR -ItemType Directory -Force | Out-Null
 
 Copy-Item $VCPKG_INSTALLED_DIR\bin\* $DRIVER_BIN_DIR
-if ($BITNESS -eq "32") {
-    # Strip bitness from 32bit VLD DLL dir name
-    $BITNESS = $null
-    $WIN_ARCH = "x86"
-}
-Copy-Item .\libraries\VisualLeakDetector\bin$BITNESS\vld_$WIN_ARCH.dll $DRIVER_BIN_DIR

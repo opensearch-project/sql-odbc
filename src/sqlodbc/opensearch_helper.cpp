@@ -39,7 +39,7 @@ ConnStatusType OpenSearchStatus(void* opensearch_conn) {
 std::string GetErrorMsg(void* opensearch_conn) {
     return opensearch_conn
                ? static_cast< OpenSearchCommunication* >(opensearch_conn)->GetErrorMessage()
-                   : NULL;
+               : "";
 }
 
 ConnErrorType GetErrorType(void* opensearch_conn) {

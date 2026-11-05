@@ -8,9 +8,9 @@ const size_t valid_option_count = 4;
 const size_t invalid_option_count = 4;
 const size_t missing_option_count = 3;
 const std::string valid_host = (use_ssl ? "https://localhost" : "localhost");
-const std::string valid_port = "9200";
-const std::string valid_user = "admin";
-const std::string valid_pw = "admin";
+const std::string valid_port = test_port;
+const std::string valid_user = test_user;
+const std::string valid_pw = test_password;
 const std::string valid_region = "us-west-3";
 const std::string valid_tunnel_host = "";
 const std::string invalid_host = "10.1.1.189";
@@ -111,6 +111,43 @@ TEST(TestOpenSearchConnDropDBConnection, ValidParameters) {
     ASSERT_EQ(CONNECTION_OK, conn.GetConnectionStatus());
     conn.DropDBConnection();
     EXPECT_EQ(CONNECTION_BAD, conn.GetConnectionStatus());
+}
+
+// Request bodies (no cluster needed)
+
+TEST(TestBuildRequestBody, Query) {
+    EXPECT_EQ(std::optional< std::string >(R"({"query":"SELECT 1"})"),
+              OpenSearchCommunication::BuildRequestBody("SELECT 1", "", ""));
+}
+
+TEST(TestBuildRequestBody, QueryWithFetchSize) {
+    EXPECT_EQ(
+        std::optional< std::string >(R"({"query":"SELECT 1","fetch_size":"5"})"),
+        OpenSearchCommunication::BuildRequestBody("SELECT 1", "5", ""));
+    // -1 means "server default", so it's left out
+    EXPECT_EQ(std::optional< std::string >(R"({"query":"SELECT 1"})"),
+              OpenSearchCommunication::BuildRequestBody("SELECT 1", "-1", ""));
+}
+
+TEST(TestBuildRequestBody, Cursor) {
+    EXPECT_EQ(std::optional< std::string >(R"({"cursor":"abc"})"),
+              OpenSearchCommunication::BuildRequestBody("", "", "abc"));
+}
+
+TEST(TestBuildRequestBody, Utf8QueryPassesThrough) {
+    EXPECT_EQ(
+        std::optional< std::string >("{\"query\":\"WHERE t = 'caf\xc3\xa9'\"}"),
+        OpenSearchCommunication::BuildRequestBody("WHERE t = 'caf\xc3\xa9'", "",
+                                                  ""));
+}
+
+// An ANSI app on a non-UTF-8 codepage passes bytes like Latin-1 0xE9
+// straight through SQLExecDirect. Rewriting them to U+FFFD would silently
+// change the query (e.g. a WHERE that matches nothing), so refuse instead.
+TEST(TestBuildRequestBody, InvalidUtf8QueryIsRejected) {
+    EXPECT_EQ(std::nullopt,
+              OpenSearchCommunication::BuildRequestBody("WHERE t = 'caf\xe9'",
+                                                        "", ""));
 }
 
 int main(int argc, char** argv) {

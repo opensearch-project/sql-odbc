@@ -5,7 +5,7 @@
 #include "it_odbc_helper.h"
 #include "chrono"
 #include <cwctype>
-#include "rabbit.hpp"
+#include "opensearch_json.h"
 #include <codecvt>
 #include <locale>
 // clang-format on
@@ -83,21 +83,23 @@ void ParseVersionInfoString(
     const std::string& input_info,
     std::vector< std::pair< std::string, std::string > >& output_info) {
     // Parse input
-    rabbit::document doc;
-    doc.parse(input_info);
+    json_doc doc = json_doc::parse(input_info);
+    auto text = [](const json_doc& v) {
+        return v.is_string() ? v.get< std::string >() : v.dump();
+    };
 
     // Populate output with info
     for (auto& it : base_items) {
-        ASSERT_TRUE(doc.has(it));
+        ASSERT_TRUE(doc.contains(it));
         output_info.push_back(
-            std::pair< std::string, std::string >(it, doc[it].str()));
+            std::pair< std::string, std::string >(it, text(doc.at(it))));
     }
 
-    ASSERT_TRUE(doc.has("version"));
+    ASSERT_TRUE(doc.contains("version"));
     for (auto& it : version_items) {
-        ASSERT_TRUE(doc["version"].has(it));
+        ASSERT_TRUE(doc.at("version").contains(it));
         output_info.push_back(std::pair< std::string, std::string >(
-            it, doc["version"][it].str()));
+            it, text(doc.at("version").at(it))));
     }
 }
 

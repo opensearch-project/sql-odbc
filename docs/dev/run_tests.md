@@ -2,13 +2,13 @@
 
 ## Requirements
 
-* Latest version of [OpenSearch](https://docs-beta.opensearch.org/opensearch/install/index/)
+* Latest version of [OpenSearch](https://opensearch.org/docs/latest/install-and-configure/install-opensearch/index/)
 * [Required datasets loaded](#set-up-test-datasets)
 * [DSN configured](#set-up-dsn)
 
 ### Set up test datasets
 
-Loading a dataset requires an [OpenSearch](https://docs-beta.opensearch.org/opensearch/install/index/) service running with [OpenSearch Dashboards](https://docs-beta.opensearch.org/dashboards/index/). If either of these are missing, please refer to the documentation on how to set them up.
+Loading a dataset requires an [OpenSearch](https://opensearch.org/docs/latest/install-and-configure/install-opensearch/index/) service running with [OpenSearch Dashboards](https://opensearch.org/docs/latest/dashboards/). If either of these are missing, please refer to the documentation on how to set them up.
 
 Note, if you wish to work with SSL/TLS, you need to configure OpenSearch and OpenSearch Dashboards to support it. See the [build instructions](./BUILD_INSTRUCTIONS.md) for more info.
 
@@ -61,6 +61,19 @@ Tests can be executed directly using **Visual Studio** by setting the desired te
 >* Run the test by selecting **Local Windows Debugger** in the toolbar at the top of the application
 
 For more information, see the [Visual Studio Console Application documentation](https://docs.microsoft.com/en-us/cpp/build/vscpp-step-2-build?view=vs-2019).
+
+#### Linux
+
+`scripts/start_test_cluster.sh` starts a security-enabled OpenSearch in Docker (published on `127.0.0.1` only) and loads the sample datasets, the same way CI does:
+
+```
+export OPENSEARCH_INITIAL_ADMIN_PASSWORD='<a strong password>'   # generate one; don't commit it
+./build_linux_release64.sh
+./scripts/start_test_cluster.sh                                 # OPENSEARCH_VERSION=2 for 2.x
+ODBC_TEST_USE_SSL=1 ODBC_TEST_PASSWORD="$OPENSEARCH_INITIAL_ADMIN_PASSWORD" ./build/odbc/bin/ut_conn
+```
+
+`ODBC_TEST_PORT` (default `9200`) and `ODBC_TEST_USER` (default `admin`) are also read. Without them set, the tests target an unsecured local cluster on `localhost:9200` with `admin`/`admin`. Remove the test cluster with `docker rm -f odbc-test-opensearch; docker network rm odbc-test`.
 
 #### Mac
 

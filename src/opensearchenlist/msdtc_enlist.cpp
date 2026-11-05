@@ -1111,7 +1111,10 @@ RETCODE static EnlistInDtc_1pipe(void *conn, ITransaction *pTra,
                     case DTC_CHECK_RM_CONNECTION:
                         if (!confirmingLink) {
                             confirmingLink = true;
+
+                            // cppcheck-suppress unknownMacro
                             strcat(dtcname, ";" KEYWORD_DTC_CHECK "=0");
+
                             continue;
                         }
                     default:

@@ -41,10 +41,13 @@ include_directories(
 						${LIBRARY_DIRECTORY}/../src
 						${CMAKE_CURRENT_SOURCE_DIR}
 						${OPENSEARCHENLIST_SRC}
-						${RABBIT_SRC}
-						${RAPIDJSON_SRC}
+
 						${AWSSDK_INCLUDE_DIR}
 					)
+
+# Header-only JSON library; its include path propagates to anything linking
+# sqlodbc (the tests include opensearch_types.h)
+target_link_libraries(sqlodbc nlohmann_json::nlohmann_json)
 
 # Platform specific library dependencies
 if(WIN32)
@@ -54,9 +57,18 @@ if(WIN32)
 	target_link_libraries(sqlodbc optimized msvcrt)
 elseif(APPLE)
 	# Apple specific
-	target_link_libraries(sqlodbc iodbc iodbcinst aws-cpp-sdk-core)
+	target_link_libraries(sqlodbc ${IODBC_LIB} ${IODBCINST_LIB} aws-cpp-sdk-core)
 elseif(UNIX)
 	# Unix specific
-	include_directories(/usr/src/linux-headers-5.0.0-27/include)
-	target_link_libraries(sqlodbc aws-cpp-sdk-core odbc odbcinst)
+	# unixODBC is LGPL: link only the shared odbcinst (the driver never calls
+	# into the driver manager itself), never a static archive.
+	find_library(UNIXODBCINST_LIB NAMES libodbcinst.so odbcinst REQUIRED)
+	if(UNIXODBCINST_LIB MATCHES "\\.a$")
+		message(FATAL_ERROR "Refusing to statically link LGPL unixODBC (${UNIXODBCINST_LIB}); use a shared libodbcinst")
+	endif()
+	target_link_libraries(sqlodbc aws-cpp-sdk-core ${UNIXODBCINST_LIB})
+	# No RPATH/RUNPATH: a build-tree path is meaningless on user machines, and
+	# an empty entry would make glibc search the app's working directory.
+	# libodbcinst.so.2 is resolved from the system unixODBC at runtime.
+	set_target_properties(sqlodbc PROPERTIES SKIP_BUILD_RPATH TRUE)
 endif()

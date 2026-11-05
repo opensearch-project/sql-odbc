@@ -4,10 +4,9 @@ project(ut_conn)
 set(SOURCE_FILES test_conn.cpp test_query_execution.cpp)
 include_directories(	${UT_HELPER}
 						${OPENSEARCHODBC_SRC}
-						${RAPIDJSON_SRC} 
-						${RABBIT_SRC}		
+
 						${LIBCURL_SRC}
-						${VLD_SRC} )
+ )
 
 # Generate executable
 add_executable(ut_conn ${SOURCE_FILES})

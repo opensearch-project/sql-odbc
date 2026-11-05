@@ -2,6 +2,9 @@ name: OpenSearch ODBC Driver
 
 on:
   workflow_dispatch:
+  schedule:
+    # Weekly, so runner-image drift shows up as a failure instead of going unnoticed
+    - cron: '0 6 * * 1'
   pull_request:
   push:
     branches-ignore:
@@ -17,18 +20,133 @@ env:
 
 # Tests are disabled (commented out) in all jobs because they are fail and/or outdated
 # Keeping them for the brighten future when we can re-activate them
-jobs:    
-  build-mac:
-    runs-on: macos-12
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+    - name: Get dependencies
+      run: |
+        sudo apt-get update
+        # autotools + libltdl: build vcpkg's unixodbc port.
+        # unixodbc: the driver has no RPATH and loads libodbcinst.so.2 from the
+        # system at runtime, as it would on a user machine.
+        # valgrind: memcheck for ut_mylog.
+        sudo apt-get install -y autoconf autoconf-archive automake libtool libltdl-dev unixodbc valgrind
+
+    - name: Get vcpkg config fingerprint
+      id: get-key
+      run: |
+        echo key=`cat src/vcpkg.json src/vcpkg-configuration.json src/vcpkg-triplets/* | md5sum | cut -d ' ' -f 1`-linux-$ImageOS-$ImageVersion >> $GITHUB_OUTPUT
+
+    - name: Restore vcpkg cache
+      id: cache-restore
+      uses: actions/cache/restore@6f8efc29b200d32929f49075959781ed54ec270c # v3
+      with:
+        path: src/vcpkg_installed
+        key: ${{ steps.get-key.outputs.key }}
+
+    - name: Configure and build driver
+      run: |
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT ./build_linux_release64.sh
+
+    - name: Save vcpkg cache
+      if: steps.cache-restore.outputs.cache-hit != 'true'
+      uses: actions/cache/save@6f8efc29b200d32929f49075959781ed54ec270c # v3
+      with:
+        path: src/vcpkg_installed
+        key: ${{ steps.get-key.outputs.key }}
+
+    - name: Unit tests (no cluster needed)
+      run: |
+        ./build/odbc/bin/ut_critical_section
+        ./build/odbc/bin/ut_parse_result
+        # Reads of uninitialised memory only fail reliably under memcheck
+        valgrind --error-exitcode=1 ./build/odbc/bin/ut_mylog
+
+    - name: Upload build
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      with:
+        name: linux64-build
+        path: build/odbc/lib/libsqlodbc.so
+
+  # End-to-end: the driver against a real, security-enabled OpenSearch with the
+  # Dashboards sample datasets loaded. Runs after build-linux, so compile and
+  # unit-test failures surface first and the vcpkg cache is usually warm.
+  e2e-linux:
+    needs: build-linux
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        opensearch: ['2', '3']
+    steps:
+    - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+    - name: Get dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y autoconf autoconf-archive automake libtool libltdl-dev unixodbc
+
+    - name: Get vcpkg config fingerprint
+      id: get-key
+      run: |
+        echo key=`cat src/vcpkg.json src/vcpkg-configuration.json src/vcpkg-triplets/* | md5sum | cut -d ' ' -f 1`-linux-$ImageOS-$ImageVersion >> $GITHUB_OUTPUT
+
+    - name: Restore vcpkg cache
+      id: cache-restore
+      uses: actions/cache/restore@6f8efc29b200d32929f49075959781ed54ec270c # v3
+      with:
+        path: src/vcpkg_installed
+        key: ${{ steps.get-key.outputs.key }}
+
+    - name: Configure and build driver
+      run: |
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT ./build_linux_release64.sh
+
+    # A matrix leg can land on a newer runner image than build-linux did
+    - name: Save vcpkg cache
+      if: steps.cache-restore.outputs.cache-hit != 'true'
+      uses: actions/cache/save@6f8efc29b200d32929f49075959781ed54ec270c # v3
+      with:
+        path: src/vcpkg_installed
+        key: ${{ steps.get-key.outputs.key }}
+
+    - name: Generate cluster admin password
+      run: |
+        # Fresh per run, masked in logs; meets OpenSearch's strength rules
+        pw="Aa1!$(openssl rand -hex 16)"
+        echo "::add-mask::$pw"
+        echo "OPENSEARCH_INITIAL_ADMIN_PASSWORD=$pw" >> $GITHUB_ENV
+        echo "ODBC_TEST_PASSWORD=$pw" >> $GITHUB_ENV
+
+    - name: Start OpenSearch ${{ matrix.opensearch }} and load sample data
+      env:
+        OPENSEARCH_VERSION: ${{ matrix.opensearch }}
+      run: |
+        ./scripts/start_test_cluster.sh
+
+    - name: Connection and query tests
+      env:
+        ODBC_TEST_USE_SSL: '1'
+      run: |
+        ./build/odbc/bin/ut_conn
+
+    - name: OpenSearch logs
+      if: failure()
+      run: |
+        docker logs --tail 200 odbc-test-opensearch
+
+  build-mac:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
     - name: Run cppcheck
       run: |
         brew install cppcheck
         sh run_cppcheck.sh
     - name: Upload cppcheck results
       if: failure()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: cppcheck-results
         path: cppcheck-results.log
@@ -41,11 +159,11 @@ jobs:
     - name: Get vcpkg config fingerprint
       id: get-key
       run:  |
-        echo key=`md5 src/vcpkg.json | cut -d ' ' -f 4`-mac >> $GITHUB_OUTPUT
+        echo key=`md5 src/vcpkg.json | cut -d ' ' -f 4`-mac-$ImageOS-$ImageVersion >> $GITHUB_OUTPUT
 
     - name: Restore vcpkg cache
       id: cache-restore
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@6f8efc29b200d32929f49075959781ed54ec270c # v3
       with:
         path: src/vcpkg_installed
         key: ${{ steps.get-key.outputs.key }}
@@ -55,7 +173,7 @@ jobs:
         ./build_mac_release64.sh
 
     - name: Save vcpkg cache
-      uses: actions/cache/save@v3
+      uses: actions/cache/save@6f8efc29b200d32929f49075959781ed54ec270c # v3
       with:
         path: src/vcpkg_installed
         key: ${{ steps.get-key.outputs.key }}
@@ -85,40 +203,38 @@ jobs:
     #    cp ./bin64/*.log test-output
     - name: Upload build
       if: success()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: mac64-build
         path: build-output
     - name: Upload installer
       if: success()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: mac64-installer
         path: installer
     #- name: Upload test results
     #  if: always()
-    #  uses: actions/upload-artifact@v3
+    #  uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
     #  with:
     #    name: mac-test-results
     #    path: test-output
 
   build-windows32:
-    runs-on: windows-2019
+    runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Get specific version CMake, v3.26.3
-      uses: lukka/get-cmake@v3.26.3
+    - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
     - name: Add msbuild to path
-      uses: microsoft/setup-msbuild@v1.3.1
+      uses: microsoft/setup-msbuild@1ff57057b5cfdc39105cd07a01d78e9b0ea0c14c # v1.3.1
 
     - name: Get vcpkg config fingerprint
       id: get-key
       run:  |
-        "key=" + (Get-FileHash -Algorithm MD5 .\src\vcpkg.json).Hash + "-w32" >> $Env:GITHUB_OUTPUT
+        "key=" + (Get-FileHash -Algorithm MD5 .\src\vcpkg.json).Hash + "-w32-$Env:ImageOS-$Env:ImageVersion" >> $Env:GITHUB_OUTPUT
 
     - name: Restore vcpkg cache
       id: cache-restore
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@6f8efc29b200d32929f49075959781ed54ec270c # v3
       with:
         path: src/vcpkg_installed
         key: ${{ steps.get-key.outputs.key }}
@@ -129,7 +245,7 @@ jobs:
 
     - name: Save vcpkg cache
       if: steps.cache-restore.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v3
+      uses: actions/cache/save@6f8efc29b200d32929f49075959781ed54ec270c # v3
       with:
         path: src/vcpkg_installed
         key: ${{ steps.get-key.outputs.key }}
@@ -140,49 +256,45 @@ jobs:
         .\scripts\build_installer.ps1 Release Win32 .\src $Env:ODBC_BUILD_PATH $Env:VCPKG_X86_INSTALL_PATH
     #- name: test
     #  run: |
-    #    cp .\\libraries\\VisualLeakDetector\\bin32\\*.* .\\bin32\\Release
-    #    cp .\\libraries\\VisualLeakDetector\\lib32\\*.lib .\\lib32\\Release
     #    .\run_test_runner.bat
     - name: Prepare output
       if: always()
       run: |
-        .\scripts\prepare_ci_output.ps1 $Env:ODBC_BIN_PATH $Env:ODBC_LIB_PATH $Env:ODBC_BUILD_PATH
+        .\scripts\prepare_ci_output.ps1 "$Env:ODBC_BIN_PATH\Release" "$Env:ODBC_LIB_PATH\Release" $Env:ODBC_BUILD_PATH
     - name: Upload build
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: windows32-build
         path: ci-output/build
     - name: Upload installer
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: windows32-installer
         path: ci-output/installer
     #- name: Upload test results
     #  if: always()
-    #  uses: actions/upload-artifact@v3
+    #  uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
     #  with:
     #    name: windows-test-results
     #    path: $CI_OUTPUT_PATH/test
 
   build-windows64:
-    runs-on: windows-2019
+    runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
-    - name: Get specific version CMake, v3.26.3
-      uses: lukka/get-cmake@v3.26.3
+    - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
     - name: Add msbuild to path
-      uses: microsoft/setup-msbuild@v1.3.1
+      uses: microsoft/setup-msbuild@1ff57057b5cfdc39105cd07a01d78e9b0ea0c14c # v1.3.1
 
     - name: Get vcpkg config fingerprint
       id: get-key
       run: |
-        "key=" + (Get-FileHash -Algorithm MD5 .\src\vcpkg.json).Hash + "-w64" >> $Env:GITHUB_OUTPUT
+        "key=" + (Get-FileHash -Algorithm MD5 .\src\vcpkg.json).Hash + "-w64-$Env:ImageOS-$Env:ImageVersion" >> $Env:GITHUB_OUTPUT
 
     - name: Restore vcpkg cache
       id: cache-restore
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@6f8efc29b200d32929f49075959781ed54ec270c # v3
       with:
         path: src/vcpkg_installed
         key: ${{ steps.get-key.outputs.key }}
@@ -193,7 +305,7 @@ jobs:
 
     - name: Save vcpkg cache
       if: steps.cache-restore.outputs.cache-hit != 'true'
-      uses: actions/cache/save@v3
+      uses: actions/cache/save@6f8efc29b200d32929f49075959781ed54ec270c # v3
       with:
         path: src/vcpkg_installed
         key: ${{ steps.get-key.outputs.key }}
@@ -204,28 +316,26 @@ jobs:
         .\scripts\build_installer.ps1 Release x64 .\src $Env:ODBC_BUILD_PATH $Env:VCPKG_X64_INSTALL_PATH
     #- name: test
     #  run: |
-    #    cp .\\libraries\\VisualLeakDetector\\bin64\\*.* .\\bin64\\Release
-    #    cp .\\libraries\\VisualLeakDetector\\lib64\\*.lib .\\lib64\\Release
     #    .\run_test_runner.bat
     - name: Prepare output
       if: always()
       run: |
-        .\scripts\prepare_ci_output.ps1 $Env:ODBC_BIN_PATH $Env:ODBC_LIB_PATH $Env:ODBC_BUILD_PATH
+        .\scripts\prepare_ci_output.ps1 "$Env:ODBC_BIN_PATH\Release" "$Env:ODBC_LIB_PATH\Release" $Env:ODBC_BUILD_PATH
     - name: Upload build
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: windows64-build
         path: ci-output/build
     - name: Upload installer
       if: always()
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: windows64-installer
         path: ci-output/installer
     #- name: Upload test results
     #  if: always()
-    #  uses: actions/upload-artifact@v3
+    #  uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
     #  with:
     #    name: windows-test-results
     #    path: ci-output/test-output

@@ -9,10 +9,6 @@ void unused_vargs(int cnt, ...);
 #ifdef WIN32
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
-#elif __APPLE__
-
-#elif __linux__
-#include "linux/kconfig.h"
 #endif
 
 #include <stdio.h> /* for FILE* pointers: see GLOBAL_VALUES */
@@ -185,6 +181,8 @@ typedef long ssize_t;
 #ifndef SIZEOF_VOID_P
 #ifdef __APPLE__
 #define SIZEOF_VOID_P 8
+#elif defined(__SIZEOF_POINTER__)
+#define SIZEOF_VOID_P __SIZEOF_POINTER__
 #else
 #error "SIZEOF_VOID_P must be defined"
 #endif  // __APPLE__
@@ -193,6 +191,8 @@ typedef long ssize_t;
 #ifndef SIZEOF_LONG
 #ifdef __APPLE__
 #define SIZEOF_LONG 8
+#elif defined(__SIZEOF_LONG__)
+#define SIZEOF_LONG __SIZEOF_LONG__
 #else
 #error "SIZEOF_LONG must be defined"
 #endif  // __APPLE__

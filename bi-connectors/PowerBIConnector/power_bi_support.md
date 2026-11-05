@@ -1,9 +1,9 @@
-﻿#  Connecting OpenSearch to Microsoft Power BI Desktop
+#  Connecting OpenSearch to Microsoft Power BI Desktop
 
 ## Prerequisites
 * Microsoft Power BI Desktop
-* [OpenSearch](https://docs-beta.opensearch.org/opensearch/install/index/)
-* [OpenSearch SQL ODBC driver](https://docs-beta.opensearch.org/search-plugins/sql/odbc/)
+* [OpenSearch](https://opensearch.org/docs/latest/install-and-configure/install-opensearch/index/)
+* [OpenSearch SQL ODBC driver](https://opensearch.org/docs/latest/search-plugins/sql/sql/odbc/)
 * [OpenSearchProject.mez](OpenSearchProject.mez) or [AmazonOpenSearchService.mez](AmazonOpenSearchService.mez)
 * Optional: [sqlodbc_import.pbids](PBIDSExamples/sqlodbc_import.pbids) to help with repeated connections to the same server 
 
@@ -54,7 +54,7 @@
 
 ## Using .PBIDS Files
 
-More info: https://docs.microsoft.com/en-us/power-bi/connect-data/desktop-data-sources#using-pbids-files-to-get-data
+More info: https://learn.microsoft.com/en-us/power-bi/connect-data/desktop-data-sources#using-pbids-files-to-get-data
 
 Example PBIDS file for OpenSearch: (available here: [sqlodbc_import.pbids](PBIDSExamples/sqlodbc_import.pbids))
 ```json
@@ -86,7 +86,7 @@ It will take you straight to the **Navigator** window for selecting the tables f
 
 ## Troubleshooting 
 
-* If you get an following error, please install [OpenSearch SQL ODBC Driver](https://docs-beta.opensearch.org/search-plugins/sql/odbc/).
+* If you get an following error, please install [OpenSearch SQL ODBC Driver](https://opensearch.org/docs/latest/search-plugins/sql/sql/odbc/).
 
 <img src="img/pbi_error_driver_not_installed.png" width="350">
 

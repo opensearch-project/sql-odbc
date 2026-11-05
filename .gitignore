@@ -20,10 +20,6 @@ lib64/*
 *.tlog
 include/*
 packages/*
-# Visual Studio 
-.vs/*
-# Visual Studio Code
-.vscode/*
 src/psqlodbc/psqlodbcBuilder/x64_*
 src/*/x64
 src/*/Win32
@@ -60,3 +56,8 @@ CTestTestfile.cmake
 /src/PowerBIConnector/obj/
 /src/PowerBIConnector/.vs/
 src/vcpkg_installed/
+
+# IDEs
+.vs/*
+.vscode/*
+.idea/*

@@ -136,6 +136,8 @@ enum {
     (QR_haskeyset(self)                                             \
          ? (CI_get_num_fields(self->fields) - self->num_key_fields) \
          : CI_get_num_fields(self->fields))
+#define QR_get_basename(self, fieldno_) \
+    (CI_get_basename(self->fields, fieldno_))
 #define QR_get_fieldname(self, fieldno_) \
     (CI_get_fieldname(self->fields, fieldno_))
 #define QR_get_fieldsize(self, fieldno_) \

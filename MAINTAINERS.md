@@ -10,20 +10,16 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Joshua Li         | [joshuali925](https://github.com/joshuali925)       | Amazon      |
 | Shenoy Pratik     | [ps48](https://github.com/ps48)                     | Amazon      |
 | Kavitha Mohan     | [kavithacm](https://github.com/kavithacm)           | Amazon      |
-| Rupal Mahajan     | [rupal-bq](https://github.com/rupal-bq)             | Amazon      |
-| Derek Ho          | [derek-ho](https://github.com/derek-ho)             | Amazon      |
 | Lior Perry        | [YANG-DB](https://github.com/YANG-DB)               | Amazon      |
-| Peter Fitzgibbons | [pjfitzgibbons](https://github.com/pjfitzgibbons)   | Amazon      |
-| Simeon Widdis     | [swiddis](https://github.com/swiddis)               | Amazon      |
+| Simeon Widdis     | [Swiddis](https://github.com/Swiddis)               | Amazon      |
 | Chen Dai          | [dai-chen](https://github.com/dai-chen)             | Amazon      |
-| Vamsi Manohar     | [vamsi-amazon](https://github.com/vamsi-amazon)     | Amazon      |
+| Vamsi Manohar     | [vamsimanohar](https://github.com/vamsimanohar)     | Amazon      |
 | Peng Huo          | [penghuo](https://github.com/penghuo)               | Amazon      |
 | Sean Kao          | [seankao-az](https://github.com/seankao-az)         | Amazon      |
 | Anirudha Jadhav   | [anirudha](https://github.com/anirudha)             | Amazon      |
 | Max Ksyunz        | [MaxKsyunz](https://github.com/MaxKsyunz)           | Improving   |
 | Yury Fridlyand    | [Yury-Fridlyand](https://github.com/Yury-Fridlyand) | Improving   |
 | Andrew Carbonetto | [acarbonetto](https://github.com/acarbonetto)       | Improving   |
-| Forest Vey        | [forestmvey](https://github.com/forestmvey)         | Improving   |
 | Guian Gumpac      | [GumpacG](https://github.com/GumpacG)               | Improving   |
 
 ## Emeritus Maintainers
@@ -36,3 +32,5 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Eugene Lee        | [eugenesk24](https://github.com/eugenesk24)             | Amazon      |
 | Zhongnan Su       | [zhongnansu](https://github.com/zhongnansu)             | Amazon      |
 | Chloe Zhang       | [chloe-zh](https://github.com/chloe-zh)                 | Amazon      |
+| Forest Vey        | [forestmvey](https://github.com/forestmvey)             | Improving   |
+| Derek Ho          | [derek-ho](https://github.com/derek-ho)                 | Amazon      |

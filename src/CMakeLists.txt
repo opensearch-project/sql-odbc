@@ -40,10 +40,18 @@ else()
 	option(BUILD_WITH_TESTS "Enable testing" ON)
 endif()
 
+option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
 if(MSVC)
-  add_compile_options(/W4 /WX)
+  add_compile_options(/W4)
+  if(WARNINGS_AS_ERRORS)
+    add_compile_options(/WX)
+  endif()
 else()
-  add_compile_options(-Wall -Wextra -pedantic -Werror)
+  add_compile_options(-Wall -Wextra -pedantic -Wno-deprecated-declarations
+                      $<$<COMPILE_LANGUAGE:C>:-Wno-strict-prototypes>)
+  if(WARNINGS_AS_ERRORS)
+    add_compile_options(-Werror)
+  endif()
 endif()
 
 if(NOT WIN32)
@@ -63,8 +71,8 @@ set(INSTALL_SRC "${CMAKE_CURRENT_SOURCE_DIR}/installer")
 set(DSN_INSTALLER_SRC "${CMAKE_CURRENT_SOURCE_DIR}/DSNInstaller")
 
 # ODBC Driver version
-set(DRIVER_PACKAGE_VERSION "1.5.0.0")
-set(DRIVER_PACKAGE_VERSION_COMMA_SEPARATED "1,5,0,0")
+set(DRIVER_PACKAGE_VERSION "1.6.0.0")
+set(DRIVER_PACKAGE_VERSION_COMMA_SEPARATED "1,6,0,0")
 add_compile_definitions( OPENSEARCH_ODBC_VERSION="${DRIVER_PACKAGE_VERSION}"
                          # Comma separated version is required for odbc administrator's driver file.
                          OPENSEARCH_ODBC_DRVFILE_VERSION=${DRIVER_PACKAGE_VERSION_COMMA_SEPARATED} )
@@ -73,18 +81,14 @@ add_compile_definitions( OPENSEARCH_ODBC_VERSION="${DRIVER_PACKAGE_VERSION}"
 set(PERFORMANCE_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/PerformanceTests")
 set(UT_HELPER "${UNIT_TESTS}/UTHelper")
 set(IT_HELPER "${INTEGRATION_TESTS}/ITODBCHelper")
-set(RABBIT_SRC ${LIBRARY_DIRECTORY}/rabbit/include)
-set(VLD_SRC ${LIBRARY_DIRECTORY}/VisualLeakDetector/include)
-if(WIN32)
-    set(RAPIDJSON_SRC ${LIBRARY_DIRECTORY}/rapidjson/include)
-endif ()
 # Without this symbols will be exporting to Unix but not Windows
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 
 find_package(aws-cpp-sdk-core CONFIG REQUIRED)
+# JSON: nlohmann/json from vcpkg on every platform (see vcpkg.json)
+find_package(nlohmann_json CONFIG REQUIRED)
 if(APPLE)
     find_package(ZLIB REQUIRED)
-    find_package(RapidJSON CONFIG REQUIRED)
 endif()
 
 # General compiler definitions
@@ -98,6 +102,11 @@ add_compile_definitions		(	_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING
 								_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 								# USE_SSL
 							)
+
+# <windows.h> min/max macros break std::numeric_limits<>::max() (nlohmann/json)
+if(WIN32)
+	add_compile_definitions(NOMINMAX)
+endif()
 
 # Platform specific compiler definitions
 if (WIN32 AND BITNESS EQUAL 64)
@@ -119,8 +128,15 @@ elseif(APPLE)
 	add_compile_definitions	(	WITH_IODBC
 								SQLCOLATTRIBUTE_SQLLEN
 							)
-	# iODBC includes
-	include_directories(/usr/local/opt/libiodbc/include)
+	# iODBC from Homebrew: /usr/local on Intel, /opt/homebrew on Apple Silicon
+	execute_process(COMMAND brew --prefix libiodbc
+					OUTPUT_VARIABLE IODBC_BREW_PREFIX
+					OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+	set(IODBC_HINTS ${IODBC_BREW_PREFIX} /opt/homebrew/opt/libiodbc /usr/local/opt/libiodbc)
+	find_path(IODBC_INCLUDE_DIR iodbcext.h HINTS ${IODBC_HINTS} PATH_SUFFIXES include REQUIRED)
+	find_library(IODBC_LIB iodbc HINTS ${IODBC_HINTS} PATH_SUFFIXES lib REQUIRED)
+	find_library(IODBCINST_LIB iodbcinst HINTS ${IODBC_HINTS} PATH_SUFFIXES lib REQUIRED)
+	include_directories(${IODBC_INCLUDE_DIR})
 elseif(UNIX)
 	# Unix specific
 	add_compile_definitions	(	WITH_UNIXODBC

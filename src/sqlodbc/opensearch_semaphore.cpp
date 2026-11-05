@@ -27,15 +27,15 @@ opensearch_semaphore::opensearch_semaphore(unsigned int initial, unsigned int ca
 #ifdef __APPLE__
 #pragma clang diagnostic pop
 #endif  // __APPLE__
-    :
 #ifdef WIN32
-      m_semaphore(createSemaphore(initial, capacity))
+    : m_semaphore(createSemaphore(initial, capacity))
 #elif defined(__APPLE__)
-      m_semaphore(dispatch_semaphore_create(initial))
+    : m_semaphore(dispatch_semaphore_create(initial))
 #endif
 {
 #if !defined(WIN32) && !defined(__APPLE__)
-    sem_init(&m_semaphore, 0, capacity);
+    (void)capacity;
+    sem_init(&m_semaphore, 0, initial);
 #endif
 }
 
@@ -83,7 +83,12 @@ bool opensearch_semaphore::try_lock_for(unsigned int timeout_ms) {
         return false;
     }
 
-    ts.tv_nsec += timeout_ms * 1000000;
-    return 0 == sem_timedwait(&m_semaphore & ts);
+    ts.tv_sec += timeout_ms / 1000;
+    ts.tv_nsec += static_cast< long >(timeout_ms % 1000) * 1000000L;
+    if (ts.tv_nsec >= 1000000000L) {
+        ts.tv_sec += 1;
+        ts.tv_nsec -= 1000000000L;
+    }
+    return 0 == sem_timedwait(&m_semaphore, &ts);
 #endif
 }

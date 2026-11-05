@@ -107,7 +107,7 @@ See [run_tests.md](./run_tests.md)
 
 **BUILD_WITH_TESTS**
 
-(Defaults to ON) If disabled, all tests and and test dependencies will be excluded from build which will optimize the installer package size. This option can set with the command line (using `-D`).
+(Defaults to ON) If disabled, all tests and test dependencies will be excluded from build which will optimize the installer package size. This option can set with the command line (using `-D`).
 
 ### Working With SSL/TLS
 
@@ -119,7 +119,7 @@ If you plan to use OpenSearch Dashboards, as suggested for this project, you mus
 
 ### Setting up a DSN
 
-A **D**ata **S**ouce **N**ame is used to store driver information in the system. By storing the information in the system, the information does not need to be specified each time the driver connects.
+A **D**ata **S**ource **N**ame is used to store driver information in the system. By storing the information in the system, the information does not need to be specified each time the driver connects.
 
 #### Windows
 
