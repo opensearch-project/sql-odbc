@@ -84,16 +84,20 @@ class OpenSearchCommunication {
     void SetIsAossServerless();
     void SetSqlEndpoint();
 
-    // TODO #35 - Go through and add error messages on exit conditions
-    std::string m_error_message;
+    // Declared before m_client_encoding, which is initialized from it.
     const std::vector< std::string > m_supported_client_encodings = {"UTF8"};
 
+    // Keep the order below in sync with the constructor's init list
+    // (-Wreorder).
     ConnStatusType m_status;
     ConnErrorType m_error_type;
     std::shared_ptr< ErrorDetails > m_error_details;
-    bool is_aoss_serverless;
+    // Set by SetIsAossServerless() in EstablishConnection()
+    bool is_aoss_serverless = false;
     bool m_valid_connection_options;
     bool m_is_retrieving;
+    // TODO #35 - Go through and add error messages on exit conditions
+    std::string m_error_message;
     OpenSearchResultQueue m_result_queue;
     runtime_options m_rt_opts;
     std::string m_client_encoding;
