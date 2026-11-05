@@ -57,6 +57,13 @@ class OpenSearchCommunication {
         const std::string& cursor);
     // Sets a clear error and returns false if query isn't valid UTF-8
     bool CheckQueryEncoding(const std::string& query);
+    // A response body shortened to at most max_bytes for error text, cut
+    // before any UTF-8 sequence that would straddle the limit and marked
+    // "... (N bytes total)". Bodies can carry row data and be any size.
+    static std::string TruncateResponseBody(const std::string& body,
+                                            size_t max_bytes = 256);
+    // TruncateResponseBody(body), after logging the whole body at TRACE
+    std::string ResponseBodyForMessage(const std::string& body);
     void AwsHttpResponseToString(
         std::shared_ptr< Aws::Http::HttpResponse > response,
         std::string& output);

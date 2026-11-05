@@ -2,6 +2,9 @@
 #include "pch.h"
 #include "unit_test_helper.h"
 #include "opensearch_communication.h"
+#include "opensearch_connection.h"
+#include <cstdio>
+#include <memory>
 // clang-format on
 
 const size_t valid_option_count = 4;
@@ -148,6 +151,74 @@ TEST(TestBuildRequestBody, InvalidUtf8QueryIsRejected) {
     EXPECT_EQ(std::nullopt,
               OpenSearchCommunication::BuildRequestBody("WHERE t = 'caf\xe9'",
                                                         "", ""));
+}
+
+// Response bodies in error text (no cluster needed)
+
+TEST(TestTruncateResponseBody, ShortBodyIsUnchanged) {
+    EXPECT_EQ("", OpenSearchCommunication::TruncateResponseBody("", 8));
+    EXPECT_EQ("abc", OpenSearchCommunication::TruncateResponseBody("abc", 8));
+    EXPECT_EQ("abcdefgh",
+              OpenSearchCommunication::TruncateResponseBody("abcdefgh", 8));
+}
+
+TEST(TestTruncateResponseBody, LongBodyIsCutAndMarked) {
+    EXPECT_EQ("abcdefgh... (10 bytes total)",
+              OpenSearchCommunication::TruncateResponseBody("abcdefghij", 8));
+}
+
+TEST(TestTruncateResponseBody, DefaultLimitIs256Bytes) {
+    const std::string body(1000, 'x');
+    EXPECT_EQ(std::string(256, 'x') + "... (1000 bytes total)",
+              OpenSearchCommunication::TruncateResponseBody(body));
+}
+
+// U+00E9 is 2 bytes and U+1F600 is 4: neither may be split at the limit
+TEST(TestTruncateResponseBody, DoesNotSplitMultibyteSequence) {
+    EXPECT_EQ("abc... (6 bytes total)",
+              OpenSearchCommunication::TruncateResponseBody("abc\xc3\xa9z", 4));
+    EXPECT_EQ("abc\xc3\xa9... (6 bytes total)",
+              OpenSearchCommunication::TruncateResponseBody("abc\xc3\xa9z", 5));
+    EXPECT_EQ("a... (6 bytes total)",
+              OpenSearchCommunication::TruncateResponseBody(
+                  "a\xf0\x9f\x98\x80z", 4));
+}
+
+// Not UTF-8 at all: still bounded, just cut at the limit
+TEST(TestTruncateResponseBody, InvalidUtf8IsStillBounded) {
+    const std::string body(10, '\x80');
+    EXPECT_EQ(std::string(4, '\x80') + "... (10 bytes total)",
+              OpenSearchCommunication::TruncateResponseBody(body, 4));
+}
+
+// Server URL scheme (no cluster needed)
+
+namespace {
+std::string ServerUrlFor(const char* server, char ssl_flag) {
+    auto conn = std::make_unique< ConnectionClass >();
+    snprintf(conn->connInfo.server, sizeof(conn->connInfo.server), "%s",
+             server);
+    conn->connInfo.use_ssl = ssl_flag;
+    return generateValidServerUrl(conn.get());
+}
+}  // namespace
+
+// UseSSL is stored as the character '0' or '1', not as 0 or 1
+TEST(TestGenerateValidServerUrl, BareHostWithoutSsl) {
+    EXPECT_EQ("http://localhost", ServerUrlFor("localhost", '0'));
+}
+
+TEST(TestGenerateValidServerUrl, BareHostWithSsl) {
+    EXPECT_EQ("https://localhost", ServerUrlFor("localhost", '1'));
+}
+
+TEST(TestGenerateValidServerUrl, ExplicitSchemeIsKept) {
+    EXPECT_EQ("http://localhost", ServerUrlFor("http://localhost", '1'));
+    EXPECT_EQ("https://localhost", ServerUrlFor("https://localhost", '0'));
+}
+
+TEST(TestGenerateValidServerUrl, EmptyServer) {
+    EXPECT_EQ("", ServerUrlFor("", '0'));
 }
 
 int main(int argc, char** argv) {
