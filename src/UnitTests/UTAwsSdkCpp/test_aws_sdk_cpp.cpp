@@ -12,6 +12,7 @@
 #pragma clang diagnostic pop
 #endif  // __APPLE__
 #include "unit_test_helper.h"
+#include <cstdlib>
 
 using namespace Aws::Auth;
 using namespace Aws::Client;
@@ -23,6 +24,14 @@ static const char host[] = "https://search-bit-quill-cx3hpfoxvasohujxkllmgjwqde.
 static const char region[] = "us-west-2";
 
 TEST(AWS_SIGV4, EnvironmentAWSCredentials) {
+	// EnvironmentAWSCredentialsProvider reads these; without them the request
+	// is unsigned and the test can only fail
+	const char* access_key = std::getenv("AWS_ACCESS_KEY_ID");
+	const char* secret_key = std::getenv("AWS_SECRET_ACCESS_KEY");
+	if (!access_key || !*access_key || !secret_key || !*secret_key) {
+		GTEST_SKIP() << "AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY not set";
+	}
+
 	Aws::SDKOptions options;
 	EXPECT_NO_THROW(Aws::InitAPI(options));
 
