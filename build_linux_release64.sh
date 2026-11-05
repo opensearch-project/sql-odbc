@@ -20,4 +20,4 @@ cmake -S src -B cmake-build64 \
 # Integration and performance tests don't compile on unixODBC yet (SQLWCHAR is
 # 2 bytes, wchar_t is 4), so only build the driver and unit tests for now.
 cmake --build cmake-build64 --parallel "$(nproc)" --target \
-  sqlodbc ut_critical_section ut_conn ut_aws_sdk_cpp ut_mylog ut_parse_result
+  sqlodbc ut_critical_section ut_conn ut_aws_sdk_cpp ut_mylog ut_parse_result ut_convert

@@ -1350,9 +1350,7 @@ int copy_and_convert_field(StatementClass *stmt, OID field_type, int atttypmod,
                     int wdt;
                     int fr = effective_fraction(std_time.fr, &wdt);
 
-                    char *fraction = NULL;
-                    len = sprintf(fraction, ".%0*d", wdt, fr);
-                    strcat(midtemp, fraction);
+                    len = SPRINTFCAT_FIXED(midtemp, ".%0*d", wdt, fr);
                 }
                 break;
 
