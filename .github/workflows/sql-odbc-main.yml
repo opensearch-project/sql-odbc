@@ -61,6 +61,7 @@ jobs:
       run: |
         ./build/odbc/bin/ut_critical_section
         ./build/odbc/bin/ut_parse_result
+        ./build/odbc/bin/ut_convert
         # Reads of uninitialised memory only fail reliably under memcheck
         valgrind --error-exitcode=1 ./build/odbc/bin/ut_mylog
 
