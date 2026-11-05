@@ -3,7 +3,7 @@
 #include "unit_test_helper.h"
 #include "opensearch_communication.h"
 #include "opensearch_connection.h"
-#include <cstring>
+#include <cstdio>
 #include <memory>
 // clang-format on
 
@@ -194,10 +194,11 @@ TEST(TestTruncateResponseBody, InvalidUtf8IsStillBounded) {
 // Server URL scheme (no cluster needed)
 
 namespace {
-std::string ServerUrlFor(const char* server, char use_ssl) {
+std::string ServerUrlFor(const char* server, char ssl_flag) {
     auto conn = std::make_unique< ConnectionClass >();
-    strncpy(conn->connInfo.server, server, sizeof(conn->connInfo.server) - 1);
-    conn->connInfo.use_ssl = use_ssl;
+    snprintf(conn->connInfo.server, sizeof(conn->connInfo.server), "%s",
+             server);
+    conn->connInfo.use_ssl = ssl_flag;
     return generateValidServerUrl(conn.get());
 }
 }  // namespace
