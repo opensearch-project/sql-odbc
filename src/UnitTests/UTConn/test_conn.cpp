@@ -2,6 +2,9 @@
 #include "pch.h"
 #include "unit_test_helper.h"
 #include "opensearch_communication.h"
+#include "opensearch_connection.h"
+#include <cstring>
+#include <memory>
 // clang-format on
 
 const size_t valid_option_count = 4;
@@ -148,6 +151,35 @@ TEST(TestBuildRequestBody, InvalidUtf8QueryIsRejected) {
     EXPECT_EQ(std::nullopt,
               OpenSearchCommunication::BuildRequestBody("WHERE t = 'caf\xe9'",
                                                         "", ""));
+}
+
+// Server URL scheme (no cluster needed)
+
+namespace {
+std::string ServerUrlFor(const char* server, char use_ssl) {
+    auto conn = std::make_unique< ConnectionClass >();
+    strncpy(conn->connInfo.server, server, sizeof(conn->connInfo.server) - 1);
+    conn->connInfo.use_ssl = use_ssl;
+    return generateValidServerUrl(conn.get());
+}
+}  // namespace
+
+// UseSSL is stored as the character '0' or '1', not as 0 or 1
+TEST(TestGenerateValidServerUrl, BareHostWithoutSsl) {
+    EXPECT_EQ("http://localhost", ServerUrlFor("localhost", '0'));
+}
+
+TEST(TestGenerateValidServerUrl, BareHostWithSsl) {
+    EXPECT_EQ("https://localhost", ServerUrlFor("localhost", '1'));
+}
+
+TEST(TestGenerateValidServerUrl, ExplicitSchemeIsKept) {
+    EXPECT_EQ("http://localhost", ServerUrlFor("http://localhost", '1'));
+    EXPECT_EQ("https://localhost", ServerUrlFor("https://localhost", '0'));
+}
+
+TEST(TestGenerateValidServerUrl, EmptyServer) {
+    EXPECT_EQ("", ServerUrlFor("", '0'));
 }
 
 int main(int argc, char** argv) {

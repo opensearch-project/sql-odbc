@@ -94,7 +94,7 @@ std::string generateValidServerUrl(ConnectionClass *self) {
     bool http_prefix_prepended = (server_url.size() > http_prefix.size() && (server_url.substr(0, http_prefix.size()) == http_prefix));
     bool https_prefix_prepended = (server_url.size() > https_prefix.size() && (server_url.substr(0, https_prefix.size()) == https_prefix));
     if (!http_prefix_prepended && !https_prefix_prepended) {
-        valid_server_url = self->connInfo.use_ssl ?
+        valid_server_url = (self->connInfo.use_ssl == '1') ?
             std::string(https_prefix) + std::string(server_url) :
             std::string(http_prefix) + std::string(server_url);
     } else {
