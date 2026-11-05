@@ -32,72 +32,74 @@ static const std::string DISTRIBUTION_OPENSEARCH = "opensearch";
 static const std::string ctype = "application/json";
 static const std::string ERROR_MSG_PREFIX =
     "[OpenSearch][SQL ODBC Driver][SQL Plugin] ";
-static const std::string JSON_SCHEMA =
-    "{"  // This was generated from the example OpenSearch data
-    "\"type\": \"object\","
-    "\"properties\": {"
-    "\"schema\": {"
-    "\"type\": \"array\","
-    "\"items\": [{"
-    "\"type\": \"object\","
-    "\"properties\": {"
-    "\"name\": { \"type\": \"string\" },"
-    "\"type\": { \"type\": \"string\" }"
-    "},"
-    "\"required\": [ \"name\", \"type\" ]"
-    "}]"
-    "},"
-    "\"cursor\": { \"type\": \"string\" },"
-    "\"total\": { \"type\": \"integer\" },"
-    "\"datarows\": {"
-    "\"type\": \"array\","
-    "\"items\": {}"
-    "},"
-    "\"size\": { \"type\": \"integer\" },"
-    "\"status\": { \"type\": \"integer\" }"
-    "},"
-    "\"required\": [\"schema\", \"total\", \"datarows\", \"size\", \"status\"]"
-    "}";
-static const std::string CURSOR_JSON_SCHEMA =
-    "{"  // This was generated from the example OpenSearch data
-    "\"type\": \"object\","
-    "\"properties\": {"
-    "\"cursor\": { \"type\": \"string\" },"
-    "\"datarows\": {"
-    "\"type\": \"array\","
-    "\"items\": {}"
-    "},"
-    "\"status\": { \"type\": \"integer\" }"
-    "},"
-    "\"required\":  [\"datarows\"]"
-    "}";
-static const std::string ERROR_RESPONSE_SCHEMA = R"EOF(
-{
-    "type": "object",
-    "properties": {
-        "error": {
-            "type": "object",
-            "properties": {
-                "reason": { "type": "string" },
-                "details": { "type": "string" },
-                "type": { "type": "string" }
-            },
-            "required": [
-                "reason",
-                "details",
-                "type"
-            ]
-        },
-        "status": {
-            "type": "integer"
-        }
-    },
-    "required": [
-        "error",
-        "status"
-    ]
+// Response shape checks. These replace JSON-schema validation: the shapes are
+// small and fixed, so explicit checks are clearer and need no schema engine.
+namespace {
+class json_shape_error : public std::runtime_error {
+   public:
+    using std::runtime_error::runtime_error;
+};
+
+bool IsString(const json_doc& v) { return v.is_string(); }
+bool IsInteger(const json_doc& v) { return v.is_number_integer(); }
+bool IsArray(const json_doc& v) { return v.is_array(); }
+bool IsObject(const json_doc& v) { return v.is_object(); }
+
+// Check obj[key] with is_type; a missing key fails only when required.
+void CheckField(const json_doc& obj, const char* key,
+                bool (*is_type)(const json_doc&), const char* type_name,
+                bool required) {
+    auto it = obj.find(key);
+    if (it == obj.end()) {
+        if (required)
+            throw json_shape_error(std::string("missing required field '")
+                                   + key + "'");
+        return;
+    }
+    if (!is_type(*it))
+        throw json_shape_error(std::string("field '") + key + "' is not "
+                               + type_name);
 }
-)EOF";
+
+void CheckObject(const json_doc& v, const char* what) {
+    if (!v.is_object())
+        throw json_shape_error(std::string(what) + " is not an object");
+}
+
+// First page of a query result
+void CheckResultShape(const json_doc& doc) {
+    CheckObject(doc, "response");
+    CheckField(doc, "schema", IsArray, "an array", true);
+    for (const auto& column : doc.at("schema")) {
+        CheckObject(column, "schema entry");
+        CheckField(column, "name", IsString, "a string", true);
+        CheckField(column, "type", IsString, "a string", true);
+    }
+    CheckField(doc, "cursor", IsString, "a string", false);
+    CheckField(doc, "total", IsInteger, "an integer", true);
+    CheckField(doc, "datarows", IsArray, "an array", true);
+    CheckField(doc, "size", IsInteger, "an integer", true);
+    CheckField(doc, "status", IsInteger, "an integer", true);
+}
+
+// Follow-up page fetched with a cursor
+void CheckCursorShape(const json_doc& doc) {
+    CheckObject(doc, "response");
+    CheckField(doc, "cursor", IsString, "a string", false);
+    CheckField(doc, "datarows", IsArray, "an array", true);
+    CheckField(doc, "status", IsInteger, "an integer", false);
+}
+
+void CheckErrorShape(const json_doc& doc) {
+    CheckObject(doc, "response");
+    CheckField(doc, "error", IsObject, "an object", true);
+    const json_doc& error = doc.at("error");
+    CheckField(error, "reason", IsString, "a string", true);
+    CheckField(error, "details", IsString, "a string", true);
+    CheckField(error, "type", IsString, "a string", true);
+    CheckField(doc, "status", IsInteger, "an integer", true);
+}
+}  // namespace
 
 namespace {
     /**
@@ -159,12 +161,11 @@ void OpenSearchCommunication::PrepareCursorResult(OpenSearchResult& opensearch_r
     // Prepare document and validate result
     try {
         LogMsg(OPENSEARCH_DEBUG, "Parsing result JSON with cursor.");
-        opensearch_result.opensearch_result_doc.parse(
-            opensearch_result.result_json,
-                                      CURSOR_JSON_SCHEMA);
-    } catch (const rabbit::parse_error& e) {
-        // The exception rabbit gives is quite useless - providing the json
-        // will aid debugging for users
+        opensearch_result.opensearch_result_doc =
+            json_doc::parse(opensearch_result.result_json);
+        CheckCursorShape(opensearch_result.opensearch_result_doc);
+    } catch (const std::exception& e) {
+        // Providing the json will aid debugging for users
         std::string str = "Exception obtained '" + std::string(e.what())
                           + "' when parsing json string '"
                           + opensearch_result.result_json + "'.";
@@ -177,21 +178,18 @@ std::shared_ptr< ErrorDetails > OpenSearchCommunication::ParseErrorResponse(
     // Prepare document and validate schema
     try {
         LogMsg(OPENSEARCH_DEBUG, "Parsing error response (with schema validation)");
-        opensearch_result.opensearch_result_doc.parse(
-            opensearch_result.result_json,
-                                      ERROR_RESPONSE_SCHEMA);
+        opensearch_result.opensearch_result_doc =
+            json_doc::parse(opensearch_result.result_json);
+        CheckErrorShape(opensearch_result.opensearch_result_doc);
 
+        const json_doc& error = opensearch_result.opensearch_result_doc.at("error");
         auto error_details = std::make_shared< ErrorDetails >();
-        error_details->reason =
-            opensearch_result.opensearch_result_doc["error"]["reason"].as_string();
-        error_details->details =
-            opensearch_result.opensearch_result_doc["error"]["details"].as_string();
-        error_details->source_type =
-            opensearch_result.opensearch_result_doc["error"]["type"].as_string();
+        error_details->reason = error.at("reason").get< std::string >();
+        error_details->details = error.at("details").get< std::string >();
+        error_details->source_type = error.at("type").get< std::string >();
         return error_details;
-    } catch (const rabbit::parse_error& e) {
-        // The exception rabbit gives is quite useless - providing the json
-        // will aid debugging for users
+    } catch (const std::exception& e) {
+        // Providing the json will aid debugging for users
         std::string str = "Exception obtained '" + std::string(e.what())
                           + "' when parsing json string '"
                           + opensearch_result.result_json + "'.";
@@ -220,11 +218,11 @@ void OpenSearchCommunication::GetJsonSchema(OpenSearchResult& opensearch_result)
     // Prepare document and validate schema
     try {
         LogMsg(OPENSEARCH_DEBUG, "Parsing result JSON with schema.");
-        opensearch_result.opensearch_result_doc.parse(
-            opensearch_result.result_json, JSON_SCHEMA);
-    } catch (const rabbit::parse_error& e) {
-        // The exception rabbit gives is quite useless - providing the json
-        // will aid debugging for users
+        opensearch_result.opensearch_result_doc =
+            json_doc::parse(opensearch_result.result_json);
+        CheckResultShape(opensearch_result.opensearch_result_doc);
+    } catch (const std::exception& e) {
+        // Providing the json will aid debugging for users
         std::string str = "Exception obtained '" + std::string(e.what())
                           + "' when parsing json string '"
                           + opensearch_result.result_json + "'.";
@@ -401,6 +399,40 @@ void OpenSearchCommunication::InitializeConnection() {
     m_http_client = Aws::Http::CreateHttpClient(config);
 }
 
+std::optional< std::string > OpenSearchCommunication::BuildRequestBody(
+    const std::string& query, const std::string& fetch_size,
+    const std::string& cursor) {
+    json_doc body = json_doc::object();
+    if (!query.empty()) {
+        body["query"] = query;
+        if (!fetch_size.empty() && fetch_size != "-1")
+            body["fetch_size"] = fetch_size;
+    } else if (!cursor.empty()) {
+        body["cursor"] = cursor;
+    }
+    // Strict: an ANSI app on a non-UTF-8 codepage passes e.g. Latin-1 bytes
+    // straight through, and replacing them would silently change the query
+    try {
+        return body.dump();
+    } catch (const nlohmann::json::type_error&) {
+        return std::nullopt;
+    }
+}
+
+// For app-supplied query text. IssueRequest also refuses invalid UTF-8, but
+// its callers can only report a generic NULL response, so check up front
+bool OpenSearchCommunication::CheckQueryEncoding(const std::string& query) {
+    if (BuildRequestBody(query, "", ""))
+        return true;
+    m_error_message =
+        "Query text is not valid UTF-8. Use the wide-character (W) ODBC "
+        "functions or a UTF-8 client encoding.";
+    SetErrorDetails("Execution error", m_error_message,
+                    ConnErrorType::CONN_ERROR_QUERY_SYNTAX);
+    LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
+    return false;
+}
+
 std::shared_ptr< Aws::Http::HttpResponse >
 OpenSearchCommunication::IssueRequest(
     const std::string& endpoint, const Aws::Http::HttpMethod request_type,
@@ -425,19 +457,19 @@ OpenSearchCommunication::IssueRequest(
 
     // Set body
     if (!query.empty() || !cursor.empty()) {
-        rabbit::object body;
-        if (!query.empty()) {
-            body["query"] = query;
-            if (!fetch_size.empty() && fetch_size != "-1")
-                body["fetch_size"] = fetch_size;
-        } else if (!cursor.empty()) {
-            body["cursor"] = cursor;
+        std::optional< std::string > body =
+            BuildRequestBody(query, fetch_size, cursor);
+        if (!body) {
+            LogMsg(OPENSEARCH_ERROR,
+                   "Not sending request: query text is not valid UTF-8.");
+            return nullptr;
         }
+        const std::string& body_str = *body;
         std::shared_ptr< Aws::StringStream > aws_ss =
-            Aws::MakeShared< Aws::StringStream >("RabbitStream");
-        *aws_ss << std::string(body.str());
+            Aws::MakeShared< Aws::StringStream >("RequestBodyStream");
+        *aws_ss << body_str;
         request->AddContentBody(aws_ss);
-        request->SetContentLength(Aws::Utils::StringUtils::to_string(body.str().size()));
+        request->SetContentLength(Aws::Utils::StringUtils::to_string(body_str.size()));
     }
 
     // Handle authentication
@@ -614,6 +646,10 @@ std::vector< std::string > OpenSearchCommunication::GetColumnsWithSelectQuery(
     std::string msg = "Attempting to execute a query \"" + query + "\"";
     LogMsg(OPENSEARCH_DEBUG, msg.c_str());
 
+    // table_name comes from the app (SQLColumns), so it can be non-UTF-8 too
+    if (!CheckQueryEncoding(query))
+        return list_of_column;
+
     // Issue request
     std::shared_ptr< Aws::Http::HttpResponse > response =
         IssueRequest(sql_endpoint, Aws::Http::HttpMethod::HTTP_POST,
@@ -656,10 +692,8 @@ std::vector< std::string > OpenSearchCommunication::GetColumnsWithSelectQuery(
 
     GetJsonSchema(*result);
 
-    rabbit::array schema_array = result->opensearch_result_doc["schema"];
-    for (rabbit::array::iterator it = schema_array.begin();
-         it != schema_array.end(); ++it) {
-        std::string column_name = it->at("name").as_string();
+    for (const auto& column : result->opensearch_result_doc.at("schema")) {
+        std::string column_name = column.at("name").get< std::string >();
         list_of_column.push_back(column_name);
     }
 
@@ -687,6 +721,9 @@ int OpenSearchCommunication::ExecDirect(const char* query, const char* fetch_siz
     std::string fetch_size(fetch_size_);
     std::string msg = "Attempting to execute a query \"" + statement + "\"";
     LogMsg(OPENSEARCH_DEBUG, msg.c_str());
+
+    if (!CheckQueryEncoding(statement))
+        return -1;
 
     // Issue request
     std::shared_ptr< Aws::Http::HttpResponse > response =
@@ -785,9 +822,9 @@ void OpenSearchCommunication::SendCursorQueries(std::string cursor) {
             AwsHttpResponseToString(response, result->result_json);
             PrepareCursorResult(*result);
 
-            if (result->opensearch_result_doc.has("cursor")) {
-                cursor = result->opensearch_result_doc["cursor"].as_string();
-                result->cursor = result->opensearch_result_doc["cursor"].as_string();
+            if (result->opensearch_result_doc.contains("cursor")) {
+                cursor = result->opensearch_result_doc.at("cursor").get< std::string >();
+                result->cursor = result->opensearch_result_doc.at("cursor").get< std::string >();
             } else {
                 SendCloseCursorRequest(cursor);
                 cursor.clear();
@@ -837,15 +874,14 @@ void OpenSearchCommunication::StopResultRetrieval() {
 
 void OpenSearchCommunication::ConstructOpenSearchResult(OpenSearchResult& result) {
     GetJsonSchema(result);
-    rabbit::array schema_array = result.opensearch_result_doc["schema"];
-    for (rabbit::array::iterator it = schema_array.begin();
-         it != schema_array.end(); ++it) {
+    const json_doc& schema_array = result.opensearch_result_doc.at("schema");
+    for (const auto& column : schema_array) {
         // The SQL plugin adds "alias" when the query aliases the column
         // (SELECT x AS y), and may send alias == name; it is the label the
         // user asked for.
-        std::string column_name = it->has("alias")
-                                      ? it->at("alias").as_string()
-                                      : it->at("name").as_string();
+        std::string column_name = column.contains("alias")
+                                      ? column.at("alias").get< std::string >()
+                                      : column.at("name").get< std::string >();
 
         ColumnInfo col_info;
         col_info.field_name = column_name;
@@ -858,8 +894,8 @@ void OpenSearchCommunication::ConstructOpenSearchResult(OpenSearchResult& result
 
         result.column_info.push_back(col_info);
     }
-    if (result.opensearch_result_doc.has("cursor")) {
-        result.cursor = result.opensearch_result_doc["cursor"].as_string();
+    if (result.opensearch_result_doc.contains("cursor")) {
+        result.cursor = result.opensearch_result_doc.at("cursor").get< std::string >();
     }
     result.command_type = "SELECT";
     result.num_fields = (uint16_t)schema_array.size();
@@ -926,19 +962,18 @@ std::string OpenSearchCommunication::GetServerVersion() {
     if (response->GetResponseCode() == Aws::Http::HttpResponseCode::OK) {
         try {
             AwsHttpResponseToString(response, m_response_str);
-            rabbit::document doc;
-            doc.parse(m_response_str);
-            if (doc.has("version") && doc["version"].has("number")) {
-                return doc["version"]["number"].as_string();
+            json_doc doc = json_doc::parse(m_response_str);
+            if (doc.contains("version") && doc.at("version").contains("number")) {
+                return doc.at("version").at("number").get< std::string >();
             }
 
-        } catch (const rabbit::type_mismatch& e) {
+        } catch (const nlohmann::json::type_error& e) {
             m_error_message = "Error parsing main endpoint response: "
                               + std::string(e.what());
             SetErrorDetails("Connection error", m_error_message,
                             ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
             LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
-        } catch (const rabbit::parse_error& e) {
+        } catch (const nlohmann::json::parse_error& e) {
             m_error_message = "Error parsing main endpoint response: "
                               + std::string(e.what());
             SetErrorDetails("Connection error", m_error_message,
@@ -991,18 +1026,17 @@ std::string OpenSearchCommunication::GetServerDistribution() {
     if (response->GetResponseCode() == Aws::Http::HttpResponseCode::OK) {
         try {
             AwsHttpResponseToString(response, m_response_str);
-            rabbit::document doc;
-            doc.parse(m_response_str);
-            if (doc.has("version") && doc["version"].has("distribution")) {
-                return doc["version"]["distribution"].as_string();
+            json_doc doc = json_doc::parse(m_response_str);
+            if (doc.contains("version") && doc.at("version").contains("distribution")) {
+                return doc.at("version").at("distribution").get< std::string >();
             }
-        } catch (const rabbit::type_mismatch& e) {
+        } catch (const nlohmann::json::type_error& e) {
             m_error_message = "Error parsing main endpoint response: "
                               + std::string(e.what());
             SetErrorDetails("Connection error", m_error_message,
                             ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
             LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
-        } catch (const rabbit::parse_error& e) {
+        } catch (const nlohmann::json::parse_error& e) {
             m_error_message = "Error parsing main endpoint response: "
                               + std::string(e.what());
             SetErrorDetails("Connection error", m_error_message,
@@ -1046,19 +1080,18 @@ std::string OpenSearchCommunication::GetClusterName() {
     if (response->GetResponseCode() == Aws::Http::HttpResponseCode::OK) {
         try {
             AwsHttpResponseToString(response, m_response_str);
-            rabbit::document doc;
-            doc.parse(m_response_str);
-            if (doc.has("cluster_name")) {
-                return doc["cluster_name"].as_string();
+            json_doc doc = json_doc::parse(m_response_str);
+            if (doc.contains("cluster_name")) {
+                return doc.at("cluster_name").get< std::string >();
             }
 
-        } catch (const rabbit::type_mismatch& e) {
+        } catch (const nlohmann::json::type_error& e) {
             m_error_message = "Error parsing main endpoint response: "
                               + std::string(e.what());
             SetErrorDetails("Connection error", m_error_message,
                             ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
             LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
-        } catch (const rabbit::parse_error& e) {
+        } catch (const nlohmann::json::parse_error& e) {
             m_error_message = "Error parsing main endpoint response: "
                               + std::string(e.what());
             SetErrorDetails("Connection error", m_error_message,

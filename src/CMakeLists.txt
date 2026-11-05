@@ -81,14 +81,12 @@ add_compile_definitions( OPENSEARCH_ODBC_VERSION="${DRIVER_PACKAGE_VERSION}"
 set(PERFORMANCE_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/PerformanceTests")
 set(UT_HELPER "${UNIT_TESTS}/UTHelper")
 set(IT_HELPER "${INTEGRATION_TESTS}/ITODBCHelper")
-set(RABBIT_SRC ${LIBRARY_DIRECTORY}/rabbit/include)
 # Without this symbols will be exporting to Unix but not Windows
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS TRUE)
 
 find_package(aws-cpp-sdk-core CONFIG REQUIRED)
-# RapidJSON comes from vcpkg on every platform (see vcpkg.json)
-find_package(RapidJSON CONFIG REQUIRED)
-set(RAPIDJSON_SRC ${RapidJSON_INCLUDE_DIRS})
+# JSON: nlohmann/json from vcpkg on every platform (see vcpkg.json)
+find_package(nlohmann_json CONFIG REQUIRED)
 if(APPLE)
     find_package(ZLIB REQUIRED)
 endif()
@@ -104,6 +102,11 @@ add_compile_definitions		(	_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING
 								_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 								# USE_SSL
 							)
+
+# <windows.h> min/max macros break std::numeric_limits<>::max() (nlohmann/json)
+if(WIN32)
+	add_compile_definitions(NOMINMAX)
+endif()
 
 # Platform specific compiler definitions
 if (WIN32 AND BITNESS EQUAL 64)

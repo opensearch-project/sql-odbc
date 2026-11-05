@@ -41,10 +41,13 @@ include_directories(
 						${LIBRARY_DIRECTORY}/../src
 						${CMAKE_CURRENT_SOURCE_DIR}
 						${OPENSEARCHENLIST_SRC}
-						${RABBIT_SRC}
-						${RAPIDJSON_SRC}
+
 						${AWSSDK_INCLUDE_DIR}
 					)
+
+# Header-only JSON library; its include path propagates to anything linking
+# sqlodbc (the tests include opensearch_types.h)
+target_link_libraries(sqlodbc nlohmann_json::nlohmann_json)
 
 # Platform specific library dependencies
 if(WIN32)

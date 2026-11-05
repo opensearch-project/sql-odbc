@@ -4,18 +4,30 @@
 
 #include "opensearch_types.h"
 #include "opensearch_helper.h"
-#ifdef __APPLE__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-#endif  // __APPLE__
-#include "rabbit.hpp"
-#ifdef __APPLE__
-#pragma clang diagnostic pop
-#endif  // __APPLE__
+#include "opensearch_json.h"
 #include "statement.h"
 
-typedef rabbit::array json_arr;
-typedef json_arr::iterator::result_type json_arr_it;
+// Text handed to the ODBC conversion layer for one result cell; nullopt = NULL.
+// Strings pass through decoded; numbers, booleans and nested objects/arrays
+// become compact JSON (numbers in shortest round-trip form).
+static std::optional< std::string > CellText(const json_doc &value) {
+    if (value.is_null())
+        return std::nullopt;
+    if (value.is_string())
+        return value.get< std::string >();
+    return value.dump(-1, ' ', false, json_doc::error_handler_t::replace);
+}
+
+std::vector< row_text_type > GetDataRowsText(json_doc &opensearch_result_doc) {
+    std::vector< row_text_type > rows;
+    for (const auto &row : opensearch_result_doc.at("datarows")) {
+        row_text_type cells;
+        for (const auto &cell : row)
+            cells.push_back(CellText(cell));
+        rows.push_back(cells);
+    }
+    return rows;
+}
 
 bool _CC_from_OpenSearchResult(QResultClass *q_res, ConnectionClass *conn,
                        const char *cursor,
@@ -31,7 +43,7 @@ bool AssignColumnHeaders(const schema_type &doc_schema, QResultClass *q_res,
                          const OpenSearchResult &opensearch_result);
 bool AssignTableData(json_doc &opensearch_result_doc, QResultClass *q_res,
                      size_t doc_schema_size, ColumnInfoClass &fields);
-bool AssignRowData(const json_arr_it &row, size_t row_schema_size,
+bool AssignRowData(const json_doc &row, size_t row_schema_size,
                    QResultClass *q_res, ColumnInfoClass &fields,
                    const size_t &row_size);
 void UpdateResultFields(QResultClass *q_res, const ConnectionClass *conn,
@@ -155,9 +167,9 @@ bool _CC_No_Metadata_from_OpenSearchResult(QResultClass *q_res, ConnectionClass 
 
         // Return true (success)
         return true;
-    } catch (const rabbit::type_mismatch &e) {
+    } catch (const nlohmann::json::type_error &e) {
         SetError(e.what());
-    } catch (const rabbit::parse_error &e) {
+    } catch (const nlohmann::json::parse_error &e) {
         SetError(e.what());
     } catch (const std::exception &e) {
         SetError(e.what());
@@ -193,9 +205,9 @@ bool _CC_Metadata_from_OpenSearchResult(QResultClass *q_res, ConnectionClass *co
 
         // Return true (success)
         return true;
-    } catch (const rabbit::type_mismatch &e) {
+    } catch (const nlohmann::json::type_error &e) {
         SetError(e.what());
-    } catch (const rabbit::parse_error &e) {
+    } catch (const nlohmann::json::parse_error &e) {
         SetError(e.what());
     } catch (const std::exception &e) {
         SetError(e.what());
@@ -232,9 +244,9 @@ bool _CC_from_OpenSearchResult(QResultClass *q_res, ConnectionClass *conn,
 
         // Return true (success)
         return true;
-    } catch (const rabbit::type_mismatch &e) {
+    } catch (const nlohmann::json::type_error &e) {
         SetError(e.what());
-    } catch (const rabbit::parse_error &e) {
+    } catch (const nlohmann::json::parse_error &e) {
         SetError(e.what());
     } catch (const std::exception &e) {
         SetError(e.what());
@@ -247,18 +259,20 @@ bool _CC_from_OpenSearchResult(QResultClass *q_res, ConnectionClass *conn,
 }
 
 void GetSchemaInfo(schema_type &schema, json_doc &opensearch_result_doc) {
-    json_arr schema_arr = opensearch_result_doc[JSON_KW_SCHEMA];
-    for (auto it : schema_arr) {
-        auto mapped_oid = type_to_oid_map.find(it[JSON_KW_TYPE].as_string());
+    for (const auto &column : opensearch_result_doc.at(JSON_KW_SCHEMA)) {
+        auto mapped_oid = type_to_oid_map.find(
+            column.at(JSON_KW_TYPE).get< std::string >());
         OID type_oid = (mapped_oid == type_to_oid_map.end())
                            ? SQL_WVARCHAR
                            : mapped_oid->second;
         // The SQL plugin adds "alias" when the query aliases the column
         // (SELECT x AS y), and may send alias == name. The alias is the label
         // the user asked for; "name" stays the underlying (base) column name.
-        std::string base_name = it[JSON_KW_NAME].as_string();
+        std::string base_name = column.at(JSON_KW_NAME).get< std::string >();
         std::string label =
-            it.has(JSON_KW_ALIAS) ? it[JSON_KW_ALIAS].as_string() : base_name;
+            column.contains(JSON_KW_ALIAS)
+                ? column.at(JSON_KW_ALIAS).get< std::string >()
+                : base_name;
         schema.push_back(ColumnSchema{label, base_name, type_oid});
     }
 }
@@ -301,18 +315,22 @@ bool AssignColumnHeaders(const schema_type &doc_schema, QResultClass *q_res,
 bool AssignTableData(json_doc &opensearch_result_doc, QResultClass *q_res,
                      size_t doc_schema_size, ColumnInfoClass &fields) {
     // Assign row info
-    json_arr opensearch_result_data = opensearch_result_doc[JSON_KW_DATAROWS];
+    const json_doc &opensearch_result_data =
+        opensearch_result_doc.at(JSON_KW_DATAROWS);
     if (opensearch_result_data.size() == 0)
         return true;
 
     // Figure out number of columns are in a row and make schema is not bigger
     // than it
-    size_t row_size = std::distance(opensearch_result_data.begin()->value_begin(),
-                      opensearch_result_data.begin()->value_end());
+    size_t row_size = opensearch_result_data.front().size();
     if (row_size < doc_schema_size) {
         return false;
     }
-    for (auto it : opensearch_result_data) {
+    for (const auto &it : opensearch_result_data) {
+        // Every row must have the columns the first one did
+        if (!it.is_array() || it.size() != row_size)
+            return false;
+
         // Setup memory to receive tuple
         if (!QR_prepare_for_tupledata(q_res))
             return false;
@@ -326,7 +344,7 @@ bool AssignTableData(json_doc &opensearch_result_doc, QResultClass *q_res,
 }
 
 // Responsible for assigning row data to tuples
-bool AssignRowData(const json_arr_it &row, size_t row_schema_size,
+bool AssignRowData(const json_doc &row, size_t row_schema_size,
                    QResultClass *q_res, ColumnInfoClass &fields,
                    const size_t &row_size) {
     TupleField *tuple =
@@ -341,14 +359,14 @@ bool AssignRowData(const json_arr_it &row, size_t row_schema_size,
 
     // Loop through and assign data
     size_t i = 0;
-    for (auto row_column = row.value_begin(); i < row_schema_size;
-         ++row_column, ++i) {
-        if (row_column->is_null()) {
+    for (; i < row_schema_size; ++i) {
+        std::optional< std::string > cell = CellText(row.at(i));
+        if (!cell) {
             tuple[i].len = SQL_NULL_DATA;
             tuple[i].value = NULL;
         } else {
             // Copy string over to tuple
-            const std::string data = row_column->str();
+            const std::string &data = *cell;
             tuple[i].len = static_cast< int >(data.length());
             QR_MALLOC_return_with_error(
                 tuple[i].value, char, data.length() + 1, q_res,
@@ -370,16 +388,17 @@ bool AssignRowData(const json_arr_it &row, size_t row_schema_size,
             return false;
         }
 
-        auto row_column = row.value_begin() + row_schema_size;
-        if (sscanf(row_column->str().c_str(), "(%u,%hu)", &ks->blocknum,
-                   &ks->offset)
+        std::string keyset =
+            CellText(row.at(row_schema_size)).value_or(std::string());
+        if (sscanf(keyset.c_str(), "(%u,%hu)", &ks->blocknum, &ks->offset)
             != 2) {
             QR_set_rstatus(q_res, PORES_INTERNAL_ERROR);
             QR_set_message(q_res, "Failed to assign Keyset.");
             return false;
         }
-        row_column++;
-        ks->oid = std::stoul(row_column->str(), nullptr, 10);
+        ks->oid = std::stoul(
+            CellText(row.at(row_schema_size + 1)).value_or(std::string()),
+            nullptr, 10);
     }
 
     // Increment relevant data

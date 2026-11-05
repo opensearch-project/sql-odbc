@@ -11,8 +11,11 @@ extern "C" {
 #endif
 
 #ifdef __cplusplus
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "opensearch_helper.h"
-typedef rabbit::document json_doc;
 // const char* is used instead of string for the cursor, because a NULL cursor
 // is sometimes used Cannot pass q_res as reference because it breaks qresult.h
 // macros that expect to use -> operator
@@ -36,5 +39,10 @@ struct ColumnSchema {
 };
 typedef std::vector< ColumnSchema > schema_type;
 void GetSchemaInfo(schema_type &schema, json_doc &opensearch_result_doc);
+
+// Each "datarows" cell as the text handed to the ODBC conversion layer
+// (std::nullopt for JSON null). Same conversion AssignRowData uses.
+typedef std::vector< std::optional< std::string > > row_text_type;
+std::vector< row_text_type > GetDataRowsText(json_doc &opensearch_result_doc);
 #endif
 #endif

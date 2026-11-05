@@ -3,8 +3,7 @@ project(ut_parse_result)
 # Source, headers, and include dirs
 set(SOURCE_FILES test_parse_result.cpp)
 include_directories(	${OPENSEARCHODBC_SRC}
-						${RAPIDJSON_SRC}
-						${RABBIT_SRC}  )
+)
 
 # Generate executable
 add_executable(ut_parse_result ${SOURCE_FILES})

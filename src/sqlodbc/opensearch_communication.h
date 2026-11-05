@@ -9,16 +9,9 @@
 #include "opensearch_types.h"
 #include "opensearch_result_queue.h"
 
-//Keep rabbit at top otherwise it gives build error because of some variable names like max, min
-#ifdef __APPLE__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-parameter"
-#endif // __APPLE__
-#include "rabbit.hpp"
-#ifdef __APPLE__
-#pragma clang diagnostic pop
-#endif // __APPLE__
+#include "opensearch_json.h"
 #include <map>
+#include <optional>
 #include <string>
 #include <aws/core/Aws.h>
 #include <aws/core/http/HttpRequest.h>
@@ -57,6 +50,13 @@ class OpenSearchCommunication {
         const std::string& endpoint, const Aws::Http::HttpMethod request_type,
         const std::string& content_type, const std::string& query,
         const std::string& fetch_size = "", const std::string& cursor = "");
+    // JSON body for a query or cursor request; nullopt if the query text
+    // isn't valid UTF-8 (sent unchanged it would be silently altered)
+    static std::optional< std::string > BuildRequestBody(
+        const std::string& query, const std::string& fetch_size,
+        const std::string& cursor);
+    // Sets a clear error and returns false if query isn't valid UTF-8
+    bool CheckQueryEncoding(const std::string& query);
     void AwsHttpResponseToString(
         std::shared_ptr< Aws::Http::HttpResponse > response,
         std::string& output);
