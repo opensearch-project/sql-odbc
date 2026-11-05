@@ -13,7 +13,6 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Lior Perry        | [YANG-DB](https://github.com/YANG-DB)               | Amazon      |
 | Simeon Widdis     | [Swiddis](https://github.com/Swiddis)               | Amazon      |
 | Chen Dai          | [dai-chen](https://github.com/dai-chen)             | Amazon      |
-| Vamsi Manohar     | [vamsimanohar](https://github.com/vamsimanohar)     | Amazon      |
 | Peng Huo          | [penghuo](https://github.com/penghuo)               | Amazon      |
 | Sean Kao          | [seankao-az](https://github.com/seankao-az)         | Amazon      |
 | Anirudha Jadhav   | [anirudha](https://github.com/anirudha)             | Amazon      |
@@ -33,4 +32,5 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Zhongnan Su       | [zhongnansu](https://github.com/zhongnansu)             | Amazon      |
 | Chloe Zhang       | [chloe-zh](https://github.com/chloe-zh)                 | Amazon      |
 | Forest Vey        | [forestmvey](https://github.com/forestmvey)             | Improving   |
+| Vamsi Manohar     | [vamsimanohar](https://github.com/vamsimanohar)         | Amazon      |
 | Derek Ho          | [derek-ho](https://github.com/derek-ho)                 | Amazon      |
