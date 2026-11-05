@@ -514,8 +514,8 @@ RETCODE SQL_API OPENSEARCHAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
                 MYLOG(OPENSEARCH_DEBUG, "COLUMN_LABEL = '%s'\n", p);
                 break;
             }
-            /* otherwise same as column name -- FALL THROUGH!!! */
-
+            /* otherwise same as column name */
+            /* fall through */
         case SQL_DESC_NAME:
             MYLOG(OPENSEARCH_ALL, "fi=%p (alias, name)=", (void *)fi);
             if (fi)

@@ -55,7 +55,7 @@ void CI_set_num_fields(ColumnInfoClass *self, SQLSMALLINT new_num_fields) {
     self->num_fields = new_num_fields;
 
     self->coli_array =
-        (struct srvr_info *)calloc(sizeof(struct srvr_info), self->num_fields);
+        (struct srvr_info *)calloc(self->num_fields, sizeof(struct srvr_info));
 }
 
 void CI_set_field_info(ColumnInfoClass *self, int field_num,

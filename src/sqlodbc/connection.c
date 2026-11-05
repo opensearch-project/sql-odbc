@@ -224,7 +224,7 @@ static void reset_current_schema(ConnectionClass *self) {
 }
 
 static ConnectionClass *CC_alloc(void) {
-    return (ConnectionClass *)calloc(sizeof(ConnectionClass), 1);
+    return (ConnectionClass *)calloc(1, sizeof(ConnectionClass));
 }
 
 static void CC_lockinit(ConnectionClass *self) {

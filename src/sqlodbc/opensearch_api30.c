@@ -777,6 +777,7 @@ static RETCODE SQL_API IPDSetField(DescriptorClass *desc, SQLSMALLINT RecNumber,
                              "invalid descriptor identifier");
                 return ret;
             }
+            /* fall through */
         case SQL_DESC_NAME:
         case SQL_DESC_TYPE:
         case SQL_DESC_DATETIME_INTERVAL_CODE:
@@ -1762,6 +1763,7 @@ RETCODE SQL_API OPENSEARCHAPI_SetStmtAttr(HSTMT StatementHandle, SQLINTEGER Attr
         case SQL_ATTR_ENABLE_AUTO_IPD: /* 15 */
             if (SQL_FALSE == Value)
                 break;
+            /* fall through */
         case SQL_ATTR_CURSOR_SCROLLABLE:  /* -1 */
         case SQL_ATTR_CURSOR_SENSITIVITY: /* -2 */
         case SQL_ATTR_AUTO_IPD:           /* 10001 */

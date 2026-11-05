@@ -239,6 +239,7 @@ opensearchtype_attr_to_concise_type(const ConnectionClass *conn, OID type,
 
         case OPENSEARCH_TYPE_BPCHAR:
             bFixed = TRUE;
+            /* fall through */
         case OPENSEARCH_TYPE_VARCHAR:
             if (getCharColumnSizeX(conn, type, typmod, adtsize_or_longestlen,
                                    handle_unknown_size_as)
