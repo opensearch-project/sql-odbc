@@ -165,10 +165,12 @@ void OpenSearchCommunication::PrepareCursorResult(OpenSearchResult& opensearch_r
             json_doc::parse(opensearch_result.result_json);
         CheckCursorShape(opensearch_result.opensearch_result_doc);
     } catch (const std::exception& e) {
-        // Providing the json will aid debugging for users
-        std::string str = "Exception obtained '" + std::string(e.what())
-                          + "' when parsing json string '"
-                          + opensearch_result.result_json + "'.";
+        // A prefix of the json aids debugging without putting row data or an
+        // unbounded body in the error text
+        std::string str =
+            "Exception obtained '" + std::string(e.what())
+            + "' when parsing json string '"
+            + ResponseBodyForMessage(opensearch_result.result_json) + "'.";
         throw std::runtime_error(str.c_str());
     }
 }
@@ -189,10 +191,12 @@ std::shared_ptr< ErrorDetails > OpenSearchCommunication::ParseErrorResponse(
         error_details->source_type = error.at("type").get< std::string >();
         return error_details;
     } catch (const std::exception& e) {
-        // Providing the json will aid debugging for users
-        std::string str = "Exception obtained '" + std::string(e.what())
-                          + "' when parsing json string '"
-                          + opensearch_result.result_json + "'.";
+        // A prefix of the json aids debugging without putting row data or an
+        // unbounded body in the error text
+        std::string str =
+            "Exception obtained '" + std::string(e.what())
+            + "' when parsing json string '"
+            + ResponseBodyForMessage(opensearch_result.result_json) + "'.";
         throw std::runtime_error(str.c_str());
     }
 }
@@ -222,10 +226,12 @@ void OpenSearchCommunication::GetJsonSchema(OpenSearchResult& opensearch_result)
             json_doc::parse(opensearch_result.result_json);
         CheckResultShape(opensearch_result.opensearch_result_doc);
     } catch (const std::exception& e) {
-        // Providing the json will aid debugging for users
-        std::string str = "Exception obtained '" + std::string(e.what())
-                          + "' when parsing json string '"
-                          + opensearch_result.result_json + "'.";
+        // A prefix of the json aids debugging without putting row data or an
+        // unbounded body in the error text
+        std::string str =
+            "Exception obtained '" + std::string(e.what())
+            + "' when parsing json string '"
+            + ResponseBodyForMessage(opensearch_result.result_json) + "'.";
         throw std::runtime_error(str.c_str());
     }
 }
@@ -556,6 +562,8 @@ bool OpenSearchCommunication::CheckSQLPluginAvailability() {
             AwsHttpResponseToString(response, result->result_json);
             std::shared_ptr< ErrorDetails > error_details =
                 ParseErrorResponse(*result);
+            const std::string body_for_message =
+                ResponseBodyForMessage(m_response_str);
 
             if(!IsSQLPluginEnabled(error_details)) {
                 m_error_message_to_user =
@@ -564,7 +572,7 @@ bool OpenSearchCommunication::CheckSQLPluginAvailability() {
                 m_error_message +=
                     "The SQL plugin is disabled. The SQL plugin must be "
                     "enabled in order to use this driver. Response body: '"
-                    + m_response_str + "'";
+                    + body_for_message + "'";
                 SetErrorDetails("Connection error", m_error_message,
                                 ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
             }
@@ -577,7 +585,8 @@ bool OpenSearchCommunication::CheckSQLPluginAvailability() {
             }
 
             if (!m_response_str.empty()) {
-                m_error_message += " Response error: '" + m_response_str + "'.";
+                m_error_message +=
+                    " Response error: '" + body_for_message + "'.";
                 SetErrorDetails("Connection error", m_error_message,
                                 ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
             }
@@ -682,7 +691,8 @@ std::vector< std::string > OpenSearchCommunication::GetColumnsWithSelectQuery(
                 " Client error: '" + response->GetClientErrorMessage() + "'.";
         if (!result->result_json.empty()) {
             m_error_message +=
-                " Response error: '" + result->result_json + "'.";
+                " Response error: '"
+                + ResponseBodyForMessage(result->result_json) + "'.";
         }
         SetErrorDetails("Connection error", m_error_message,
                         ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
@@ -698,6 +708,34 @@ std::vector< std::string > OpenSearchCommunication::GetColumnsWithSelectQuery(
     }
 
     return list_of_column;
+}
+
+std::string OpenSearchCommunication::TruncateResponseBody(
+    const std::string& body, size_t max_bytes) {
+    if (body.size() <= max_bytes)
+        return body;
+
+    // If the byte just past the cut is a UTF-8 continuation byte (10xxxxxx),
+    // the cut is mid-sequence: back up to the sequence's lead byte. A
+    // sequence is at most 4 bytes, so give up after 3 (input isn't UTF-8).
+    auto is_continuation = [&body](size_t i) {
+        return (static_cast< unsigned char >(body[i]) & 0xC0) == 0x80;
+    };
+    size_t cut = max_bytes;
+    while (cut > 0 && max_bytes - cut < 3 && is_continuation(cut))
+        --cut;
+    if (is_continuation(cut))
+        cut = max_bytes;
+
+    return body.substr(0, cut) + "... (" + std::to_string(body.size())
+           + " bytes total)";
+}
+
+std::string OpenSearchCommunication::ResponseBodyForMessage(
+    const std::string& body) {
+    // Only the most verbose logging gets the whole body
+    LogMsg(OPENSEARCH_TRACE, ("Full response body: '" + body + "'").c_str());
+    return TruncateResponseBody(body);
 }
 
 int OpenSearchCommunication::ExecDirect(const char* query, const char* fetch_size_) {
@@ -758,7 +796,8 @@ int OpenSearchCommunication::ExecDirect(const char* query, const char* fetch_siz
         if (!result->result_json.empty()) {
             m_error_details = ParseErrorResponse(*result.get());
             m_error_message +=
-                " Response error: '" + result->result_json + "'.";
+                " Response error: '"
+                + ResponseBodyForMessage(result->result_json) + "'.";
         }
         LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
         return -1;
@@ -771,7 +810,8 @@ int OpenSearchCommunication::ExecDirect(const char* query, const char* fetch_siz
         m_error_message =
             "Received runtime exception: " + std::string(e.what());
         if (!result->result_json.empty()) {
-            m_error_message += " Result body: " + result->result_json;
+            m_error_message +=
+                " Result body: " + ResponseBodyForMessage(result->result_json);
         }
         SetErrorDetails("Execution error", m_error_message,
                         ConnErrorType::CONN_ERROR_QUERY_SYNTAX);
@@ -968,20 +1008,23 @@ std::string OpenSearchCommunication::GetServerVersion() {
             }
 
         } catch (const nlohmann::json::type_error& e) {
+            // parse_error's message quotes the token it stopped at
             m_error_message = "Error parsing main endpoint response: "
-                              + std::string(e.what());
+                              + TruncateResponseBody(e.what());
             SetErrorDetails("Connection error", m_error_message,
                             ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
             LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
         } catch (const nlohmann::json::parse_error& e) {
+            // parse_error's message quotes the token it stopped at
             m_error_message = "Error parsing main endpoint response: "
-                              + std::string(e.what());
+                              + TruncateResponseBody(e.what());
             SetErrorDetails("Connection error", m_error_message,
                             ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
             LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
         } catch (const std::exception& e) {
+            // parse_error's message quotes the token it stopped at
             m_error_message = "Error parsing main endpoint response: "
-                              + std::string(e.what());
+                              + TruncateResponseBody(e.what());
             SetErrorDetails("Connection error", m_error_message,
                             ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
             LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
@@ -1031,20 +1074,23 @@ std::string OpenSearchCommunication::GetServerDistribution() {
                 return doc.at("version").at("distribution").get< std::string >();
             }
         } catch (const nlohmann::json::type_error& e) {
+            // parse_error's message quotes the token it stopped at
             m_error_message = "Error parsing main endpoint response: "
-                              + std::string(e.what());
+                              + TruncateResponseBody(e.what());
             SetErrorDetails("Connection error", m_error_message,
                             ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
             LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
         } catch (const nlohmann::json::parse_error& e) {
+            // parse_error's message quotes the token it stopped at
             m_error_message = "Error parsing main endpoint response: "
-                              + std::string(e.what());
+                              + TruncateResponseBody(e.what());
             SetErrorDetails("Connection error", m_error_message,
                             ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
             LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
         } catch (const std::exception& e) {
+            // parse_error's message quotes the token it stopped at
             m_error_message = "Error parsing main endpoint response: "
-                              + std::string(e.what());
+                              + TruncateResponseBody(e.what());
             SetErrorDetails("Connection error", m_error_message,
                             ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
             LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
@@ -1086,20 +1132,23 @@ std::string OpenSearchCommunication::GetClusterName() {
             }
 
         } catch (const nlohmann::json::type_error& e) {
+            // parse_error's message quotes the token it stopped at
             m_error_message = "Error parsing main endpoint response: "
-                              + std::string(e.what());
+                              + TruncateResponseBody(e.what());
             SetErrorDetails("Connection error", m_error_message,
                             ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
             LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
         } catch (const nlohmann::json::parse_error& e) {
+            // parse_error's message quotes the token it stopped at
             m_error_message = "Error parsing main endpoint response: "
-                              + std::string(e.what());
+                              + TruncateResponseBody(e.what());
             SetErrorDetails("Connection error", m_error_message,
                             ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
             LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
         } catch (const std::exception& e) {
+            // parse_error's message quotes the token it stopped at
             m_error_message = "Error parsing main endpoint response: "
-                              + std::string(e.what());
+                              + TruncateResponseBody(e.what());
             SetErrorDetails("Connection error", m_error_message,
                             ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
             LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
