@@ -246,7 +246,7 @@ void QR_close_result(QResultClass *self, BOOL destroy) {
 }
 
 void QR_reset_for_re_execute(QResultClass *self) {
-    MYLOG(OPENSEARCH_TRACE, "entering for %p\n", self);
+    MYLOG(OPENSEARCH_TRACE, "entering for %p\n", (void *)self);
     if (!self)
         return;
     QR_close_result(self, FALSE);

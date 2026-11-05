@@ -132,7 +132,7 @@ RETCODE SQL_API SQLDriverConnectW(HDBC hdbc, HWND hwnd, SQLWCHAR *szConnStrIn,
         if (outlen >= cbConnStrOutMax && NULL != szConnStrOut
             && NULL != pcbConnStrOut) {
             MYLOG(OPENSEARCH_ALL, "cbConnstrOutMax=%d pcb=%p\n", cbConnStrOutMax,
-                  pcbConnStrOut);
+                  (void *)pcbConnStrOut);
             if (SQL_SUCCESS == ret) {
                 CC_set_error(conn, CONN_TRUNCATED,
                              "the ConnStrOut is too small", func);

@@ -25,9 +25,9 @@ RETCODE SQL_API OPENSEARCHAPI_BindCol(HSTMT hstmt, SQLUSMALLINT icol,
 
     MYLOG(OPENSEARCH_TRACE, "entering...\n");
 
-    MYLOG(OPENSEARCH_DEBUG, "**** : stmt = %p, icol = %d\n", stmt, icol);
+    MYLOG(OPENSEARCH_DEBUG, "**** : stmt = %p, icol = %d\n", (void *)stmt, icol);
     MYLOG(OPENSEARCH_DEBUG, "**** : fCType=%d rgb=%p valusMax=" FORMAT_LEN " pcb=%p\n",
-          fCType, rgbValue, cbValueMax, pcbValue);
+          fCType, rgbValue, cbValueMax, (void *)pcbValue);
 
     if (!stmt) {
         SC_log_error(func, "", NULL);
@@ -191,7 +191,7 @@ void extend_parameter_bindings(APDFields *self, SQLSMALLINT num_params) {
 
     MYLOG(OPENSEARCH_TRACE,
           "entering ... self=%p, parameters_allocated=%d, num_params=%d,%p\n",
-          self, self->allocated, num_params, self->parameters);
+          (void *)self, self->allocated, num_params, (void *)self->parameters);
 
     /*
      * if we have too few, allocate room for more, and copy the old
@@ -218,7 +218,7 @@ void extend_parameter_bindings(APDFields *self, SQLSMALLINT num_params) {
         self->allocated = num_params;
     }
 
-    MYLOG(OPENSEARCH_TRACE, "leaving %p\n", self->parameters);
+    MYLOG(OPENSEARCH_TRACE, "leaving %p\n", (void *)self->parameters);
 }
 
 void extend_iparameter_bindings(IPDFields *self, SQLSMALLINT num_params) {
@@ -226,7 +226,7 @@ void extend_iparameter_bindings(IPDFields *self, SQLSMALLINT num_params) {
 
     MYLOG(OPENSEARCH_TRACE,
           "entering ... self=%p, parameters_allocated=%d, num_params=%d\n",
-          self, self->allocated, num_params);
+          (void *)self, self->allocated, num_params);
 
     /*
      * if we have too few, allocate room for more, and copy the old
@@ -253,12 +253,12 @@ void extend_iparameter_bindings(IPDFields *self, SQLSMALLINT num_params) {
         self->allocated = num_params;
     }
 
-    MYLOG(OPENSEARCH_TRACE, "leaving %p\n", self->parameters);
+    MYLOG(OPENSEARCH_TRACE, "leaving %p\n", (void *)self->parameters);
 }
 
 void reset_a_parameter_binding(APDFields *self, int ipar) {
     MYLOG(OPENSEARCH_TRACE, "entering ... self=%p, parameters_allocated=%d, ipar=%d\n",
-          self, self->allocated, ipar);
+          (void *)self, self->allocated, ipar);
 
     if (ipar < 1 || ipar > self->allocated)
         return;
@@ -275,7 +275,7 @@ void reset_a_parameter_binding(APDFields *self, int ipar) {
 
 void reset_a_iparameter_binding(IPDFields *self, int ipar) {
     MYLOG(OPENSEARCH_TRACE, "entering ... self=%p, parameters_allocated=%d, ipar=%d\n",
-          self, self->allocated, ipar);
+          (void *)self, self->allocated, ipar);
 
     if (ipar < 1 || ipar > self->allocated)
         return;
@@ -330,7 +330,7 @@ int CountParameters(const StatementClass *self, Int2 *inputCount, Int2 *ioCount,
  *	Free parameters and free the memory.
  */
 void APD_free_params(APDFields *apdopts, char option) {
-    MYLOG(OPENSEARCH_TRACE, "entering self=%p\n", apdopts);
+    MYLOG(OPENSEARCH_TRACE, "entering self=%p\n", (void *)apdopts);
 
     if (!apdopts->parameters)
         return;
@@ -347,7 +347,7 @@ void APD_free_params(APDFields *apdopts, char option) {
 void PDATA_free_params(PutDataInfo *pdata, char option) {
     int i;
 
-    MYLOG(OPENSEARCH_TRACE, "entering self=%p\n", pdata);
+    MYLOG(OPENSEARCH_TRACE, "entering self=%p\n", (void *)pdata);
 
     if (!pdata->pdata)
         return;
@@ -376,7 +376,7 @@ void PDATA_free_params(PutDataInfo *pdata, char option) {
  *	Free parameters and free the memory.
  */
 void IPD_free_params(IPDFields *ipdopts, char option) {
-    MYLOG(OPENSEARCH_TRACE, "entering self=%p\n", ipdopts);
+    MYLOG(OPENSEARCH_TRACE, "entering self=%p\n", (void *)ipdopts);
 
     if (!ipdopts->parameters)
         return;
@@ -394,7 +394,7 @@ void extend_column_bindings(ARDFields *self, SQLSMALLINT num_columns) {
     SQLSMALLINT i;
 
     MYLOG(OPENSEARCH_TRACE,
-          "entering ... self=%p, bindings_allocated=%d, num_columns=%d\n", self,
+          "entering ... self=%p, bindings_allocated=%d, num_columns=%d\n", (void *)self,
           self->allocated, num_columns);
 
     /*
@@ -437,14 +437,14 @@ void extend_column_bindings(ARDFields *self, SQLSMALLINT num_columns) {
     /* SQLExecDirect(...)  # returns 5 cols */
     /* SQLExecDirect(...)  # returns 10 cols  (now OK) */
 
-    MYLOG(OPENSEARCH_TRACE, "leaving %p\n", self->bindings);
+    MYLOG(OPENSEARCH_TRACE, "leaving %p\n", (void *)self->bindings);
 }
 
 void reset_a_column_binding(ARDFields *self, int icol) {
     BindInfoClass *bookmark;
 
     MYLOG(OPENSEARCH_TRACE, "entering ... self=%p, bindings_allocated=%d, icol=%d\n",
-          self, self->allocated, icol);
+          (void *)self, self->allocated, icol);
 
     if (icol > self->allocated)
         return;
@@ -470,7 +470,7 @@ void ARD_unbind_cols(ARDFields *self, BOOL freeall) {
     Int2 lf;
 
     MYLOG(OPENSEARCH_ALL, "freeall=%d allocated=%d bindings=%p\n", freeall,
-          self->allocated, self->bindings);
+          self->allocated, (void *)self->bindings);
     for (lf = 1; lf <= self->allocated; lf++)
         reset_a_column_binding(self, lf);
     if (freeall) {
@@ -484,7 +484,7 @@ void GDATA_unbind_cols(GetDataInfo *self, BOOL freeall) {
     Int2 lf;
 
     MYLOG(OPENSEARCH_ALL, "freeall=%d allocated=%d gdata=%p\n", freeall,
-          self->allocated, self->gdata);
+          self->allocated, (void *)self->gdata);
     if (self->fdata.ttlbuf) {
         free(self->fdata.ttlbuf);
         self->fdata.ttlbuf = NULL;
@@ -529,7 +529,7 @@ void extend_getdata_info(GetDataInfo *self, SQLSMALLINT num_columns,
     GetDataClass *new_gdata;
 
     MYLOG(OPENSEARCH_TRACE,
-          "entering ... self=%p, gdata_allocated=%d, num_columns=%d\n", self,
+          "entering ... self=%p, gdata_allocated=%d, num_columns=%d\n", (void *)self,
           self->allocated, num_columns);
 
     /*
@@ -576,7 +576,7 @@ void extend_getdata_info(GetDataInfo *self, SQLSMALLINT num_columns,
      * about it by unbinding those columns.
      */
 
-    MYLOG(OPENSEARCH_TRACE, "leaving %p\n", self->gdata);
+    MYLOG(OPENSEARCH_TRACE, "leaving %p\n", (void *)self->gdata);
 }
 void reset_a_getdata_info(GetDataInfo *gdata_info, int icol) {
     if (icol < 1 || icol > gdata_info->allocated)
@@ -600,7 +600,7 @@ void extend_putdata_info(PutDataInfo *self, SQLSMALLINT num_params,
 
     MYLOG(OPENSEARCH_TRACE,
           "entering ... self=%p, parameters_allocated=%d, num_params=%d\n",
-          self, self->allocated, num_params);
+          (void *)self, self->allocated, num_params);
 
     /*
      * if we have too few, allocate room for more, and copy the old
@@ -638,7 +638,7 @@ void extend_putdata_info(PutDataInfo *self, SQLSMALLINT num_params,
         }
     }
 
-    MYLOG(OPENSEARCH_TRACE, "leaving %p\n", self->pdata);
+    MYLOG(OPENSEARCH_TRACE, "leaving %p\n", (void *)self->pdata);
 }
 void reset_a_putdata_info(PutDataInfo *pdata_info, int ipar) {
     if (ipar < 1 || ipar > pdata_info->allocated)

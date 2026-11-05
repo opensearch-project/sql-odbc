@@ -20,7 +20,7 @@ void TI_Destructor(TABLE_INFO **ti, int count) {
             if (ti[i]) {
                 COL_INFO *coli = ti[i]->col_info;
                 if (coli) {
-                    MYLOG(OPENSEARCH_ALL, "!!!refcnt %p:%d -> %d\n", coli, coli->refcnt,
+                    MYLOG(OPENSEARCH_ALL, "!!!refcnt %p:%d -> %d\n", (void *)coli, coli->refcnt,
                           coli->refcnt - 1);
                     coli->refcnt--;
                     if (coli->refcnt <= 0
@@ -86,7 +86,7 @@ void DC_Constructor(DescriptorClass *self, BOOL embedded,
 }
 
 static void ARDFields_free(ARDFields *self) {
-    MYLOG(OPENSEARCH_TRACE, "entering %p bookmark=%p\n", self, self->bookmark);
+    MYLOG(OPENSEARCH_TRACE, "entering %p bookmark=%p\n", (void *)self, (void *)self->bookmark);
     if (self->bookmark) {
         free(self->bookmark);
         self->bookmark = NULL;
@@ -212,7 +212,7 @@ char CC_add_descriptor(ConnectionClass *self, DescriptorClass *desc) {
     int new_num_descs;
     DescriptorClass **descs;
 
-    MYLOG(OPENSEARCH_TRACE, "entering self=%p, desc=%p\n", self, desc);
+    MYLOG(OPENSEARCH_TRACE, "entering self=%p, desc=%p\n", (void *)self, (void *)desc);
 
     for (i = 0; i < self->num_descs; i++) {
         if (!self->descs[i]) {
@@ -406,7 +406,7 @@ RETCODE SQL_API OPENSEARCHAPI_CopyDesc(SQLHDESC SourceDescHandle,
     ret = SQL_SUCCESS;
     switch (srchd->desc_type) {
         case SQL_ATTR_APP_ROW_DESC:
-            MYLOG(OPENSEARCH_DEBUG, "src=%p target=%p type=%d", src, target,
+            MYLOG(OPENSEARCH_DEBUG, "src=%p target=%p type=%d", (void *)src, (void *)target,
                   srchd->desc_type);
             if (!targethd->type_defined) {
                 targethd->desc_type = srchd->desc_type;
@@ -416,11 +416,11 @@ RETCODE SQL_API OPENSEARCHAPI_CopyDesc(SQLHDESC SourceDescHandle,
                      " rowset_size=" FORMAT_LEN " bind_size=" FORMAT_UINTEGER
                      " ope_ptr=%p off_ptr=%p\n",
                      ard_src->size_of_rowset, ard_src->bind_size,
-                     ard_src->row_operation_ptr, ard_src->row_offset_ptr);
+                     (void *)ard_src->row_operation_ptr, (void *)ard_src->row_offset_ptr);
             ard_tgt = &(target->ardf);
-            MYPRINTF(OPENSEARCH_DEBUG, " target=%p", ard_tgt);
+            MYPRINTF(OPENSEARCH_DEBUG, " target=%p", (void *)ard_tgt);
             ARDFields_copy(ard_src, ard_tgt);
-            MYPRINTF(OPENSEARCH_DEBUG, " offset_ptr=%p\n", ard_tgt->row_offset_ptr);
+            MYPRINTF(OPENSEARCH_DEBUG, " offset_ptr=%p\n", (void *)ard_tgt->row_offset_ptr);
             break;
         case SQL_ATTR_APP_PARAM_DESC:
             if (!targethd->type_defined) {

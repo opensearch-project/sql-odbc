@@ -456,7 +456,7 @@ RETCODE SQL_API OPENSEARCHAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
     }
 
     MYLOG(OPENSEARCH_DEBUG, "col %d field_type=%d fi,ti=%p,%p\n", col_idx, field_type,
-          fi, ti);
+          (void *)fi, (void *)ti);
 
 #ifdef SUPPRESS_LONGEST_ON_CURSORS
     if (UNKNOWNS_AS_LONGEST == unknown_sizes) {
@@ -517,7 +517,7 @@ RETCODE SQL_API OPENSEARCHAPI_ColAttributes(HSTMT hstmt, SQLUSMALLINT icol,
             /* otherwise same as column name -- FALL THROUGH!!! */
 
         case SQL_DESC_NAME:
-            MYLOG(OPENSEARCH_ALL, "fi=%p (alias, name)=", fi);
+            MYLOG(OPENSEARCH_ALL, "fi=%p (alias, name)=", (void *)fi);
             if (fi)
                 MYPRINTF(OPENSEARCH_DEBUG, "(%s,%s)\n", PRINT_NAME(fi->column_alias),
                          PRINT_NAME(fi->column_name));
@@ -769,7 +769,7 @@ RETCODE SQL_API OPENSEARCHAPI_GetData(HSTMT hstmt, SQLUSMALLINT icol,
     SQLCHAR dum_rgb[2] = "\0\0";
 #endif /* WITH_UNIXODBC */
 
-    MYLOG(OPENSEARCH_TRACE, "entering stmt=%p icol=%d\n", stmt, icol);
+    MYLOG(OPENSEARCH_TRACE, "entering stmt=%p icol=%d\n", (void *)stmt, icol);
 
     if (!stmt) {
         SC_log_error(func, NULL_STRING, NULL);
@@ -1007,8 +1007,8 @@ RETCODE SQL_API OPENSEARCHAPI_Fetch(HSTMT hstmt) {
     BindInfoClass *bookmark;
     RETCODE retval = SQL_SUCCESS;
 
-    MYLOG(OPENSEARCH_TRACE, "entering stmt = %p, stmt->result= %p\n", stmt,
-          stmt ? SC_get_Curres(stmt) : NULL);
+    MYLOG(OPENSEARCH_TRACE, "entering stmt = %p, stmt->result= %p\n", (void *)stmt,
+          (void *)(stmt ? SC_get_Curres(stmt) : NULL));
 
     if (!stmt) {
         SC_log_error(func, NULL_STRING, NULL);
@@ -1227,7 +1227,7 @@ RETCODE SQL_API OPENSEARCHAPI_ExtendedFetch(HSTMT hstmt, SQLUSMALLINT fFetchType
     BOOL currp_is_valid, reached_eof, useCursor;
     SQLLEN reqsize = rowsetSize;
 
-    MYLOG(OPENSEARCH_TRACE, "entering stmt=%p rowsetSize=" FORMAT_LEN "\n", stmt,
+    MYLOG(OPENSEARCH_TRACE, "entering stmt=%p rowsetSize=" FORMAT_LEN "\n", (void *)stmt,
           rowsetSize);
 
     if (!stmt) {
@@ -1624,7 +1624,7 @@ RETCODE SQL_API OPENSEARCHAPI_GetCursorName(HSTMT hstmt, SQLCHAR *szCursor,
 
     MYLOG(OPENSEARCH_DEBUG,
           "entering hstmt=%p, szCursor=%p, cbCursorMax=%d, pcbCursor=%p\n",
-          hstmt, szCursor, cbCursorMax, pcbCursor);
+          hstmt, szCursor, cbCursorMax, (void *)pcbCursor);
 
     if (!stmt) {
         SC_log_error(func, NULL_STRING, NULL);

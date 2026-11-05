@@ -107,7 +107,7 @@ char *ucs2_to_utf8(const SQLWCHAR *ucs2str, SQLLEN ilen, SQLLEN *olen,
                    BOOL lower_identifier) {
     char *utf8str;
     int len = 0;
-    MYLOG(OPENSEARCH_DEBUG, "%p ilen=" FORMAT_LEN " ", ucs2str, ilen);
+    MYLOG(OPENSEARCH_DEBUG, "%p ilen=" FORMAT_LEN " ", (void *)ucs2str, ilen);
 
     if (!ucs2str) {
         if (olen)

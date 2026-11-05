@@ -93,7 +93,7 @@ RETCODE SQL_API OPENSEARCHAPI_AllocStmt(HDBC hdbc, HSTMT *phstmt, UDWORD flag) {
 
     stmt = SC_Constructor(conn);
 
-    MYLOG(OPENSEARCH_DEBUG, "**** : hdbc = %p, stmt = %p\n", hdbc, stmt);
+    MYLOG(OPENSEARCH_DEBUG, "**** : hdbc = %p, stmt = %p\n", hdbc, (void *)stmt);
 
     if (!stmt) {
         CC_set_error(conn, CONN_STMT_ALLOC_ERROR,
@@ -338,8 +338,8 @@ char SC_Destructor(StatementClass *self) {
     CSTR func = "SC_Destructor";
     QResultClass *res = SC_get_Result(self);
 
-    MYLOG(OPENSEARCH_TRACE, "entering self=%p, self->result=%p, self->hdbc=%p\n", self,
-          res, self->hdbc);
+    MYLOG(OPENSEARCH_TRACE, "entering self=%p, self->result=%p, self->hdbc=%p\n", (void *)self,
+          (void *)res, (void *)self->hdbc);
     SC_clear_error(self);
     if (STMT_EXECUTING == self->status) {
         SC_set_error(self, STMT_SEQUENCE_ERROR,
@@ -386,12 +386,12 @@ char SC_Destructor(StatementClass *self) {
 
 void SC_init_Result(StatementClass *self) {
     self->result = self->curres = NULL;
-    MYLOG(OPENSEARCH_TRACE, "leaving(%p)\n", self);
+    MYLOG(OPENSEARCH_TRACE, "leaving(%p)\n", (void *)self);
 }
 
 void SC_set_Result(StatementClass *self, QResultClass *res) {
     if (res != self->result) {
-        MYLOG(OPENSEARCH_DEBUG, "(%p, %p)\n", self, res);
+        MYLOG(OPENSEARCH_DEBUG, "(%p, %p)\n", (void *)self, (void *)res);
         QR_Destructor(self->result);
         self->result = self->curres = res;
     }
@@ -426,10 +426,10 @@ void SC_set_rowset_start(StatementClass *stmt, SQLLEN start, BOOL valid_base) {
     SQLLEN incr = start - stmt->rowset_start;
 
     MYLOG(OPENSEARCH_DEBUG, "%p->SC_set_rowstart " FORMAT_LEN "->" FORMAT_LEN "(%s) ",
-          stmt, stmt->rowset_start, start, valid_base ? "valid" : "unknown");
+          (void *)stmt, stmt->rowset_start, start, valid_base ? "valid" : "unknown");
     if (res != NULL) {
         BOOL valid = QR_has_valid_base(res);
-        MYPRINTF(OPENSEARCH_DEBUG, ":(%p)QR is %s", res,
+        MYPRINTF(OPENSEARCH_DEBUG, ":(%p)QR is %s", (void *)res,
                  QR_has_valid_base(res) ? "valid" : "unknown");
 
         if (valid) {
@@ -446,7 +446,7 @@ void SC_set_rowset_start(StatementClass *stmt, SQLLEN start, BOOL valid_base) {
         }
         if (!QR_get_cursor(res))
             res->key_base = start;
-        MYPRINTF(OPENSEARCH_DEBUG, ":(%p)QR result=" FORMAT_LEN "(%s)", res,
+        MYPRINTF(OPENSEARCH_DEBUG, ":(%p)QR result=" FORMAT_LEN "(%s)", (void *)res,
                  QR_get_rowstart_in_cache(res),
                  QR_has_valid_base(res) ? "valid" : "unknown");
     }
@@ -587,7 +587,7 @@ char SC_recycle_statement(StatementClass *self) {
     CSTR func = "SC_recycle_statement";
     ConnectionClass *conn;
 
-    MYLOG(OPENSEARCH_TRACE, "entering self=%p\n", self);
+    MYLOG(OPENSEARCH_TRACE, "entering self=%p\n", (void *)self);
 
     SC_clear_error(self);
     /* This would not happen */
@@ -649,7 +649,7 @@ char SC_recycle_statement(StatementClass *self) {
     SC_set_rowset_start(self, -1, FALSE);
     SC_set_current_col(self, -1);
     self->bind_row = 0;
-    MYLOG(OPENSEARCH_DEBUG, "statement=%p ommitted=0\n", self);
+    MYLOG(OPENSEARCH_DEBUG, "statement=%p ommitted=0\n", (void *)self);
     self->last_fetch_count = self->last_fetch_count_include_ommitted = 0;
 
     self->__error_message = NULL;
@@ -913,7 +913,7 @@ void SC_error_copy(StatementClass *self, const StatementClass *from,
     QResultClass *self_res, *from_res;
     BOOL repstate;
 
-    MYLOG(OPENSEARCH_TRACE, "entering %p->%p check=%i\n", from, self, check);
+    MYLOG(OPENSEARCH_TRACE, "entering %p->%p check=%i\n", (void *)from, (void *)self, check);
     if (!from)
         return; /* for safety */
     if (self == from)
@@ -959,7 +959,7 @@ void SC_full_error_copy(StatementClass *self, const StatementClass *from,
                         BOOL allres) {
     OpenSearch_ErrorInfo *opensearch_error;
 
-    MYLOG(OPENSEARCH_TRACE, "entering %p->%p\n", from, self);
+    MYLOG(OPENSEARCH_TRACE, "entering %p->%p\n", (void *)from, (void *)self);
     if (!from)
         return; /* for safety */
     if (self == from)
@@ -1054,14 +1054,14 @@ SC_fetch(StatementClass *self) {
 
     /* TupleField *tupleField; */
 
-    MYLOG(OPENSEARCH_TRACE, "entering statement=%p res=%p ommitted=0\n", self, res);
+    MYLOG(OPENSEARCH_TRACE, "entering statement=%p res=%p ommitted=0\n", (void *)self, (void *)res);
     self->last_fetch_count = self->last_fetch_count_include_ommitted = 0;
     if (!res)
         return SQL_ERROR;
     coli = QR_get_fields(res); /* the column info */
 
     MYLOG(OPENSEARCH_DEBUG, "fetch_cursor=%d, %p->total_read=" FORMAT_LEN "\n",
-          SC_is_fetchcursor(self), res, res->num_total_read);
+          SC_is_fetchcursor(self), (void *)res, res->num_total_read);
 
     if (self->currTuple >= (Int4)QR_get_num_total_tuples(res) - 1
         || (self->options.maxRows > 0
@@ -1081,7 +1081,7 @@ SC_fetch(StatementClass *self) {
 
     result = SQL_SUCCESS;
     self->last_fetch_count++;
-    MYLOG(OPENSEARCH_DEBUG, "stmt=%p ommitted++\n", self);
+    MYLOG(OPENSEARCH_DEBUG, "stmt=%p ommitted++\n", (void *)self);
     self->last_fetch_count_include_ommitted++;
 
     opts = SC_get_ARDF(self);
@@ -1109,7 +1109,7 @@ SC_fetch(StatementClass *self) {
         MYLOG(OPENSEARCH_DEBUG,
               "fetch: cols=%d, lf=%d, opts = %p, opts->bindings = %p, buffer[] "
               "= %p\n",
-              num_cols, lf, opts, opts->bindings, opts->bindings[lf].buffer);
+              num_cols, lf, (void *)opts, (void *)opts->bindings, opts->bindings[lf].buffer);
 
         /* reset for SQLGetData */
         GETDATA_RESET(gdata->gdata[lf]);
@@ -1132,7 +1132,7 @@ SC_fetch(StatementClass *self) {
                 MYLOG(OPENSEARCH_DEBUG,
                       "%p->base=" FORMAT_LEN " curr=" FORMAT_LEN
                       " st=" FORMAT_LEN " valid=%d\n",
-                      res, QR_get_rowstart_in_cache(res), self->currTuple,
+                      (void *)res, QR_get_rowstart_in_cache(res), self->currTuple,
                       SC_get_rowset_start(self), QR_has_valid_base(res));
                 MYLOG(OPENSEARCH_DEBUG, "curt=" FORMAT_LEN "\n", curt);
                 value = QR_get_value_backend_row(res, curt, lf);
@@ -1274,14 +1274,14 @@ void SC_log_error(const char *func, const char *desc,
                  "------------------------------------------------------------"
                  "\n");
             QLOG(level, "                 hdbc=%p, stmt=%p, result=%p\n",
-                 self->hdbc, self, res);
+                 (void *)self->hdbc, (void *)self, (void *)res);
             QLOG(level, "                 prepare=%d, external=%d\n",
                  self->prepare, self->external);
             QLOG(level, "                 bindings=%p, bindings_allocated=%d\n",
-                 opts->bindings, opts->allocated);
+                 (void *)opts->bindings, opts->allocated);
             QLOG(level,
                  "                 parameters=%p, parameters_allocated=%d\n",
-                 apdopts->parameters, apdopts->allocated);
+                 (void *)apdopts->parameters, apdopts->allocated);
             QLOG(level, "                 statement_type=%d, statement='%s'\n",
                  self->statement_type, NULLCHECK(self->statement));
             QLOG(level,
@@ -1306,8 +1306,8 @@ void SC_log_error(const char *func, const char *desc,
                 QLOG(level,
                      "                 fields=%p, backend_tuples=%p, "
                      "tupleField=%p, conn=%p\n",
-                     QR_get_fields(res), res->backend_tuples, res->tupleField,
-                     res->conn);
+                     (void *)QR_get_fields(res), (void *)res->backend_tuples, (void *)res->tupleField,
+                     (void *)res->conn);
                 QLOG(level,
                      "                 fetch_count=" FORMAT_LEN
                      ", num_total_rows=" FORMAT_ULEN

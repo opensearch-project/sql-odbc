@@ -47,7 +47,7 @@ RETCODE SQL_API OPENSEARCHAPI_AllocConnect(HENV henv, HDBC *phdbc) {
     MYLOG(OPENSEARCH_TRACE, "entering...\n");
 
     conn = CC_Constructor();
-    MYLOG(OPENSEARCH_DEBUG, "**** henv = %p, conn = %p\n", henv, conn);
+    MYLOG(OPENSEARCH_DEBUG, "**** henv = %p, conn = %p\n", henv, (void *)conn);
 
     if (!conn) {
         env->errormsg = "Couldn't allocate memory for Connection object.";
@@ -116,7 +116,7 @@ RETCODE SQL_API OPENSEARCHAPI_Connect(HDBC hdbc, const SQLCHAR *szDSN,
         free(tmpstr);
     }
 
-    MYLOG(OPENSEARCH_DEBUG, "conn = %p (DSN='%s', UID='%s', PWD='%s')\n", conn, ci->dsn,
+    MYLOG(OPENSEARCH_DEBUG, "conn = %p (DSN='%s', UID='%s', PWD='%s')\n", (void *)conn, ci->dsn,
           ci->username, NAME_IS_VALID(ci->password) ? "xxxxx" : "");
 
     if ((fchar = CC_connect(conn)) <= 0) {
@@ -295,7 +295,7 @@ ConnectionClass *CC_Constructor() {
 }
 
 char CC_Destructor(ConnectionClass *self) {
-    MYLOG(OPENSEARCH_TRACE, "entering self=%p\n", self);
+    MYLOG(OPENSEARCH_TRACE, "entering self=%p\n", (void *)self);
 
     if (self->status == CONN_EXECUTING)
         return 0;
@@ -394,7 +394,7 @@ CC_cleanup(ConnectionClass *self, BOOL keepCommunication) {
     if (self->status == CONN_EXECUTING)
         return FALSE;
 
-    MYLOG(OPENSEARCH_TRACE, "entering self=%p\n", self);
+    MYLOG(OPENSEARCH_TRACE, "entering self=%p\n", (void *)self);
 
     ENTER_CONN_CS(self);
     /* Cancel an ongoing transaction */
@@ -490,7 +490,7 @@ char CC_add_statement(ConnectionClass *self, StatementClass *stmt) {
     int i;
     char ret = TRUE;
 
-    MYLOG(OPENSEARCH_DEBUG, "self=%p, stmt=%p\n", self, stmt);
+    MYLOG(OPENSEARCH_DEBUG, "self=%p, stmt=%p\n", (void *)self, (void *)stmt);
 
     CONNLOCK_ACQUIRE(self);
     for (i = 0; i < self->num_stmts; i++) {
@@ -534,7 +534,7 @@ char CC_add_statement(ConnectionClass *self, StatementClass *stmt) {
 static void CC_set_error_statements(ConnectionClass *self) {
     int i;
 
-    MYLOG(OPENSEARCH_TRACE, "entering self=%p\n", self);
+    MYLOG(OPENSEARCH_TRACE, "entering self=%p\n", (void *)self);
 
     for (i = 0; i < self->num_stmts; i++) {
         if (NULL != self->stmts[i])
@@ -628,9 +628,9 @@ void CC_log_error(const char *func, const char *desc,
               "------------------------------------------------------------\n");
         MYLOG(OPENSEARCH_ERROR,
               "            henv=%p, conn=%p, status=%u, num_stmts=%d\n",
-              self->henv, self, self->status, self->num_stmts);
+              self->henv, (void *)self, self->status, self->num_stmts);
         MYLOG(OPENSEARCH_ERROR, "            opensearchconn=%p, stmts=%p, lobj_type=%d\n",
-              self->opensearchconn, self->stmts, self->lobj_type);
+              self->opensearchconn, (void *)self->stmts, self->lobj_type);
     } else {
         MYLOG(OPENSEARCH_ERROR, "INVALID CONNECTION HANDLE ERROR: func=%s, desc='%s'\n",
               func, desc);

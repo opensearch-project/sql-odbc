@@ -1788,7 +1788,7 @@ RETCODE SQL_API OPENSEARCHAPI_SetStmtAttr(HSTMT StatementHandle, SQLINTEGER Attr
                 stmt->ard = &(stmt->ardi);
             } else {
                 stmt->ard = (DescriptorClass *)Value;
-                MYLOG(OPENSEARCH_ALL, "set ard=%p\n", stmt->ard);
+                MYLOG(OPENSEARCH_ALL, "set ard=%p\n", (void *)stmt->ard);
             }
             break;
         case SQL_ATTR_APP_PARAM_DESC: /* 10011 */
