@@ -61,6 +61,8 @@ class ConvertTest : public ::testing::Test {
     StatementClass* m_stmt = nullptr;
 };
 
+}  // namespace
+
 TEST_F(ConvertTest, TimeWithoutFractionAsChar) {
     EXPECT_EQ("12:34:56", AsChar(OPENSEARCH_TYPE_TIME, "12:34:56"));
 }
@@ -83,5 +85,3 @@ TEST_F(ConvertTest, TimestampWithFractionAsChar) {
     EXPECT_EQ("2024-02-29 13:45:10.123456",
               AsChar(OPENSEARCH_TYPE_TIMESTAMP, "2024-02-29 13:45:10.123456"));
 }
-
-}  // namespace
