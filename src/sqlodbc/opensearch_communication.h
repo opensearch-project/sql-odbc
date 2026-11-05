@@ -9,7 +9,6 @@
 #include "opensearch_types.h"
 #include "opensearch_result_queue.h"
 
-// Keep JSON at top: <windows.h> min/max macros break it otherwise
 #include "opensearch_json.h"
 #include <map>
 #include <optional>
@@ -56,6 +55,8 @@ class OpenSearchCommunication {
     static std::optional< std::string > BuildRequestBody(
         const std::string& query, const std::string& fetch_size,
         const std::string& cursor);
+    // Sets a clear error and returns false if query isn't valid UTF-8
+    bool CheckQueryEncoding(const std::string& query);
     void AwsHttpResponseToString(
         std::shared_ptr< Aws::Http::HttpResponse > response,
         std::string& output);

@@ -5,8 +5,8 @@
 // the order the server sent them, which matters when nested values are passed
 // on to ODBC clients as JSON text.
 //
-// Include this before <windows.h>-pulling headers: its min/max macros clash
-// with std::numeric_limits<>::max().
+// Windows builds define NOMINMAX (src/CMakeLists.txt), so include order
+// relative to <windows.h> doesn't matter.
 #include <nlohmann/json.hpp>
 
 typedef nlohmann::ordered_json json_doc;

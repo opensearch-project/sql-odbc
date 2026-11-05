@@ -103,6 +103,11 @@ add_compile_definitions		(	_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING
 								# USE_SSL
 							)
 
+# <windows.h> min/max macros break std::numeric_limits<>::max() (nlohmann/json)
+if(WIN32)
+	add_compile_definitions(NOMINMAX)
+endif()
+
 # Platform specific compiler definitions
 if (WIN32 AND BITNESS EQUAL 64)
 	# Windows specific

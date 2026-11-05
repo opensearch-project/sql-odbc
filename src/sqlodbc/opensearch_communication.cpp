@@ -419,6 +419,20 @@ std::optional< std::string > OpenSearchCommunication::BuildRequestBody(
     }
 }
 
+// For app-supplied query text. IssueRequest also refuses invalid UTF-8, but
+// its callers can only report a generic NULL response, so check up front
+bool OpenSearchCommunication::CheckQueryEncoding(const std::string& query) {
+    if (BuildRequestBody(query, "", ""))
+        return true;
+    m_error_message =
+        "Query text is not valid UTF-8. Use the wide-character (W) ODBC "
+        "functions or a UTF-8 client encoding.";
+    SetErrorDetails("Execution error", m_error_message,
+                    ConnErrorType::CONN_ERROR_QUERY_SYNTAX);
+    LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
+    return false;
+}
+
 std::shared_ptr< Aws::Http::HttpResponse >
 OpenSearchCommunication::IssueRequest(
     const std::string& endpoint, const Aws::Http::HttpMethod request_type,
@@ -632,6 +646,10 @@ std::vector< std::string > OpenSearchCommunication::GetColumnsWithSelectQuery(
     std::string msg = "Attempting to execute a query \"" + query + "\"";
     LogMsg(OPENSEARCH_DEBUG, msg.c_str());
 
+    // table_name comes from the app (SQLColumns), so it can be non-UTF-8 too
+    if (!CheckQueryEncoding(query))
+        return list_of_column;
+
     // Issue request
     std::shared_ptr< Aws::Http::HttpResponse > response =
         IssueRequest(sql_endpoint, Aws::Http::HttpMethod::HTTP_POST,
@@ -704,16 +722,8 @@ int OpenSearchCommunication::ExecDirect(const char* query, const char* fetch_siz
     std::string msg = "Attempting to execute a query \"" + statement + "\"";
     LogMsg(OPENSEARCH_DEBUG, msg.c_str());
 
-    // Checked here (IssueRequest also refuses) so the user gets a clear error
-    if (!BuildRequestBody(statement, fetch_size, "")) {
-        m_error_message =
-            "Query text is not valid UTF-8. Use the wide-character (W) ODBC "
-            "functions or a UTF-8 client encoding.";
-        SetErrorDetails("Execution error", m_error_message,
-                        ConnErrorType::CONN_ERROR_QUERY_SYNTAX);
-        LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
+    if (!CheckQueryEncoding(statement))
         return -1;
-    }
 
     // Issue request
     std::shared_ptr< Aws::Http::HttpResponse > response =
