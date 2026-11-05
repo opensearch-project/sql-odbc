@@ -75,7 +75,7 @@ RETCODE SQL_API SQLCloseCursor(HSTMT StatementHandle) {
     RETCODE ret;
 
     MYLOG(OPENSEARCH_TRACE, "entering\n");
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     ENTER_STMT_CS(stmt);
@@ -103,7 +103,7 @@ SQLRETURN SQL_API SQLColAttribute(SQLHSTMT StatementHandle,
     StatementClass *stmt = (StatementClass *)StatementHandle;
 
     MYLOG(OPENSEARCH_TRACE, "entering\n");
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     ENTER_STMT_CS(stmt);
@@ -162,7 +162,7 @@ RETCODE SQL_API SQLFetchScroll(HSTMT StatementHandle,
 
     MYLOG(OPENSEARCH_TRACE, "entering %d," FORMAT_LEN "\n", FetchOrientation,
           FetchOffset);
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     ENTER_STMT_CS(stmt);

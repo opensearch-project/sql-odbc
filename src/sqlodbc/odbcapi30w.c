@@ -89,7 +89,8 @@ RETCODE SQL_API SQLSetDescFieldW(SQLHDESC DescriptorHandle,
             case SQL_DESC_TYPE_NAME:
                 uval = ucs2_to_utf8(
                     Value,
-                    BufferLength > 0 ? BufferLength / WCLEN : BufferLength,
+                    BufferLength > 0 ? BufferLength / (SQLINTEGER)WCLEN
+                                     : BufferLength,
                     &vallen, FALSE);
                 val_alloced = TRUE;
                 break;
@@ -232,7 +233,7 @@ SQLRETURN SQL_API SQLColAttributeW(SQLHSTMT hstmt, SQLUSMALLINT iCol,
     char *rgbD = NULL, *rgbDt;
 
     MYLOG(OPENSEARCH_TRACE, "entering\n");
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     ENTER_STMT_CS(stmt);

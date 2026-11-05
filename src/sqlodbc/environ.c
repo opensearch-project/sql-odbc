@@ -50,7 +50,7 @@ RETCODE SQL_API OPENSEARCHAPI_FreeEnv(HENV henv) {
     SQLRETURN ret = SQL_SUCCESS;
     EnvironmentClass *env = (EnvironmentClass *)henv;
 
-    MYLOG(OPENSEARCH_TRACE, "entering env=%p\n", env);
+    MYLOG(OPENSEARCH_TRACE, "entering env=%p\n", (void *)env);
 
     if (env && EN_Destructor(env)) {
         MYLOG(OPENSEARCH_DEBUG, "   ok\n");
@@ -438,7 +438,7 @@ char EN_Destructor(EnvironmentClass *self) {
     int lf, nullcnt;
     char rv = 1;
 
-    MYLOG(OPENSEARCH_TRACE, "entering self=%p\n", self);
+    MYLOG(OPENSEARCH_TRACE, "entering self=%p\n", (void *)self);
     if (!self)
         return 0;
 
@@ -498,7 +498,7 @@ char EN_add_connection(EnvironmentClass *self, ConnectionClass *conn) {
     ConnectionClass **newa;
     char ret = FALSE;
 
-    MYLOG(OPENSEARCH_TRACE, "entering self = %p, conn = %p\n", self, conn);
+    MYLOG(OPENSEARCH_TRACE, "entering self = %p, conn = %p\n", (void *)self, (void *)conn);
 
     ENTER_CONNS_CS;
     for (i = 0; i < conns_count; i++) {

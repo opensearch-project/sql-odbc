@@ -366,7 +366,7 @@ void SC_reset_delegate(RETCODE, StatementClass *);
     do {                                                            \
         tp *tmp;                                                    \
         if (tmp = (tp *)realloc(t, s), NULL == tmp) {               \
-            SC_set_error(a, STMT_NO_MEMORY_ERROR, m, __FUNCTION__); \
+            SC_set_error(a, STMT_NO_MEMORY_ERROR, m, __func__); \
             r;                                                      \
             goto cleanup;                                           \
         }                                                           \

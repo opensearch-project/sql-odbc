@@ -94,8 +94,9 @@ typedef struct {
     (book->buffer + offset                                             \
      + (bind_size > 0                                                  \
             ? bind_size                                                \
-            : (SQL_C_VARBOOKMARK == book->returntype ? book->buflen    \
-                                                     : sizeof(UInt4))) \
+            : (SQL_C_VARBOOKMARK == book->returntype                   \
+                   ? book->buflen                                      \
+                   : (SQLLEN)sizeof(UInt4)))                           \
            * index)
 
 /* Macros to handle opensearch type of parameters */
