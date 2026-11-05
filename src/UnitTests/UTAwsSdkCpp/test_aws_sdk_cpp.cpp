@@ -23,6 +23,13 @@ static const char host[] = "https://search-bit-quill-cx3hpfoxvasohujxkllmgjwqde.
 static const char region[] = "us-west-2";
 
 TEST(AWS_SIGV4, EnvironmentAWSCredentials) {
+	// EnvironmentAWSCredentialsProvider reads these; without them the request
+	// is unsigned and the test can only fail
+	if (TestEnv("AWS_ACCESS_KEY_ID", "").empty()
+		|| TestEnv("AWS_SECRET_ACCESS_KEY", "").empty()) {
+		GTEST_SKIP() << "AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY not set";
+	}
+
 	Aws::SDKOptions options;
 	EXPECT_NO_THROW(Aws::InitAPI(options));
 

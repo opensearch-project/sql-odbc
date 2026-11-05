@@ -42,7 +42,7 @@ extern int qprintf(char *fmt, ...)
 const char *po_basename(const char *path);
 
 #define PREPEND_FMT "%10.10s[%s]%d: "
-#define PREPEND_ITEMS , po_basename(__FILE__), __FUNCTION__, __LINE__
+#define PREPEND_ITEMS , po_basename(__FILE__), __func__, __LINE__
 #define QLOG_MARK "[QLOG]"
 
 #if defined(__GNUC__) && !defined(__APPLE__)

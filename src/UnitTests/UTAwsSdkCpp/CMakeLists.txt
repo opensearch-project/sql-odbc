@@ -4,7 +4,7 @@ project(ut_aws_sdk_cpp)
 set(SOURCE_FILES test_aws_sdk_cpp.cpp)
 include_directories(	${UT_HELPER}
 						${AWSSDK_INCLUDE_DIR}
-						${VLD_SRC})
+)
 
 # Generate executable
 add_executable(ut_aws_sdk_cpp ${SOURCE_FILES})
@@ -13,5 +13,5 @@ add_executable(ut_aws_sdk_cpp ${SOURCE_FILES})
 find_package(GTest CONFIG REQUIRED)
 
 # Library dependencies
-target_link_libraries(ut_aws_sdk_cpp ut_helper GTest::gtest_main aws-cpp-sdk-core ${VLD})
+target_link_libraries(ut_aws_sdk_cpp ut_helper GTest::gtest_main aws-cpp-sdk-core)
 target_compile_definitions(ut_aws_sdk_cpp PUBLIC _UNICODE UNICODE)

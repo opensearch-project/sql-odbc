@@ -14,7 +14,8 @@ For information on how the pagination is supported on OpenSearch server, check [
 * Step 5 will send a request to close cursor whenever the connection is closed.
 * ODBC Driver will provide an option to define fetch size as a connection parameter.
   * If fetch size is zero, query will fallback to non-cursor behavior.
-  * If fetch size is not given then the number of rows per request will be as per server-defined default fetch size.
+  * If fetch size is not given (the default, -1), no fetch size is sent and the query does not page: the server returns at most `plugins.query.size_limit` rows (10,000 by default).
+  * A positive fetch size pages through the whole result. It can't exceed `index.max_result_window` (10,000 by default).
 * ODBC Driver will send the request to close cursor whenever the connection is closed.
 
 ## Detailed Design

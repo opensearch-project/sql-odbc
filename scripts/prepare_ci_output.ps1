@@ -1,3 +1,6 @@
+# Fail the step if anything is missing, instead of uploading empty artifacts
+$ErrorActionPreference = "Stop"
+
 $ODBC_BIN_PATH = $args[0]
 $ODBC_LIB_PATH = $args[1]
 $ODBC_BUILD_PATH = $args[2]

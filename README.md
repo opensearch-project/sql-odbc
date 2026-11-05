@@ -8,8 +8,8 @@ OpenSearchODBC is a read-only ODBC driver for Windows and Mac for connecting to 
 | ----- | ----------------------------------------------- |
 | Build | [![ODBC CI][odbc-build-badge]][odbc-build-link] |
 
-[odbc-build-badge]: https://github.com/opensearch-project/sql/actions/workflows/sql-odbc-main.yml/badge.svg
-[odbc-build-link]: https://github.com/opensearch-project/sql/actions/workflows/sql-odbc-main.yml
+[odbc-build-badge]: https://github.com/opensearch-project/sql-odbc/actions/workflows/sql-odbc-main.yml/badge.svg
+[odbc-build-link]: https://github.com/opensearch-project/sql-odbc/actions/workflows/sql-odbc-main.yml
 
 ## Specifications
 

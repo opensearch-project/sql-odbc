@@ -39,6 +39,10 @@ void CI_free_memory(ColumnInfoClass *self) {
                 free(self->coli_array[lf].name);
                 self->coli_array[lf].name = NULL;
             }
+            if (self->coli_array[lf].base_name) {
+                free(self->coli_array[lf].base_name);
+                self->coli_array[lf].base_name = NULL;
+            }
         }
         free(self->coli_array);
         self->coli_array = NULL;
@@ -51,7 +55,7 @@ void CI_set_num_fields(ColumnInfoClass *self, SQLSMALLINT new_num_fields) {
     self->num_fields = new_num_fields;
 
     self->coli_array =
-        (struct srvr_info *)calloc(sizeof(struct srvr_info), self->num_fields);
+        (struct srvr_info *)calloc(self->num_fields, sizeof(struct srvr_info));
 }
 
 void CI_set_field_info(ColumnInfoClass *self, int field_num,
@@ -70,4 +74,13 @@ void CI_set_field_info(ColumnInfoClass *self, int field_num,
     self->coli_array[field_num].display_size = OPENSEARCH_ADT_UNSET;
     self->coli_array[field_num].relid = new_relid;
     self->coli_array[field_num].attid = (short)new_attid;
+}
+
+void CI_set_base_name(ColumnInfoClass *self, int field_num,
+                      const char *base_name) {
+    if ((field_num < 0) || (field_num >= self->num_fields))
+        return;
+
+    free(self->coli_array[field_num].base_name);
+    self->coli_array[field_num].base_name = base_name ? strdup(base_name) : NULL;
 }

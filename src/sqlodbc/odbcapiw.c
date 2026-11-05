@@ -23,7 +23,7 @@ RETCODE SQL_API SQLColumnsW(HSTMT StatementHandle, SQLWCHAR *CatalogName,
     UWORD flag = PODBC_SEARCH_PUBLIC_SCHEMA;
 
     MYLOG(OPENSEARCH_TRACE, "entering\n");
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     lower_id = DEFAULT_LOWERCASEIDENTIFIER;
@@ -132,7 +132,7 @@ RETCODE SQL_API SQLDriverConnectW(HDBC hdbc, HWND hwnd, SQLWCHAR *szConnStrIn,
         if (outlen >= cbConnStrOutMax && NULL != szConnStrOut
             && NULL != pcbConnStrOut) {
             MYLOG(OPENSEARCH_ALL, "cbConnstrOutMax=%d pcb=%p\n", cbConnStrOutMax,
-                  pcbConnStrOut);
+                  (void *)pcbConnStrOut);
             if (SQL_SUCCESS == ret) {
                 CC_set_error(conn, CONN_TRUNCATED,
                              "the ConnStrOut is too small", func);
@@ -215,7 +215,7 @@ RETCODE SQL_API SQLDescribeColW(HSTMT StatementHandle,
     char *clName = NULL, *clNamet = NULL;
 
     MYLOG(OPENSEARCH_TRACE, "entering\n");
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     buflen = 0;
@@ -265,7 +265,7 @@ RETCODE SQL_API SQLExecDirectW(HSTMT StatementHandle, SQLWCHAR *StatementText,
         return SQL_ERROR;
 
     StatementClass *stmt = (StatementClass *)StatementHandle;
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     // Get query string
@@ -366,7 +366,7 @@ RETCODE SQL_API SQLPrepareW(HSTMT StatementHandle, SQLWCHAR *StatementText,
     StatementClass *stmt = (StatementClass *)StatementHandle;
 
     MYLOG(OPENSEARCH_TRACE, "entering\n");
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     SQLLEN slen;
@@ -425,7 +425,7 @@ RETCODE SQL_API SQLSpecialColumnsW(
     BOOL lower_id;
 
     MYLOG(OPENSEARCH_TRACE, "entering\n");
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     lower_id = DEFAULT_LOWERCASEIDENTIFIER;
@@ -464,7 +464,7 @@ RETCODE SQL_API SQLStatisticsW(HSTMT StatementHandle, SQLWCHAR *CatalogName,
     BOOL lower_id;
 
     MYLOG(OPENSEARCH_TRACE, "entering\n");
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     lower_id = DEFAULT_LOWERCASEIDENTIFIER;
@@ -504,7 +504,7 @@ RETCODE SQL_API SQLTablesW(HSTMT StatementHandle, SQLWCHAR *CatalogName,
     UWORD flag = 0;
 
     MYLOG(OPENSEARCH_TRACE, "entering\n");
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     lower_id = DEFAULT_LOWERCASEIDENTIFIER;
@@ -548,7 +548,7 @@ RETCODE SQL_API SQLColumnPrivilegesW(
     UWORD flag = 0;
 
     MYLOG(OPENSEARCH_TRACE, "entering\n");
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     lower_id = DEFAULT_LOWERCASEIDENTIFIER;
@@ -594,7 +594,7 @@ RETCODE SQL_API SQLForeignKeysW(
     BOOL lower_id;
 
     MYLOG(OPENSEARCH_TRACE, "entering\n");
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     lower_id = DEFAULT_LOWERCASEIDENTIFIER;
@@ -694,7 +694,7 @@ RETCODE SQL_API SQLPrimaryKeysW(HSTMT hstmt, SQLWCHAR *szCatalogName,
     BOOL lower_id;
 
     MYLOG(OPENSEARCH_TRACE, "entering\n");
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     lower_id = DEFAULT_LOWERCASEIDENTIFIER;
@@ -773,7 +773,7 @@ RETCODE SQL_API SQLProceduresW(HSTMT hstmt, SQLWCHAR *szCatalogName,
     UWORD flag = 0;
 
     MYLOG(OPENSEARCH_TRACE, "entering\n");
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     lower_id = DEFAULT_LOWERCASEIDENTIFIER;
@@ -815,7 +815,7 @@ RETCODE SQL_API SQLTablePrivilegesW(HSTMT hstmt, SQLWCHAR *szCatalogName,
     UWORD flag = 0;
 
     MYLOG(OPENSEARCH_TRACE, "entering\n");
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     lower_id = DEFAULT_LOWERCASEIDENTIFIER;
@@ -849,7 +849,7 @@ RETCODE SQL_API SQLGetTypeInfoW(SQLHSTMT StatementHandle,
     StatementClass *stmt = (StatementClass *)StatementHandle;
 
     MYLOG(OPENSEARCH_TRACE, "entering\n");
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     ENTER_STMT_CS(stmt);
@@ -882,7 +882,7 @@ SQLRETURN SQL_API SQLColAttributesW(SQLHSTMT hstmt, SQLUSMALLINT iCol,
     char *rgbD = NULL, *rgbDt;
 
     MYLOG(OPENSEARCH_TRACE, "entering\n");
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     ENTER_STMT_CS(stmt);

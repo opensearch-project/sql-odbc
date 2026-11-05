@@ -50,7 +50,7 @@ RETCODE SQL_API OPENSEARCHAPI_FreeEnv(HENV henv) {
     SQLRETURN ret = SQL_SUCCESS;
     EnvironmentClass *env = (EnvironmentClass *)henv;
 
-    MYLOG(OPENSEARCH_TRACE, "entering env=%p\n", env);
+    MYLOG(OPENSEARCH_TRACE, "entering env=%p\n", (void *)env);
 
     if (env && EN_Destructor(env)) {
         MYLOG(OPENSEARCH_DEBUG, "   ok\n");
@@ -317,8 +317,23 @@ RETCODE SQL_API OPENSEARCHAPI_ConnectError(HDBC hdbc, SQLSMALLINT RecNumber,
     if (once_again) {
         CC_set_errornumber(conn, status);
         return SQL_SUCCESS_WITH_INFO;
-    } else
-        return SQL_SUCCESS;
+    }
+
+    /*
+     * SQLError takes no record number: the ODBC 2 contract is that each call
+     * hands back the next diagnostic and the driver forgets it, so that a
+     * caller looping until SQL_NO_DATA_FOUND terminates.  unixODBC's
+     * SQLDriverConnect(W) loops exactly that way when the driver exports
+     * SQLError(W), so leaving the error in place spins forever on any connect
+     * that fails.  EN_get_error() already clears the environment's error for
+     * this reason; the connection's is cleared here rather than inside
+     * CC_get_error() because SQLGetDiagRec must stay repeatable.
+     *
+     * Cleared last: CC_clear_error() frees __error_message, which is what msg
+     * points at.
+     */
+    CC_clear_error(conn);
+    return SQL_SUCCESS;
 }
 
 RETCODE SQL_API OPENSEARCHAPI_EnvError(HENV henv, SQLSMALLINT RecNumber,
@@ -423,7 +438,7 @@ char EN_Destructor(EnvironmentClass *self) {
     int lf, nullcnt;
     char rv = 1;
 
-    MYLOG(OPENSEARCH_TRACE, "entering self=%p\n", self);
+    MYLOG(OPENSEARCH_TRACE, "entering self=%p\n", (void *)self);
     if (!self)
         return 0;
 
@@ -483,7 +498,7 @@ char EN_add_connection(EnvironmentClass *self, ConnectionClass *conn) {
     ConnectionClass **newa;
     char ret = FALSE;
 
-    MYLOG(OPENSEARCH_TRACE, "entering self = %p, conn = %p\n", self, conn);
+    MYLOG(OPENSEARCH_TRACE, "entering self = %p, conn = %p\n", (void *)self, (void *)conn);
 
     ENTER_CONNS_CS;
     for (i = 0; i < conns_count; i++) {

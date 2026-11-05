@@ -41,15 +41,19 @@ ssize_t my_strcpy(char *dst, ssize_t dst_len, const char *src, ssize_t src_len);
  *		when the target is pointer not a fixed array.
  */
 #if ((__GNUC__ * 100) + __GNUC_MINOR__) >= 406
-#define FUNCTION_BEGIN_MACRO ({
+/* __extension__ keeps -pedantic quiet about the GNU statement expression. */
+#define FUNCTION_BEGIN_MACRO __extension__({
 #define FUNCTION_END_MACRO \
     ;                      \
     })
-#define CHECK_NOT_CHAR_P(t)                                              \
-    _Pragma("GCC diagnostic push")                                       \
-        _Pragma("GCC diagnostic ignored \"-Wunused-variable\"") if (0) { \
-        typeof(t) dummy_for_check = {};                                  \
-    }                                                                    \
+/* The empty initializer must stay empty: "= {0}" would also accept a char *
+ * and defeat the check, so silence -Wpedantic for it instead. */
+#define CHECK_NOT_CHAR_P(t)                                         \
+    _Pragma("GCC diagnostic push")                                  \
+    _Pragma("GCC diagnostic ignored \"-Wunused-variable\"")         \
+    _Pragma("GCC diagnostic ignored \"-Wpedantic\"") if (0) {       \
+        typeof(t) dummy_for_check = {};                             \
+    }                                                               \
     _Pragma("GCC diagnostic pop")
 #else
 #define FUNCTION_BEGIN_MACRO
