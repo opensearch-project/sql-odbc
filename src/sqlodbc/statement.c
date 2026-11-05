@@ -1391,36 +1391,36 @@ void SC_set_errorinfo(StatementClass *self, QResultClass *res, int errkind) {
 
     if (CC_not_connected(conn)) {
         SC_set_error_if_not_set(self, STMT_COMMUNICATION_ERROR,
-                                "The connection has been lost", __FUNCTION__);
+                                "The connection has been lost", __func__);
         return;
     }
 
     switch (QR_get_rstatus(res)) {
         case PORES_NO_MEMORY_ERROR:
             SC_set_error_if_not_set(self, STMT_NO_MEMORY_ERROR,
-                                    "memory allocation error???", __FUNCTION__);
+                                    "memory allocation error???", __func__);
             break;
         case PORES_BAD_RESPONSE:
             SC_set_error_if_not_set(self, STMT_COMMUNICATION_ERROR,
                                     "communication error occured",
-                                    __FUNCTION__);
+                                    __func__);
             break;
         case PORES_INTERNAL_ERROR:
             SC_set_error_if_not_set(self, STMT_INTERNAL_ERROR,
                                     "Internal error fetching next row",
-                                    __FUNCTION__);
+                                    __func__);
             break;
         default:
             switch (errkind) {
                 case 1:
                     SC_set_error_if_not_set(
                         self, STMT_EXEC_ERROR,
-                        "Error while fetching the next result", __FUNCTION__);
+                        "Error while fetching the next result", __func__);
                     break;
                 default:
                     SC_set_error_if_not_set(self, STMT_EXEC_ERROR,
                                             "Error while executing the query",
-                                            __FUNCTION__);
+                                            __func__);
                     break;
             }
             break;

@@ -232,7 +232,7 @@ SQLRETURN SQL_API SQLColAttributeW(SQLHSTMT hstmt, SQLUSMALLINT iCol,
     char *rgbD = NULL, *rgbDt;
 
     MYLOG(OPENSEARCH_TRACE, "entering\n");
-    if (SC_connection_lost_check(stmt, __FUNCTION__))
+    if (SC_connection_lost_check(stmt, __func__))
         return SQL_ERROR;
 
     ENTER_STMT_CS(stmt);
