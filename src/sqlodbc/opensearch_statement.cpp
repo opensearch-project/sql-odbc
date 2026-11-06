@@ -149,8 +149,11 @@ SQLRETURN GetNextResultSet(StatementClass *stmt) {
         return SQL_ERROR;
     }
 
+    // Not SQLNumResultCols: on Linux that call binds to the driver manager's
+    // export, which rejects the driver's own handle, and no page after the
+    // first was ever fetched
     SQLSMALLINT total_columns = -1;
-    if (!SQL_SUCCEEDED(SQLNumResultCols(stmt, &total_columns))
+    if (!SQL_SUCCEEDED(OPENSEARCHAPI_NumResultCols(stmt, &total_columns))
         || (total_columns == -1)) {
         return SQL_ERROR;
     }
