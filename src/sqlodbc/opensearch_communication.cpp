@@ -208,21 +208,56 @@ std::shared_ptr< ErrorDetails > OpenSearchCommunication::ParseErrorResponse(
 void OpenSearchCommunication::SetErrorFromResponse(
     long response_code, const std::string& client_error,
     const std::string& body) {
-    m_error_message = "Http response code was not OK. Code received: "
-                      + std::to_string(response_code) + ".";
-    if (!client_error.empty())
-        m_error_message += " Client error: '" + client_error + "'.";
-    if (!body.empty())
-        m_error_message +=
-            " Response error: '" + ResponseBodyForMessage(body) + "'.";
-    LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
+    m_error_details = std::make_shared< ErrorDetails >(ErrorFromResponse(
+        response_code, client_error, body, m_error_message));
+}
 
-    std::shared_ptr< ErrorDetails > details = ParseErrorResponse(body);
-    if (details)
-        m_error_details = details;
-    else
-        SetErrorDetails("Connection error", m_error_message,
-                        ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
+ErrorDetails OpenSearchCommunication::ErrorFromResponse(
+    long response_code, const std::string& client_error,
+    const std::string& body, std::string& message) {
+    message = "Http response code was not OK. Code received: "
+              + std::to_string(response_code) + ".";
+    if (!client_error.empty())
+        message += " Client error: '" + client_error + "'.";
+    if (!body.empty())
+        message += " Response error: '" + ResponseBodyForMessage(body) + "'.";
+    LogMsg(OPENSEARCH_ERROR, message.c_str());
+
+    std::shared_ptr< ErrorDetails > parsed = ParseErrorResponse(body);
+    if (parsed)
+        return *parsed;
+    ErrorDetails details;
+    details.reason = "Connection error";
+    details.details = message;
+    details.source_type = "Dummy type";
+    details.type = ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE;
+    return details;
+}
+
+void OpenSearchCommunication::SetCursorError(const std::string& message,
+                                             ConnErrorType error_type) {
+    LogMsg(OPENSEARCH_ERROR, message.c_str());
+    ErrorDetails details;
+    details.reason = "Cursor error";
+    details.details = message;
+    details.source_type = "Dummy type";
+    details.type = error_type;
+    SetCursorError(details);
+}
+
+void OpenSearchCommunication::SetCursorError(const ErrorDetails& details) {
+    std::scoped_lock lock(m_cursor_error_mutex);
+    m_cursor_error = details;
+}
+
+void OpenSearchCommunication::ClearCursorError() {
+    std::scoped_lock lock(m_cursor_error_mutex);
+    m_cursor_error.reset();
+}
+
+std::optional< ErrorDetails > OpenSearchCommunication::GetCursorError() {
+    std::scoped_lock lock(m_cursor_error_mutex);
+    return m_cursor_error;
 }
 
 void OpenSearchCommunication::SetErrorDetails(std::string reason, std::string message,
@@ -287,13 +322,16 @@ OpenSearchCommunication::~OpenSearchCommunication() {
     --AWS_SDK_HELPER;
 }
 
+std::string OpenSearchCommunication::FormatErrorMessage(
+    const ErrorDetails& details) {
+    return ERROR_MSG_PREFIX + details.reason + ": "
+           + std::regex_replace(details.details, std::regex("\\n"), "\\\\n");
+}
+
 std::string OpenSearchCommunication::GetErrorMessage() {
     // TODO #35 - Check if they expect NULL or "" when there is no error.
     if (m_error_details) {
-        m_error_details->details = std::regex_replace(
-            m_error_details->details, std::regex("\\n"), "\\\\n");
-        return ERROR_MSG_PREFIX + m_error_details->reason + ": "
-               + m_error_details->details;
+        return FormatErrorMessage(*m_error_details);
     } else {
         return ERROR_MSG_PREFIX
                + "No error details available; check the driver logs.";
@@ -758,6 +796,7 @@ std::string OpenSearchCommunication::ResponseBodyForMessage(
 
 int OpenSearchCommunication::ExecDirect(const char* query, const char* fetch_size_) {
     m_error_details.reset();
+    ClearCursorError();
     if (!query) {
         m_error_message = "Query is NULL";
         SetErrorDetails("Execution error", m_error_message,
@@ -838,7 +877,9 @@ int OpenSearchCommunication::ExecDirect(const char* query, const char* fetch_siz
 
     if (!cursor.empty()) {
         // If the response has a cursor, this thread will retrieve more result
-        // pages asynchronously.
+        // pages asynchronously. Retrieval counts as started now: a PopResult
+        // that beat the thread's start would otherwise see the end of data.
+        m_is_retrieving = true;
         std::thread([&, cursor]() { SendCursorQueries(cursor); }).detach();
     }
 
@@ -856,23 +897,27 @@ void OpenSearchCommunication::SendCursorQueries(std::string cursor) {
             std::shared_ptr< Aws::Http::HttpResponse > response = IssueRequest(
                 sql_endpoint, Aws::Http::HttpMethod::HTTP_POST,
                 ctype, "", "", cursor);
+            // Errors from here go to SetCursorError, not m_error_details,
+            // which the app thread reads unlocked. A failed page must still
+            // reach the end of this function, so PopResult stops waiting.
             if (response == nullptr) {
-                m_error_message =
+                // No server answer, so no point asking it to close the cursor
+                SetCursorError(
                     "Failed to receive response from cursor. "
-                    "Received NULL response.";
-                SetErrorDetails("Cursor error", m_error_message,
-                                ConnErrorType::CONN_ERROR_QUERY_SYNTAX);
-                LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
-                return;
+                    "Received NULL response.",
+                    ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
+                break;
             }
 
             std::unique_ptr< OpenSearchResult > result = std::make_unique< OpenSearchResult >();
             AwsHttpResponseToString(response, result->result_json);
             if (response->GetResponseCode()
                 != Aws::Http::HttpResponseCode::OK) {
-                SetErrorFromResponse(
+                std::string message;
+                SetCursorError(ErrorFromResponse(
                     static_cast< long >(response->GetResponseCode()),
-                    ClientErrorOf(*response), result->result_json);
+                    ClientErrorOf(*response), result->result_json, message));
+                SendCloseCursorRequest(cursor);
                 break;
             }
             PrepareCursorResult(*result);
@@ -896,11 +941,10 @@ void OpenSearchCommunication::SendCursorQueries(std::string cursor) {
     } catch (const std::exception& e) {
         // This runs on a detached thread: an escaping exception terminates
         // the app
-        m_error_message =
-            "Received runtime exception: " + std::string(e.what());
-        SetErrorDetails("Cursor error", m_error_message,
-                        ConnErrorType::CONN_ERROR_QUERY_SYNTAX);
-        LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
+        SetCursorError("Received runtime exception: " + std::string(e.what()),
+                       ConnErrorType::CONN_ERROR_QUERY_SYNTAX);
+        if (!cursor.empty())
+            SendCloseCursorRequest(cursor);
     }
 
     if (!m_is_retrieving) {
@@ -911,16 +955,29 @@ void OpenSearchCommunication::SendCursorQueries(std::string cursor) {
 }
 
 void OpenSearchCommunication::SendCloseCursorRequest(const std::string& cursor) {
-    std::shared_ptr< Aws::Http::HttpResponse > response =
-        IssueRequest(sql_endpoint + "/close",
-                     Aws::Http::HttpMethod::HTTP_POST, ctype, "", "", cursor);
-    if (response == nullptr) {
-        m_error_message =
-            "Failed to receive response from cursor close request. "
-            "Received NULL response.";
-        SetErrorDetails("Cursor error", m_error_message,
-                        ConnErrorType::CONN_ERROR_QUERY_SYNTAX);
-        LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
+    // Best effort, on the cursor thread: a failure is only logged (the
+    // server drops the cursor when its keep-alive runs out) and nothing may
+    // throw out of here
+    try {
+        std::shared_ptr< Aws::Http::HttpResponse > response = IssueRequest(
+            sql_endpoint + "/close", Aws::Http::HttpMethod::HTTP_POST, ctype,
+            "", "", cursor);
+        if (response == nullptr) {
+            LogMsg(OPENSEARCH_WARNING,
+                   "Failed to receive response from cursor close request. "
+                   "Received NULL response.");
+        } else if (response->GetResponseCode()
+                   != Aws::Http::HttpResponseCode::OK) {
+            LogMsg(OPENSEARCH_WARNING,
+                   ("Cursor close request failed. Code received: "
+                    + std::to_string(
+                        static_cast< long >(response->GetResponseCode())))
+                       .c_str());
+        }
+    } catch (const std::exception& e) {
+        LogMsg(OPENSEARCH_WARNING,
+               ("Cursor close request failed: " + std::string(e.what()))
+                   .c_str());
     }
 }
 

@@ -1363,7 +1363,14 @@ RETCODE SQL_API OPENSEARCHAPI_ExtendedFetch(HSTMT hstmt, SQLUSMALLINT fFetchType
             const SQLLEN end_rowset_size = rowset_start + rowsetSize;
             while ((end_rowset_size >= num_tuples)
                    && (NULL != res->server_cursor_id)) {
-                GetNextResultSet(stmt);
+                /* A failed page is reported once the rows before it are
+                 * fetched, so none are lost */
+                const BOOL rows_left = rowset_start < num_tuples;
+                if (!SQL_SUCCEEDED(GetNextResultSet(stmt, !rows_left))) {
+                    if (!rows_left)
+                        return SQL_ERROR;
+                    break;
+                }
                 num_tuples = QR_get_num_total_tuples(res);
             }
         }

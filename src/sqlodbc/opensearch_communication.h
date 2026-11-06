@@ -2,7 +2,9 @@
 #define OPENSEARCH_COMMUNICATION
 
 // clang-format off
+#include <atomic>
 #include <memory>
+#include <mutex>
 #include <queue>
 #include <future>
 #include <regex>
@@ -29,6 +31,11 @@ class OpenSearchCommunication {
     // Create function for factory
     std::string GetErrorMessage();
     ConnErrorType GetErrorType();
+    // The error that stopped the background cursor thread, if one did.
+    // Safe to call while that thread runs; the next ExecDirect clears it.
+    std::optional< ErrorDetails > GetCursorError();
+    // The text GetErrorMessage gives for these details
+    static std::string FormatErrorMessage(const ErrorDetails& details);
     bool ConnectionOptions(runtime_options& rt_opts, bool use_defaults,
                            int expand_dbname, unsigned int option_count);
     bool ConnectionOptions2();
@@ -71,6 +78,12 @@ class OpenSearchCommunication {
     void SetErrorFromResponse(long response_code,
                               const std::string& client_error,
                               const std::string& body);
+    // That error without setting it, for the cursor thread. message gets
+    // the status line.
+    ErrorDetails ErrorFromResponse(long response_code,
+                                   const std::string& client_error,
+                                   const std::string& body,
+                                   std::string& message);
     void AwsHttpResponseToString(
         std::shared_ptr< Aws::Http::HttpResponse > response,
         std::string& output);
@@ -95,6 +108,9 @@ class OpenSearchCommunication {
     void SetErrorDetails(std::string reason, std::string message,
                          ConnErrorType error_type);
     void SetErrorDetails(ErrorDetails details);
+    void SetCursorError(const std::string& message, ConnErrorType error_type);
+    void SetCursorError(const ErrorDetails& details);
+    void ClearCursorError();
 
     void SetIsAossServerless();
     void SetSqlEndpoint();
@@ -110,7 +126,8 @@ class OpenSearchCommunication {
     // Set by SetIsAossServerless() in EstablishConnection()
     bool is_aoss_serverless = false;
     bool m_valid_connection_options;
-    bool m_is_retrieving;
+    // Written by both the app thread and the cursor thread
+    std::atomic< bool > m_is_retrieving;
     // TODO #35 - Go through and add error messages on exit conditions
     std::string m_error_message;
     OpenSearchResultQueue m_result_queue;
@@ -119,6 +136,10 @@ class OpenSearchCommunication {
     std::string m_response_str;
     std::shared_ptr< Aws::Http::HttpClient > m_http_client;
     std::string m_error_message_to_user;
+    // The cursor thread's error. It has its own lock, rather than going in
+    // m_error_details, because the app thread reads that unlocked.
+    std::mutex m_cursor_error_mutex;
+    std::optional< ErrorDetails > m_cursor_error;
 };
 
 #endif
