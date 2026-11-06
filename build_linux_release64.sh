@@ -14,7 +14,7 @@ PREFIX_PATH="$(pwd)/src/vcpkg_installed/x64-linux"
 cmake -S src -B cmake-build64 \
   -DCMAKE_BUILD_TYPE=Release \
   -DCMAKE_PREFIX_PATH="${PREFIX_PATH}" \
-  -DWARNINGS_AS_ERRORS=OFF \
+  -DWARNINGS_AS_ERRORS=ON \
   -DBUILD_WITH_TESTS=ON
 
 # Integration and performance tests don't compile on unixODBC yet (SQLWCHAR is
