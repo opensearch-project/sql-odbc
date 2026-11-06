@@ -81,7 +81,10 @@ std::string ConnectionString(const std::string& host, const std::string& port,
 }
 
 std::string ClusterConnectionString(const std::string& extra) {
-    return ConnectionString("localhost", test_port, use_ssl, extra);
+    // The scheme is explicit, as in ut_conn: with a bare host the driver
+    // currently ignores useSSL=1 and connects over plain HTTP
+    return ConnectionString(use_ssl ? "https://localhost" : "localhost",
+                            test_port, use_ssl, extra);
 }
 
 class DriverManager : public testing::Test {
