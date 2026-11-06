@@ -54,7 +54,10 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
         std::string es_conn_err = GetErrorMsg(SC_get_conn(stmt)->opensearchconn);
         ConnErrorType es_err_type = GetErrorType(SC_get_conn(stmt)->opensearchconn);
         std::string es_parse_err = GetResultParserError();
-        if (!es_conn_err.empty()) {
+        if (SC_get_errornumber(stmt) > 0) {
+            // SendQueryGetResult said why: the connection's message would
+            // only be "no error details", as the request itself succeeded
+        } else if (!es_conn_err.empty()) {
             if (es_err_type == ConnErrorType::CONN_ERROR_QUERY_SYNTAX) {
                 SC_set_error(stmt, STMT_QUERY_SYNTAX_ERROR, es_conn_err.c_str(),
                              func);
@@ -273,10 +276,22 @@ QResultClass *SendQueryGetResult(StatementClass *stmt, BOOL commit) {
             : CC_Metadata_from_OpenSearchResult(res, conn, res->cursor_name,
                                                    *es_res);
 
-    // Convert result to QResultClass
+    // Convert result to QResultClass. res never took ownership of es_res,
+    // so both are freed here.
     if (!success) {
         QR_Destructor(res);
-        res = NULL;
+        OpenSearchClearResult(es_res);
+        std::string parse_error = GetResultParserError();
+        SC_set_error(stmt, STMT_EXEC_ERROR,
+                     parse_error.empty()
+                         ? "Failed to convert the server's response to a "
+                           "result set."
+                         : ("Failed to convert the server's response to a "
+                            "result set: "
+                            + parse_error)
+                               .c_str(),
+                     "SendQueryGetResult");
+        return NULL;
     }
 
     if (commit) {

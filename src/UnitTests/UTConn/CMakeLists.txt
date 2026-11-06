@@ -1,7 +1,7 @@
 project(ut_conn)
 
 # Source, headers, and include dirs
-set(SOURCE_FILES test_conn.cpp test_query_execution.cpp)
+set(SOURCE_FILES test_conn.cpp test_query_execution.cpp test_send_query.cpp)
 include_directories(	${UT_HELPER}
 						${OPENSEARCHODBC_SRC}
 
