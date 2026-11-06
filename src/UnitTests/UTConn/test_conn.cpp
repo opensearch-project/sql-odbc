@@ -191,6 +191,78 @@ TEST(TestTruncateResponseBody, InvalidUtf8IsStillBounded) {
               OpenSearchCommunication::TruncateResponseBody(body, 4));
 }
 
+// Non-OK responses (no cluster needed). Proxies and load balancers answer
+// with HTML or plain text, not OpenSearch's JSON error, and that must become
+// an ODBC error rather than an exception thrown through the C API.
+
+const std::string error_prefix = "[OpenSearch][SQL ODBC Driver][SQL Plugin] ";
+
+TEST(TestSetErrorFromResponse, HtmlBodyGivesStatusAndBody) {
+    OpenSearchCommunication conn;
+    const std::string html =
+        "<html><head><title>502 Bad Gateway</title></head></html>";
+    EXPECT_NO_THROW(conn.SetErrorFromResponse(502, "", html));
+    EXPECT_EQ(error_prefix
+                  + "Connection error: Http response code was not OK. Code "
+                    "received: 502. Response error: '"
+                  + html + "'.",
+              conn.GetErrorMessage());
+}
+
+TEST(TestSetErrorFromResponse, LongBodyIsBounded) {
+    OpenSearchCommunication conn;
+    const std::string body = "<html>" + std::string(1000, 'x');
+    EXPECT_NO_THROW(conn.SetErrorFromResponse(504, "", body));
+    EXPECT_EQ(error_prefix
+                  + "Connection error: Http response code was not OK. Code "
+                    "received: 504. Response error: '"
+                  + body.substr(0, 256) + "... (1006 bytes total)'.",
+              conn.GetErrorMessage());
+}
+
+TEST(TestSetErrorFromResponse, EmptyBodyGivesStatus) {
+    OpenSearchCommunication conn;
+    EXPECT_NO_THROW(conn.SetErrorFromResponse(503, "", ""));
+    EXPECT_EQ(error_prefix
+                  + "Connection error: Http response code was not OK. Code "
+                    "received: 503.",
+              conn.GetErrorMessage());
+}
+
+TEST(TestSetErrorFromResponse, ClientErrorIsIncluded) {
+    OpenSearchCommunication conn;
+    EXPECT_NO_THROW(
+        conn.SetErrorFromResponse(429, "throttled", "Too Many Requests"));
+    EXPECT_EQ(error_prefix
+                  + "Connection error: Http response code was not OK. Code "
+                    "received: 429. Client error: 'throttled'. Response "
+                    "error: 'Too Many Requests'.",
+              conn.GetErrorMessage());
+}
+
+// JSON that isn't OpenSearch's error shape, e.g. an API gateway's 403
+TEST(TestSetErrorFromResponse, OtherJsonGivesStatusAndBody) {
+    OpenSearchCommunication conn;
+    const std::string body = R"({"message":"Forbidden"})";
+    EXPECT_NO_THROW(conn.SetErrorFromResponse(403, "", body));
+    EXPECT_EQ(error_prefix
+                  + "Connection error: Http response code was not OK. Code "
+                    "received: 403. Response error: '"
+                  + body + "'.",
+              conn.GetErrorMessage());
+}
+
+// The server's own error keeps its existing message
+TEST(TestSetErrorFromResponse, OpenSearchJsonErrorGivesServerReason) {
+    OpenSearchCommunication conn;
+    const std::string body =
+        R"({"error":{"reason":"Invalid SQL query","details":"bad token",)"
+        R"("type":"SyntaxCheckException"},"status":400})";
+    EXPECT_NO_THROW(conn.SetErrorFromResponse(400, "", body));
+    EXPECT_EQ(error_prefix + "Invalid SQL query: bad token",
+              conn.GetErrorMessage());
+}
+
 // Server URL scheme (no cluster needed)
 
 namespace {

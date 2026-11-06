@@ -99,6 +99,12 @@ void CheckErrorShape(const json_doc& doc) {
     CheckField(error, "type", IsString, "a string", true);
     CheckField(doc, "status", IsInteger, "an integer", true);
 }
+
+std::string ClientErrorOf(const Aws::Http::HttpResponse& response) {
+    return response.HasClientError()
+               ? std::string(response.GetClientErrorMessage().c_str())
+               : std::string();
+}
 }  // namespace
 
 namespace {
@@ -176,29 +182,47 @@ void OpenSearchCommunication::PrepareCursorResult(OpenSearchResult& opensearch_r
 }
 
 std::shared_ptr< ErrorDetails > OpenSearchCommunication::ParseErrorResponse(
-    OpenSearchResult& opensearch_result) {
-    // Prepare document and validate schema
+    const std::string& body) {
+    // Proxies and load balancers send HTML or plain text, so a body that
+    // isn't OpenSearch's error is expected here, not exceptional
     try {
         LogMsg(OPENSEARCH_DEBUG, "Parsing error response (with schema validation)");
-        opensearch_result.opensearch_result_doc =
-            json_doc::parse(opensearch_result.result_json);
-        CheckErrorShape(opensearch_result.opensearch_result_doc);
+        const json_doc doc = json_doc::parse(body);
+        CheckErrorShape(doc);
 
-        const json_doc& error = opensearch_result.opensearch_result_doc.at("error");
+        const json_doc& error = doc.at("error");
         auto error_details = std::make_shared< ErrorDetails >();
         error_details->reason = error.at("reason").get< std::string >();
         error_details->details = error.at("details").get< std::string >();
         error_details->source_type = error.at("type").get< std::string >();
         return error_details;
     } catch (const std::exception& e) {
-        // A prefix of the json aids debugging without putting row data or an
-        // unbounded body in the error text
-        std::string str =
-            "Exception obtained '" + std::string(e.what())
-            + "' when parsing json string '"
-            + ResponseBodyForMessage(opensearch_result.result_json) + "'.";
-        throw std::runtime_error(str.c_str());
+        LogMsg(OPENSEARCH_DEBUG,
+               ("Error response is not an OpenSearch error: "
+                + std::string(e.what()))
+                   .c_str());
+        return nullptr;
     }
+}
+
+void OpenSearchCommunication::SetErrorFromResponse(
+    long response_code, const std::string& client_error,
+    const std::string& body) {
+    m_error_message = "Http response code was not OK. Code received: "
+                      + std::to_string(response_code) + ".";
+    if (!client_error.empty())
+        m_error_message += " Client error: '" + client_error + "'.";
+    if (!body.empty())
+        m_error_message +=
+            " Response error: '" + ResponseBodyForMessage(body) + "'.";
+    LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
+
+    std::shared_ptr< ErrorDetails > details = ParseErrorResponse(body);
+    if (details)
+        m_error_details = details;
+    else
+        SetErrorDetails("Connection error", m_error_message,
+                        ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
 }
 
 void OpenSearchCommunication::SetErrorDetails(std::string reason, std::string message,
@@ -557,11 +581,17 @@ bool OpenSearchCommunication::CheckSQLPluginAvailability() {
             return true;
         }
         else {
-            std::unique_ptr< OpenSearchResult > result =
-                std::make_unique< OpenSearchResult >();
-            AwsHttpResponseToString(response, result->result_json);
             std::shared_ptr< ErrorDetails > error_details =
-                ParseErrorResponse(*result);
+                ParseErrorResponse(m_response_str);
+            if (!error_details) {
+                // Not from OpenSearch (e.g. an HTML 502 from a proxy), so
+                // say what came back rather than blaming the SQL plugin
+                SetErrorFromResponse(
+                    static_cast< long >(response->GetResponseCode()),
+                    ClientErrorOf(*response), m_response_str);
+                m_error_message_to_user = m_error_message;
+                return false;
+            }
             const std::string body_for_message =
                 ResponseBodyForMessage(m_response_str);
 
@@ -682,21 +712,9 @@ std::vector< std::string > OpenSearchCommunication::GetColumnsWithSelectQuery(
     // If response was not valid, set error
     if (response->GetResponseCode() != Aws::Http::HttpResponseCode::OK) {
         m_error_type = ConnErrorType::CONN_ERROR_QUERY_SYNTAX;
-        m_error_message =
-            "Http response code was not OK. Code received: "
-            + std::to_string(static_cast< long >(response->GetResponseCode()))
-            + ".";
-        if (response->HasClientError())
-            m_error_message +=
-                " Client error: '" + response->GetClientErrorMessage() + "'.";
-        if (!result->result_json.empty()) {
-            m_error_message +=
-                " Response error: '"
-                + ResponseBodyForMessage(result->result_json) + "'.";
-        }
-        SetErrorDetails("Connection error", m_error_message,
-                        ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE);
-        LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
+        SetErrorFromResponse(
+            static_cast< long >(response->GetResponseCode()),
+            ClientErrorOf(*response), result->result_json);
         return list_of_column;
     }
 
@@ -786,27 +804,17 @@ int OpenSearchCommunication::ExecDirect(const char* query, const char* fetch_siz
     // If response was not valid, set error
     if (response->GetResponseCode() != Aws::Http::HttpResponseCode::OK) {
         m_error_type = ConnErrorType::CONN_ERROR_QUERY_SYNTAX;
-        m_error_message =
-            "Http response code was not OK. Code received: "
-            + std::to_string(static_cast< long >(response->GetResponseCode()))
-            + ".";
-        if (response->HasClientError())
-            m_error_message +=
-                " Client error: '" + response->GetClientErrorMessage() + "'.";
-        if (!result->result_json.empty()) {
-            m_error_details = ParseErrorResponse(*result.get());
-            m_error_message +=
-                " Response error: '"
-                + ResponseBodyForMessage(result->result_json) + "'.";
-        }
-        LogMsg(OPENSEARCH_ERROR, m_error_message.c_str());
+        SetErrorFromResponse(
+            static_cast< long >(response->GetResponseCode()),
+            ClientErrorOf(*response), result->result_json);
         return -1;
     }
 
-    // Add to result queue and return
+    // Add to result queue and return. nlohmann's exceptions aren't
+    // runtime_errors, and none may escape to the C API.
     try {
         ConstructOpenSearchResult(*result);
-    } catch (std::runtime_error& e) {
+    } catch (const std::exception& e) {
         m_error_message =
             "Received runtime exception: " + std::string(e.what());
         if (!result->result_json.empty()) {
@@ -860,6 +868,13 @@ void OpenSearchCommunication::SendCursorQueries(std::string cursor) {
 
             std::unique_ptr< OpenSearchResult > result = std::make_unique< OpenSearchResult >();
             AwsHttpResponseToString(response, result->result_json);
+            if (response->GetResponseCode()
+                != Aws::Http::HttpResponseCode::OK) {
+                SetErrorFromResponse(
+                    static_cast< long >(response->GetResponseCode()),
+                    ClientErrorOf(*response), result->result_json);
+                break;
+            }
             PrepareCursorResult(*result);
 
             if (result->opensearch_result_doc.contains("cursor")) {
@@ -878,7 +893,9 @@ void OpenSearchCommunication::SendCursorQueries(std::string cursor) {
             // multiple tries.
             result.release();
         }
-    } catch (std::runtime_error& e) {
+    } catch (const std::exception& e) {
+        // This runs on a detached thread: an escaping exception terminates
+        // the app
         m_error_message =
             "Received runtime exception: " + std::string(e.what());
         SetErrorDetails("Cursor error", m_error_message,
