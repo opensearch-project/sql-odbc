@@ -132,6 +132,15 @@ jobs:
       run: |
         ./build/odbc/bin/ut_conn
 
+    # As an application calls it: through the system unixODBC driver
+    # manager, which loads the built driver from its absolute path. Also
+    # starts a fake server on 127.0.0.1 for the failed-cursor-page case.
+    - name: Driver manager tests
+      env:
+        ODBC_TEST_USE_SSL: '1'
+      run: |
+        ./build/odbc/bin/ut_driver_manager
+
     - name: OpenSearch logs
       if: failure()
       run: |
