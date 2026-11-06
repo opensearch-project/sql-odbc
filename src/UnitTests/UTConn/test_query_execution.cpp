@@ -4,6 +4,10 @@
 #include "opensearch_communication.h"
 #include "opensearch_helper.h"
 #include <algorithm>
+#include <chrono>
+#include <future>
+#include <memory>
+#include <thread>
 // clang-format on
 
 const std::string valid_host = (use_ssl ? "https://localhost" : "localhost");
@@ -220,4 +224,94 @@ TEST(TestConnPagination, DefaultFetchSizeIsCappedAtSizeLimit) {
     RecordProperty("rows", (int)paged.rows);
     RecordProperty("pages", (int)paged.pages);
     EXPECT_EQ(std::min(total, server_size_limit), paged.rows);
+}
+
+// The cursor thread's lifetime. A small fetch size gives a query far more
+// pages than the queue holds, so the thread is still fetching (or waiting
+// on a full queue) when the app stops, re-executes or disconnects. Run under
+// ASan or helgrind to see a thread outliving its connection.
+
+const std::string many_pages_fetch_size = "10";
+
+namespace {
+std::unique_ptr< OpenSearchCommunication > ConnectedComm() {
+    auto conn = std::make_unique< OpenSearchCommunication >();
+    if (!conn->ConnectionOptions(valid_conn_opt_val, false, 0, 0)
+        || !conn->ConnectDBStart())
+        return nullptr;
+    return conn;
+}
+
+// Run f on another thread, so a hang fails the test instead of the run
+template < typename F >
+bool FinishesWithin(std::chrono::seconds limit, F f) {
+    std::future< void > done = std::async(std::launch::async, f);
+    if (done.wait_for(limit) != std::future_status::ready) {
+        done.wait();
+        return false;
+    }
+    done.get();
+    return true;
+}
+
+// Long enough for a thread left running to fetch a page or two more
+void LetACursorThreadRun() {
+    std::this_thread::sleep_for(std::chrono::milliseconds(500));
+}
+}  // namespace
+
+TEST(TestCursorThread, DisconnectWhileRetrieving) {
+    std::unique_ptr< OpenSearchCommunication > conn = ConnectedComm();
+    ASSERT_NE(nullptr, conn);
+    ASSERT_EQ(0, conn->ExecDirect(flights_origin_query.c_str(),
+                                  many_pages_fetch_size.c_str()))
+        << conn->GetErrorMessage();
+    delete conn->PopResult();
+    // OpenSearchDisconnect deletes the connection
+    EXPECT_TRUE(FinishesWithin(std::chrono::seconds(10),
+                               [&conn]() { conn.reset(); }));
+    LetACursorThreadRun();
+}
+
+TEST(TestCursorThread, DropDBConnectionWhileRetrieving) {
+    std::unique_ptr< OpenSearchCommunication > conn = ConnectedComm();
+    ASSERT_NE(nullptr, conn);
+    ASSERT_EQ(0, conn->ExecDirect(flights_origin_query.c_str(),
+                                  many_pages_fetch_size.c_str()))
+        << conn->GetErrorMessage();
+    EXPECT_TRUE(FinishesWithin(std::chrono::seconds(10),
+                               [&conn]() { conn->DropDBConnection(); }));
+    LetACursorThreadRun();
+    EXPECT_EQ(nullptr, conn->PopResult());
+}
+
+// SQLFreeStmt(SQL_CLOSE) and SQLCloseCursor: no page arrives afterwards,
+// including when the stop beats the thread's start
+TEST(TestCursorThread, StopResultRetrievalStopsThePages) {
+    std::unique_ptr< OpenSearchCommunication > conn = ConnectedComm();
+    ASSERT_NE(nullptr, conn);
+    ASSERT_EQ(0, conn->ExecDirect(flights_origin_query.c_str(),
+                                  many_pages_fetch_size.c_str()))
+        << conn->GetErrorMessage();
+    EXPECT_TRUE(FinishesWithin(std::chrono::seconds(10),
+                               [&conn]() { conn->StopResultRetrieval(); }));
+    LetACursorThreadRun();
+    EXPECT_EQ(nullptr, conn->PopResult());
+}
+
+// A new query drops the old one's pages instead of queueing behind them
+TEST(TestCursorThread, ExecDirectWhileRetrieving) {
+    std::unique_ptr< OpenSearchCommunication > conn = ConnectedComm();
+    ASSERT_NE(nullptr, conn);
+    ASSERT_EQ(0, conn->ExecDirect(flights_origin_query.c_str(),
+                                  many_pages_fetch_size.c_str()))
+        << conn->GetErrorMessage();
+    LetACursorThreadRun();  // the queue is full of the old query's pages
+    ASSERT_EQ(0, conn->ExecDirect(flights_count_query.c_str(), "-1"))
+        << conn->GetErrorMessage();
+    OpenSearchResult* result = conn->PopResult();
+    ASSERT_NE(nullptr, result);
+    EXPECT_EQ("COUNT(*)", result->column_info.at(0).field_name);
+    delete result;
+    EXPECT_EQ(nullptr, conn->PopResult());
 }
