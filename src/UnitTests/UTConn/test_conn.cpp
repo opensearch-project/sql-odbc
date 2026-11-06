@@ -1,6 +1,7 @@
 // clang-format off
 #include "pch.h"
 #include "unit_test_helper.h"
+#include "dlg_specific.h"
 #include "opensearch_communication.h"
 #include "opensearch_connection.h"
 #include <cstdio>
@@ -266,31 +267,62 @@ TEST(TestSetErrorFromResponse, OpenSearchJsonErrorGivesServerReason) {
 // Server URL scheme (no cluster needed)
 
 namespace {
-std::string ServerUrlFor(const char* server, char ssl_flag) {
+// Sets UseSSL through the connection-string parser, so the test sees the
+// value the driver really stores (atoi: 0 or 1, not '0' or '1')
+std::unique_ptr< ConnectionClass > ConnFor(const char* server,
+                                           const char* use_ssl_value) {
     auto conn = std::make_unique< ConnectionClass >();
     snprintf(conn->connInfo.server, sizeof(conn->connInfo.server), "%s",
              server);
-    conn->connInfo.use_ssl = ssl_flag;
-    return generateValidServerUrl(conn.get());
+    copyConnAttributes(&conn->connInfo, INI_SSL_USE, use_ssl_value);
+    return conn;
+}
+
+std::string ServerUrlFor(const char* server, const char* use_ssl_value) {
+    return generateValidServerUrl(ConnFor(server, use_ssl_value).get());
 }
 }  // namespace
 
-// UseSSL is stored as the character '0' or '1', not as 0 or 1
 TEST(TestGenerateValidServerUrl, BareHostWithoutSsl) {
-    EXPECT_EQ("http://localhost", ServerUrlFor("localhost", '0'));
+    EXPECT_EQ("http://localhost", ServerUrlFor("localhost", "0"));
 }
 
 TEST(TestGenerateValidServerUrl, BareHostWithSsl) {
-    EXPECT_EQ("https://localhost", ServerUrlFor("localhost", '1'));
+    EXPECT_EQ("https://localhost", ServerUrlFor("localhost", "1"));
 }
 
 TEST(TestGenerateValidServerUrl, ExplicitSchemeIsKept) {
-    EXPECT_EQ("http://localhost", ServerUrlFor("http://localhost", '1'));
-    EXPECT_EQ("https://localhost", ServerUrlFor("https://localhost", '0'));
+    EXPECT_EQ("http://localhost", ServerUrlFor("http://localhost", "1"));
+    EXPECT_EQ("https://localhost", ServerUrlFor("https://localhost", "0"));
 }
 
 TEST(TestGenerateValidServerUrl, EmptyServer) {
-    EXPECT_EQ("", ServerUrlFor("", '0'));
+    EXPECT_EQ("", ServerUrlFor("", "0"));
+}
+
+// use_ssl picks the HTTP client's scheme; verify_server is its verifySSL
+TEST(TestConnOptions, UseSslReachesRuntimeOptions) {
+    EXPECT_TRUE(GetRuntimeOptions(ConnFor("localhost", "1").get())
+                    .crypt.use_ssl);
+    EXPECT_FALSE(GetRuntimeOptions(ConnFor("localhost", "0").get())
+                     .crypt.use_ssl);
+}
+
+TEST(TestConnOptions, HostnameVerificationReachesRuntimeOptions) {
+    auto conn = ConnFor("localhost", "1");
+    copyConnAttributes(&conn->connInfo, INI_SSL_HOST_VERIFY, "1");
+    EXPECT_TRUE(GetRuntimeOptions(conn.get()).crypt.verify_server);
+    copyConnAttributes(&conn->connInfo, INI_SSL_HOST_VERIFY, "0");
+    EXPECT_FALSE(GetRuntimeOptions(conn.get()).crypt.verify_server);
+}
+
+// Documented default is HostnameVerification=1
+TEST(TestConnOptions, HostnameVerificationDefaultsOn) {
+    auto conn = std::make_unique< ConnectionClass >();
+    CC_conninfo_init(&conn->connInfo, INIT_GLOBALS);
+    snprintf(conn->connInfo.server, sizeof(conn->connInfo.server), "%s",
+             "localhost");
+    EXPECT_TRUE(GetRuntimeOptions(conn.get()).crypt.verify_server);
 }
 
 int main(int argc, char** argv) {
