@@ -154,6 +154,69 @@ class DriverManager : public testing::Test {
     }
 };
 
+// cursor_stub.py as a child process: a fake server on 127.0.0.1 whose first
+// page has 3 rows and a cursor, and whose cursor page is an HTML 502
+class CursorStub {
+   public:
+    CursorStub() {
+        int to_child[2], from_child[2];
+        if (pipe(to_child) != 0 || pipe(from_child) != 0)
+            return;
+        pid_ = fork();
+        if (pid_ == 0) {
+            dup2(to_child[0], STDIN_FILENO);
+            dup2(from_child[1], STDOUT_FILENO);
+            close(to_child[1]);
+            close(from_child[0]);
+            execlp("python3", "python3", DM_TEST_CURSOR_STUB,
+                   static_cast< char* >(nullptr));
+            _exit(127);
+        }
+        close(to_child[0]);
+        close(from_child[1]);
+        stdin_ = to_child[1];
+        // First line of output is the port it listens on
+        char buf[16] = {0};
+        size_t used = 0;
+        while (used < sizeof(buf) - 1) {
+            ssize_t n = read(from_child[0], buf + used, 1);
+            if (n <= 0 || buf[used] == '\n')
+                break;
+            ++used;
+        }
+        close(from_child[0]);
+        buf[used] = '\0';
+        port_ = buf;
+    }
+
+    ~CursorStub() {
+        // Closing its stdin is the stub's signal to exit
+        if (stdin_ >= 0)
+            close(stdin_);
+        if (pid_ > 0) {
+            int status = 0;
+            for (int i = 0; i < 50; ++i) {
+                if (waitpid(pid_, &status, WNOHANG) == pid_)
+                    return;
+                usleep(100 * 1000);
+            }
+            kill(pid_, SIGKILL);
+            waitpid(pid_, &status, 0);
+        }
+    }
+
+    const std::string& port() const {
+        return port_;
+    }
+
+   private:
+    pid_t pid_ = -1;
+    int stdin_ = -1;
+    std::string port_;
+};
+
+}  // namespace
+
 // Every cursor page reaches the application, not just the first
 TEST_F(DriverManager, FetchSizePagesThroughAllRows) {
     ASSERT_NO_FATAL_FAILURE(Connect(ClusterConnectionString(";fetchSize=1000")));
@@ -243,66 +306,6 @@ TEST_F(DriverManager, ColumnMetadataAndDoublePrecision) {
               "0.3333333333333333");
 }
 
-// cursor_stub.py as a child process: a fake server on 127.0.0.1 whose first
-// page has 3 rows and a cursor, and whose cursor page is an HTML 502
-class CursorStub {
-   public:
-    CursorStub() {
-        int to_child[2], from_child[2];
-        if (pipe(to_child) != 0 || pipe(from_child) != 0)
-            return;
-        pid_ = fork();
-        if (pid_ == 0) {
-            dup2(to_child[0], STDIN_FILENO);
-            dup2(from_child[1], STDOUT_FILENO);
-            close(to_child[1]);
-            close(from_child[0]);
-            execlp("python3", "python3", DM_TEST_CURSOR_STUB,
-                   static_cast< char* >(nullptr));
-            _exit(127);
-        }
-        close(to_child[0]);
-        close(from_child[1]);
-        stdin_ = to_child[1];
-        // First line of output is the port it listens on
-        char buf[16] = {0};
-        size_t used = 0;
-        while (used < sizeof(buf) - 1) {
-            ssize_t n = read(from_child[0], buf + used, 1);
-            if (n <= 0 || buf[used] == '\n')
-                break;
-            ++used;
-        }
-        close(from_child[0]);
-        buf[used] = '\0';
-        port_ = buf;
-    }
-
-    ~CursorStub() {
-        // Closing its stdin is the stub's signal to exit
-        if (stdin_ >= 0)
-            close(stdin_);
-        if (pid_ > 0) {
-            int status = 0;
-            for (int i = 0; i < 50; ++i) {
-                if (waitpid(pid_, &status, WNOHANG) == pid_)
-                    return;
-                usleep(100 * 1000);
-            }
-            kill(pid_, SIGKILL);
-            waitpid(pid_, &status, 0);
-        }
-    }
-
-    const std::string& port() const {
-        return port_;
-    }
-
-   private:
-    pid_t pid_ = -1;
-    int stdin_ = -1;
-    std::string port_;
-};
 
 // A failed cursor page is an error after the rows before it, not the end of
 // the result set
@@ -321,5 +324,3 @@ TEST_F(DriverManager, CursorPageErrorIsReportedAfterReceivedRows) {
     EXPECT_EQ(diag.sqlstate, "08S01") << diag.message;
     EXPECT_NE(diag.message.find("502"), std::string::npos) << diag.message;
 }
-
-}  // namespace
