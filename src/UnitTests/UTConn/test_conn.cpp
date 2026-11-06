@@ -3,7 +3,9 @@
 #include "unit_test_helper.h"
 #include "opensearch_communication.h"
 #include "opensearch_connection.h"
+#include <chrono>
 #include <cstdio>
+#include <future>
 #include <memory>
 // clang-format on
 
@@ -261,6 +263,70 @@ TEST(TestSetErrorFromResponse, OpenSearchJsonErrorGivesServerReason) {
     EXPECT_NO_THROW(conn.SetErrorFromResponse(400, "", body));
     EXPECT_EQ(error_prefix + "Invalid SQL query: bad token",
               conn.GetErrorMessage());
+}
+
+// A failed cursor page (no cluster needed). A cursor that can't be encoded
+// as JSON makes IssueRequest return NULL before any connection is used,
+// which is the cursor thread's NULL-response path.
+
+namespace {
+const std::string unencodable_cursor = "\xff";
+
+// PopResult on another thread, so a hang fails the test instead of the run
+bool PopResultReturns(OpenSearchCommunication& conn, OpenSearchResult*& result) {
+    std::future< OpenSearchResult* > popped = std::async(
+        std::launch::async, [&conn]() { return conn.PopResult(); });
+    const bool returned =
+        popped.wait_for(std::chrono::seconds(5)) == std::future_status::ready;
+    if (!returned)
+        conn.StopResultRetrieval();  // unblock PopResult
+    result = popped.get();
+    return returned;
+}
+}  // namespace
+
+TEST(TestCursorError, NullResponseDoesNotHangPopResult) {
+    OpenSearchCommunication conn;
+    conn.SendCursorQueries(unencodable_cursor);
+    OpenSearchResult* result = nullptr;
+    EXPECT_TRUE(PopResultReturns(conn, result));
+    EXPECT_EQ(nullptr, result);
+}
+
+TEST(TestCursorError, NullResponseIsReported) {
+    OpenSearchCommunication conn;
+    conn.SendCursorQueries(unencodable_cursor);
+    std::optional< ErrorDetails > error = conn.GetCursorError();
+    ASSERT_TRUE(error.has_value());
+    EXPECT_EQ(ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE, error->type);
+    EXPECT_EQ(error_prefix
+                  + "Cursor error: Failed to receive response from cursor. "
+                    "Received NULL response.",
+              OpenSearchCommunication::FormatErrorMessage(*error));
+}
+
+// The cursor thread keeps its error to itself: the connection's error,
+// which the app thread reads, isn't written from that thread
+TEST(TestCursorError, ConnectionErrorIsUntouched) {
+    OpenSearchCommunication conn;
+    conn.SendCursorQueries(unencodable_cursor);
+    EXPECT_EQ(error_prefix
+                  + "No error details available; check the driver logs.",
+              conn.GetErrorMessage());
+}
+
+TEST(TestCursorError, NoErrorWithoutAFailedCursor) {
+    OpenSearchCommunication conn;
+    EXPECT_FALSE(conn.GetCursorError().has_value());
+}
+
+TEST(TestCursorError, NextQueryClearsIt) {
+    OpenSearchCommunication conn;
+    conn.SendCursorQueries(unencodable_cursor);
+    ASSERT_TRUE(conn.GetCursorError().has_value());
+    // Fails (not connected), but starts a new query all the same
+    conn.ExecDirect("SELECT 1", "-1");
+    EXPECT_FALSE(conn.GetCursorError().has_value());
 }
 
 // Server URL scheme (no cluster needed)

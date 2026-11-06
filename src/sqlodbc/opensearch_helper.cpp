@@ -48,6 +48,20 @@ ConnErrorType GetErrorType(void* opensearch_conn) {
                    : ConnErrorType::CONN_ERROR_SUCCESS;
 }
 
+bool GetCursorErrorMsg(void* opensearch_conn, std::string& message,
+                       ConnErrorType& type) {
+    if (!opensearch_conn)
+        return false;
+    std::optional< ErrorDetails > error =
+        static_cast< OpenSearchCommunication* >(opensearch_conn)
+            ->GetCursorError();
+    if (!error)
+        return false;
+    message = OpenSearchCommunication::FormatErrorMessage(*error);
+    type = error->type;
+    return true;
+}
+
 std::string GetServerVersion(void* opensearch_conn) {
     return opensearch_conn
                ? static_cast< OpenSearchCommunication* >(opensearch_conn)->GetServerVersion()
