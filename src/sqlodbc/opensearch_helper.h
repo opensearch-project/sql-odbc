@@ -15,6 +15,9 @@ std::string GetServerVersion(void* opensearch_conn);
 std::string GetClusterName(void* opensearch_conn);
 std::string GetErrorMsg(void* opensearch_conn);
 ConnErrorType GetErrorType(void* opensearch_conn);
+// The error that stopped the background cursor thread, if one did
+bool GetCursorErrorMsg(void* opensearch_conn, std::string& message,
+                       ConnErrorType& type);
 std::vector< std::string > OpenSearchGetColumnsWithSelectQuery(
     void* opensearch_conn, const std::string table_name);
 

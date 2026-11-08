@@ -14,7 +14,9 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit);
 QResultClass *SendQueryGetResult(StatementClass *stmt, BOOL commit);
 RETCODE AssignResult(StatementClass *stmt);
 SQLRETURN OPENSEARCHAPI_Cancel(HSTMT hstmt);
-SQLRETURN GetNextResultSet(StatementClass *stmt);
+// Appends the next page of rows to stmt's result. SQL_ERROR if a page
+// failed, setting stmt's error only if report_error.
+SQLRETURN GetNextResultSet(StatementClass *stmt, BOOL report_error);
 void ClearOpenSearchResult(void *opensearch_result);
 #ifdef __cplusplus
 }

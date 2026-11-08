@@ -132,9 +132,11 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
     }
 
     // This will commit results for SQLExecDirect and will not commit
-    // results for SQLPrepare since only metadata is required for SQLPrepare
+    // results for SQLPrepare since only metadata is required for SQLPrepare.
+    // A failed page isn't this call's error: SQLFetch reports it once the
+    // rows before it are fetched.
     if (commit) {
-        GetNextResultSet(stmt);
+        GetNextResultSet(stmt, FALSE);
     }
 
     stmt->diag_row_count = res->recent_processed_row_count;
@@ -142,15 +144,19 @@ RETCODE ExecuteStatement(StatementClass *stmt, BOOL commit) {
     return CleanUp();
 }
 
-SQLRETURN GetNextResultSet(StatementClass *stmt) {
+SQLRETURN GetNextResultSet(StatementClass *stmt, BOOL report_error) {
+    CSTR func = "GetNextResultSet";
     ConnectionClass *conn = SC_get_conn(stmt);
     QResultClass *q_res = SC_get_Result(stmt);
     if ((q_res == NULL) && (conn == NULL)) {
         return SQL_ERROR;
     }
 
+    // Not SQLNumResultCols: on Linux that call binds to the driver manager's
+    // export, which rejects the driver's own handle, and no page after the
+    // first was ever fetched
     SQLSMALLINT total_columns = -1;
-    if (!SQL_SUCCEEDED(SQLNumResultCols(stmt, &total_columns))
+    if (!SQL_SUCCEEDED(OPENSEARCHAPI_NumResultCols(stmt, &total_columns))
         || (total_columns == -1)) {
         return SQL_ERROR;
     }
@@ -169,9 +175,26 @@ SQLRETURN GetNextResultSet(StatementClass *stmt) {
         // appending these rows in q_result
         CC_Append_Table_Data(es_res->opensearch_result_doc, q_res, total_columns,
                              *(q_res->fields));
+        return SQL_SUCCESS;
     }
 
-    return SQL_SUCCESS;
+    // No page: either the end of data, or a page failed. A failure keeps
+    // the server cursor id, so every later fetch reports it too, rather
+    // than ending the result set early.
+    std::string message;
+    ConnErrorType error_type = ConnErrorType::CONN_ERROR_SUCCESS;
+    if (!GetCursorErrorMsg(conn->opensearchconn, message, error_type)) {
+        QR_set_server_cursor_id(q_res, NULL);
+        return SQL_SUCCESS;
+    }
+    if (report_error) {
+        SC_set_error(stmt,
+                     error_type == ConnErrorType::CONN_ERROR_COMM_LINK_FAILURE
+                         ? STMT_COMMUNICATION_ERROR
+                         : STMT_EXEC_ERROR,
+                     message.c_str(), func);
+    }
+    return SQL_ERROR;
 }
 
 RETCODE RePrepareStatement(StatementClass *stmt) {
@@ -257,6 +280,9 @@ QResultClass *SendQueryGetResult(StatementClass *stmt, BOOL commit) {
     }
 
     if (commit) {
+        // So a failed second page leaves SQLFetch a cursor to report it on
+        if (res && !es_res->cursor.empty())
+            QR_set_server_cursor_id(res, es_res->cursor.c_str());
         // Deallocate OpenSearchResult
         OpenSearchClearResult(es_res);
         res->opensearch_result = NULL;
@@ -284,7 +310,11 @@ RETCODE AssignResult(StatementClass *stmt) {
         QR_Destructor(res);
         return SQL_ERROR;
     }
-    GetNextResultSet(stmt);
+    // So a failed second page leaves SQLFetch a cursor to report it on
+    if (!es_res->cursor.empty())
+        QR_set_server_cursor_id(res, es_res->cursor.c_str());
+    // A failed page is reported by SQLFetch, as in ExecuteStatement
+    GetNextResultSet(stmt, FALSE);
 
     // Deallocate and return result
     OpenSearchClearResult(es_res);
