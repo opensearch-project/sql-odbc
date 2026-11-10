@@ -322,7 +322,19 @@ RETCODE AssignResult(StatementClass *stmt) {
     ConnectionClass *conn = SC_get_conn(stmt);
     if (!CC_No_Metadata_from_OpenSearchResult(res, conn, res->cursor_name,
                                               *es_res)) {
-        QR_Destructor(res);
+        // res is stmt->result: detach it as it's freed (along with es_res,
+        // which it owns), or the statement frees it again later
+        SC_set_Result(stmt, NULL);
+        std::string parse_error = GetResultParserError();
+        SC_set_error(stmt, STMT_EXEC_ERROR,
+                     parse_error.empty()
+                         ? "Failed to convert the server's response to a "
+                           "result set."
+                         : ("Failed to convert the server's response to a "
+                            "result set: "
+                            + parse_error)
+                               .c_str(),
+                     "AssignResult");
         return SQL_ERROR;
     }
     // So a failed second page leaves SQLFetch a cursor to report it on

@@ -196,4 +196,24 @@ TEST(TestSendQueryGetResult, UnconvertibleResponseIsAnExecutionError) {
     EXPECT_NE(nullptr, strstr(SC_get_errormsg(stmt.Stmt()),
                               "Failed to convert the server's response"));
 }
+
+// SQLPrepare then SQLExecute: the prepare only reads the schema, so the bad
+// row is found by AssignResult. It used to free stmt->result but leave the
+// statement pointing at it, so the statement's destructor freed it again.
+TEST(TestAssignResult, UnconvertiblePreparedResponseIsAnExecutionError) {
+    StubServer server(kUnconvertibleBody);
+    ASSERT_NE(0, server.Port());
+    StubStatement stmt(server.Port());
+    ASSERT_TRUE(stmt.Connected());
+
+    ASSERT_EQ(SQL_SUCCESS, ExecuteStatement(stmt.Stmt(), FALSE));
+    ASSERT_NE(nullptr, SC_get_Result(stmt.Stmt()));
+
+    EXPECT_EQ(SQL_ERROR, AssignResult(stmt.Stmt()));
+    EXPECT_EQ(nullptr, SC_get_Result(stmt.Stmt()));
+    EXPECT_EQ(STMT_EXEC_ERROR, SC_get_errornumber(stmt.Stmt()));
+    ASSERT_NE(nullptr, SC_get_errormsg(stmt.Stmt()));
+    EXPECT_NE(nullptr, strstr(SC_get_errormsg(stmt.Stmt()),
+                              "Failed to convert the server's response"));
+}
 #endif  // WIN32
