@@ -62,4 +62,4 @@ Tested against OpenSearch 2.x and 3.x. Covers all changes since 1.5.0.0 (1.6.0.0
 * Replace unmaintained rapidjson and rabbit with nlohmann/json 3.12.0 ([#113](https://github.com/opensearch-project/sql-odbc/pull/113), [#118](https://github.com/opensearch-project/sql-odbc/pull/118))
 * Bump version to 1.7.0.0
 * Version updates ([#80](https://github.com/opensearch-project/sql-odbc/pull/80), [#88](https://github.com/opensearch-project/sql-odbc/pull/88))
-* Maintainer updates ([#86](https://github.com/opensearch-project/sql-odbc/pull/86), [#90](https://github.com/opensearch-project/sql-odbc/pull/90), [#100](https://github.com/opensearch-project/sql-odbc/pull/100), [#107](https://github.com/opensearch-project/sql-odbc/pull/107))
+* Maintainer updates ([#86](https://github.com/opensearch-project/sql-odbc/pull/86), [#90](https://github.com/opensearch-project/sql-odbc/pull/90), [#100](https://github.com/opensearch-project/sql-odbc/pull/100), [#107](https://github.com/opensearch-project/sql-odbc/pull/107), [#108](https://github.com/opensearch-project/sql-odbc/pull/108))
