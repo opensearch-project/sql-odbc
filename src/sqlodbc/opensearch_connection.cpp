@@ -94,7 +94,7 @@ std::string generateValidServerUrl(ConnectionClass *self) {
     bool http_prefix_prepended = (server_url.size() > http_prefix.size() && (server_url.substr(0, http_prefix.size()) == http_prefix));
     bool https_prefix_prepended = (server_url.size() > https_prefix.size() && (server_url.substr(0, https_prefix.size()) == https_prefix));
     if (!http_prefix_prepended && !https_prefix_prepended) {
-        valid_server_url = (self->connInfo.use_ssl == '1') ?
+        valid_server_url = (self->connInfo.use_ssl != 0) ?
             std::string(https_prefix) + std::string(server_url) :
             std::string(http_prefix) + std::string(server_url);
     } else {
@@ -103,18 +103,11 @@ std::string generateValidServerUrl(ConnectionClass *self) {
     return valid_server_url;
 }
 
-int LIBOPENSEARCH_connect(ConnectionClass *self) {
-    if (self == NULL)
-        return 0;
-
-    // Setup options
+runtime_options GetRuntimeOptions(ConnectionClass *self) {
     runtime_options rt_opts;
 
     // Connection
     rt_opts.conn.server.assign(generateValidServerUrl(self));
-    if(rt_opts.conn.server.empty()) {
-        return 0;
-    }
     rt_opts.conn.port.assign(self->connInfo.port);
     rt_opts.conn.timeout.assign(self->connInfo.response_timeout);
 
@@ -125,9 +118,21 @@ int LIBOPENSEARCH_connect(ConnectionClass *self) {
     rt_opts.auth.region.assign(self->connInfo.region);
     rt_opts.auth.tunnel_host.assign(self->connInfo.tunnel_host);
 
-    // Encryption
-    rt_opts.crypt.verify_server = (self->connInfo.verify_server == '1');
-    rt_opts.crypt.use_ssl = (self->connInfo.use_ssl == '1');
+    // Encryption. The parser stores these flags as atoi() of the option
+    // value (0 or 1), not as the characters '0' and '1'
+    rt_opts.crypt.verify_server = (self->connInfo.verify_server != 0);
+    rt_opts.crypt.use_ssl = (self->connInfo.use_ssl != 0);
+    return rt_opts;
+}
+
+int LIBOPENSEARCH_connect(ConnectionClass *self) {
+    if (self == NULL)
+        return 0;
+
+    runtime_options rt_opts = GetRuntimeOptions(self);
+    if (rt_opts.conn.server.empty()) {
+        return 0;
+    }
 
     void *opensearchconn = OpenSearchConnectDBParams(rt_opts, FALSE, OPTION_COUNT);
     if (opensearchconn == NULL) {
