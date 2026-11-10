@@ -1,6 +1,6 @@
 {
     "name": "sql-odbc",
-    "version-string": "1.6.0.0",
+    "version-string": "1.7.0.0",
     "dependencies": [
         {
             "name": "aws-sdk-cpp",
