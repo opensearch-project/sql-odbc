@@ -6,6 +6,7 @@
 #include <memory>
 #include <mutex>
 #include <queue>
+#include <thread>
 #include <future>
 #include <regex>
 #include "opensearch_types.h"
@@ -44,6 +45,8 @@ class OpenSearchCommunication {
     void DropDBConnection();
     void LogMsg(OpenSearchLogLevel level, const char* msg);
     int ExecDirect(const char* query, const char* fetch_size_);
+    // Fetches the pages after the first on the calling thread. ExecDirect
+    // runs this on m_cursor_thread.
     void SendCursorQueries(std::string cursor);
     OpenSearchResult* PopResult();
     std::string GetClientEncoding();
@@ -88,6 +91,9 @@ class OpenSearchCommunication {
         std::shared_ptr< Aws::Http::HttpResponse > response,
         std::string& output);
     void SendCloseCursorRequest(const std::string& cursor);
+    // Stops the cursor thread, waits for it to exit, and drops the queued
+    // results. A page request in flight finishes first: at most one
+    // response timeout. Not for the cursor thread itself.
     void StopResultRetrieval();
     std::vector< std::string > GetColumnsWithSelectQuery(
         const std::string table_name);
@@ -111,6 +117,9 @@ class OpenSearchCommunication {
     void SetCursorError(const std::string& message, ConnErrorType error_type);
     void SetCursorError(const ErrorDetails& details);
     void ClearCursorError();
+    // SendCursorQueries' loop, without starting retrieval: on the thread,
+    // ExecDirect started it, and a stop may already have ended it
+    void RetrieveCursorPages(std::string cursor);
 
     void SetIsAossServerless();
     void SetSqlEndpoint();
@@ -140,6 +149,13 @@ class OpenSearchCommunication {
     // m_error_details, because the app thread reads that unlocked.
     std::mutex m_cursor_error_mutex;
     std::optional< ErrorDetails > m_cursor_error;
+    // Fetches a query's pages after the first. Uses this object, so it is
+    // joined before anything it uses goes away: StopResultRetrieval joins
+    // it, and every path that ends or replaces a query calls that. Started
+    // and joined only from the app thread, which holds none of the locks
+    // the cursor thread takes (the queue's and m_cursor_error_mutex) while
+    // it joins.
+    std::thread m_cursor_thread;
 };
 
 #endif
