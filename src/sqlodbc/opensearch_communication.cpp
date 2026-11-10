@@ -316,6 +316,8 @@ OpenSearchCommunication::OpenSearchCommunication()
 }
 
 OpenSearchCommunication::~OpenSearchCommunication() {
+    // The cursor thread uses this object and its HTTP client
+    StopResultRetrieval();
     // Release the HTTP client instance to free its resources before releasing AWS SDK.
     // Changing order of these actions would cause crash on disconnect.
     m_http_client.reset();
@@ -393,12 +395,13 @@ ConnStatusType OpenSearchCommunication::GetConnectionStatus() {
 
 void OpenSearchCommunication::DropDBConnection() {
     LogMsg(OPENSEARCH_ALL, "Dropping DB connection.");
+    // Before the client goes: the cursor thread may be using it
+    StopResultRetrieval();
     if (m_http_client) {
         m_http_client.reset();
     }
 
     m_status = ConnStatusType::CONNECTION_BAD;
-    StopResultRetrieval();
 }
 
 bool OpenSearchCommunication::CheckConnectionOptions() {
@@ -795,6 +798,12 @@ std::string OpenSearchCommunication::ResponseBodyForMessage(
 }
 
 int OpenSearchCommunication::ExecDirect(const char* query, const char* fetch_size_) {
+    // A previous paged query's pages, queued or still coming, would be
+    // popped as this query's results, and its thread must be gone before
+    // this one's starts. Results without a cursor stay queued, as they
+    // always have.
+    if (m_cursor_thread.joinable())
+        StopResultRetrieval();
     m_error_details.reset();
     ClearCursorError();
     if (!query) {
@@ -880,7 +889,8 @@ int OpenSearchCommunication::ExecDirect(const char* query, const char* fetch_siz
         // pages asynchronously. Retrieval counts as started now: a PopResult
         // that beat the thread's start would otherwise see the end of data.
         m_is_retrieving = true;
-        std::thread([&, cursor]() { SendCursorQueries(cursor); }).detach();
+        m_cursor_thread =
+            std::thread([this, cursor]() { RetrieveCursorPages(cursor); });
     }
 
     return 0;
@@ -891,7 +901,10 @@ void OpenSearchCommunication::SendCursorQueries(std::string cursor) {
         return;
     }
     m_is_retrieving = true;
+    RetrieveCursorPages(cursor);
+}
 
+void OpenSearchCommunication::RetrieveCursorPages(std::string cursor) {
     try {
         while (!cursor.empty() && m_is_retrieving) {
             std::shared_ptr< Aws::Http::HttpResponse > response = IssueRequest(
@@ -930,16 +943,19 @@ void OpenSearchCommunication::SendCursorQueries(std::string cursor) {
                 cursor.clear();
             }
 
-            while (m_is_retrieving
-                   && !m_result_queue.push(QUEUE_TIMEOUT, result.get())) {
-            }
+            // A full queue is waited on in QUEUE_TIMEOUT steps, so a stop
+            // ends the wait within one
+            bool pushed = false;
+            while (!pushed && m_is_retrieving)
+                pushed = m_result_queue.push(QUEUE_TIMEOUT, result.get());
 
-            // Don't release when attempting to push to the queue as it may take
-            // multiple tries.
-            result.release();
+            // The queue owns a pushed page; one that never made it (stopped)
+            // is freed here
+            if (pushed)
+                result.release();
         }
     } catch (const std::exception& e) {
-        // This runs on a detached thread: an escaping exception terminates
+        // This runs on the cursor thread: an escaping exception terminates
         // the app
         SetCursorError("Received runtime exception: " + std::string(e.what()),
                        ConnErrorType::CONN_ERROR_QUERY_SYNTAX);
@@ -983,6 +999,12 @@ void OpenSearchCommunication::SendCloseCursorRequest(const std::string& cursor) 
 
 void OpenSearchCommunication::StopResultRetrieval() {
     m_is_retrieving = false;
+    // The thread sees the flag between page requests and while waiting on
+    // a full queue. Nothing here holds a lock it takes, and it never calls
+    // this (the id check keeps a self-join, which throws, impossible).
+    if (m_cursor_thread.joinable()
+        && m_cursor_thread.get_id() != std::this_thread::get_id())
+        m_cursor_thread.join();
     m_result_queue.clear();
 }
 

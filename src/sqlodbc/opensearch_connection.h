@@ -457,5 +457,8 @@ enum { SVPOPT_RDONLY = 1L, SVPOPT_REDUCE_ROUNDTRIP = (1L << 1) };
 // Server URL with http:// or https:// prepended (chosen by UseSSL) when the
 // user didn't give a scheme
 std::string generateValidServerUrl(ConnectionClass *self);
+#include "opensearch_types.h"
+// Runtime options (server URL, auth, TLS flags) from the parsed connInfo
+runtime_options GetRuntimeOptions(ConnectionClass *self);
 #endif
 #endif /* __OPENSEARCHCONNECTION_H__ */
