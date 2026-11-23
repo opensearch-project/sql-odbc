@@ -7,7 +7,6 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Maintainer        | GitHub ID                                           | Affiliation |
 | ----------------- | -------------------------------------------------   | ----------- |
 | Eric Wei          | [mengweieric](https://github.com/mengweieric)       | Amazon      |
-| Joshua Li         | [joshuali925](https://github.com/joshuali925)       | Amazon      |
 | Shenoy Pratik     | [ps48](https://github.com/ps48)                     | Amazon      |
 | Kavitha Mohan     | [kavithacm](https://github.com/kavithacm)           | Amazon      |
 | Lior Perry        | [YANG-DB](https://github.com/YANG-DB)               | Amazon      |
@@ -34,3 +33,4 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Forest Vey        | [forestmvey](https://github.com/forestmvey)             | Improving   |
 | Vamsi Manohar     | [vamsimanohar](https://github.com/vamsimanohar)         | Amazon      |
 | Derek Ho          | [derek-ho](https://github.com/derek-ho)                 | Amazon      |
+| Joshua Li         | [joshuali925](https://github.com/joshuali925)           | Amazon      |
