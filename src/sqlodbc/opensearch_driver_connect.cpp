@@ -183,10 +183,11 @@ static SQLRETURN SetupConnString(const SQLCHAR *conn_str_in,
     //Sets log output dir to path retrived from connection string
     //If connection string doesn't have log path then takes value from DSN
     //If connection string & DSN both doesn't include log path then takes default value
+    //(none on Linux and macOS, so the value already in odbcinst.ini is kept)
     if (!conn_string_log_dir.empty()) {
         setLogDir(conn_string_log_dir.c_str());
         conn_string_log_dir.clear();
-    } else {
+    } else if (ci->drivers.output_dir[0] != '\0') {
         setLogDir(ci->drivers.output_dir);
     }
     InitializeLogging();
