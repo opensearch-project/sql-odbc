@@ -766,7 +766,7 @@ RETCODE SQL_API OPENSEARCHAPI_GetData(HSTMT hstmt, SQLUSMALLINT icol,
     SQLSMALLINT target_type;
     int precision = -1;
 #ifdef WITH_UNIXODBC
-    SQLCHAR dum_rgb[2] = "\0\0";
+    SQLCHAR dum_rgb[2] = {0, 0};
 #endif /* WITH_UNIXODBC */
 
     MYLOG(OPENSEARCH_TRACE, "entering stmt=%p icol=%d\n", (void *)stmt, icol);

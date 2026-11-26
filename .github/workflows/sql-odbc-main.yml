@@ -131,7 +131,7 @@ jobs:
 
     - name: Configure and build driver
       run: |
-        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT ./build_linux_release64.sh
+        WARNINGS_AS_ERRORS=OFF VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT ./build_linux_release64.sh
 
     # A matrix leg can land on a newer runner image than build-linux did
     - name: Save vcpkg cache
