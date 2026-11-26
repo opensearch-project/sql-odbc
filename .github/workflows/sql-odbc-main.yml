@@ -48,7 +48,8 @@ jobs:
 
     - name: Configure and build driver
       run: |
-        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT ./build_linux_release64.sh
+        # Warnings don't fail this job; the warnings-linux job reports them
+        WARNINGS_AS_ERRORS=OFF VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT ./build_linux_release64.sh
 
     - name: Save vcpkg cache
       if: steps.cache-restore.outputs.cache-hit != 'true'
@@ -70,6 +71,34 @@ jobs:
       with:
         name: linux64-build
         path: build/odbc/lib/libsqlodbc.so
+
+  # Compiler warnings as errors, in their own job so a new warning (e.g. from a
+  # newer compiler on ubuntu-latest) shows up red here without blocking the real
+  # build, unit tests or e2e. Don't mark it as a required check.
+  warnings-linux:
+    needs: build-linux
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+    - name: Get dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y autoconf autoconf-archive automake libtool libltdl-dev unixodbc
+
+    - name: Get vcpkg config fingerprint
+      id: get-key
+      run: |
+        echo key=`cat src/vcpkg.json src/vcpkg-configuration.json src/vcpkg-triplets/* | md5sum | cut -d ' ' -f 1`-linux-$ImageOS-$ImageVersion >> $GITHUB_OUTPUT
+
+    - name: Restore vcpkg cache
+      uses: actions/cache/restore@6f8efc29b200d32929f49075959781ed54ec270c # v3
+      with:
+        path: src/vcpkg_installed
+        key: ${{ steps.get-key.outputs.key }}
+
+    - name: Build with warnings as errors (keep going to list all of them)
+      run: |
+        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT WARNINGS_AS_ERRORS=ON ./build_linux_release64.sh -- -k
 
   # End-to-end: the driver against a real, security-enabled OpenSearch with the
   # Dashboards sample datasets loaded. Runs after build-linux, so compile and
@@ -102,7 +131,7 @@ jobs:
 
     - name: Configure and build driver
       run: |
-        VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT ./build_linux_release64.sh
+        WARNINGS_AS_ERRORS=OFF VCPKG_ROOT=$VCPKG_INSTALLATION_ROOT ./build_linux_release64.sh
 
     # A matrix leg can land on a newer runner image than build-linux did
     - name: Save vcpkg cache

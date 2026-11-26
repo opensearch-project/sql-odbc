@@ -175,7 +175,7 @@ int get_qlog(void) {
 }
 
 const char *po_basename(const char *path) {
-    char *p;
+    const char *p;
 
     if (p = strrchr(path, DIRSEPARATOR[0]), NULL != p)
         return p + 1;

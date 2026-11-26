@@ -186,9 +186,9 @@ BOOL dconn_get_attributes(copyfunc func, const char *connect_string,
                           ConnInfo *ci) {
     BOOL ret = TRUE;
     char *our_connect_string;
-    const char *pair, *attribute, *value, *termp;
+    const char *attribute, *termp;
     BOOL eoftok;
-    char *equals, *delp;
+    char *pair, *value, *equals, *delp;
     char *strtok_arg;
 #ifdef HAVE_STRTOK_R
     char *last = NULL;
