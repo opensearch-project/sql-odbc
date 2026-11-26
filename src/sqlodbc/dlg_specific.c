@@ -173,7 +173,13 @@ static void getCiDefaults(ConnInfo *ci) {
     strncpy(ci->tunnel_host, DEFAULT_TUNNEL_HOST, MEDIUM_REGISTRY_LEN);
     ci->use_ssl = DEFAULT_USE_SSL;
     ci->verify_server = DEFAULT_VERIFY_SERVER;
+#ifdef WIN32
     strcpy(ci->drivers.output_dir, "C:\\");
+#else
+    // No default on Linux and macOS: an empty value leaves the log directory
+    // stored in odbcinst.ini untouched, and the driver falls back to /tmp.
+    ci->drivers.output_dir[0] = '\0';
+#endif
 }
 
 #ifdef __APPLE__
