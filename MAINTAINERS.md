@@ -17,7 +17,6 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Sean Kao          | [seankao-az](https://github.com/seankao-az)         | Amazon      |
 | Anirudha Jadhav   | [anirudha](https://github.com/anirudha)             | Amazon      |
 | Max Ksyunz        | [MaxKsyunz](https://github.com/MaxKsyunz)           | Improving   |
-| Yury Fridlyand    | [Yury-Fridlyand](https://github.com/Yury-Fridlyand) | Improving   |
 | Andrew Carbonetto | [acarbonetto](https://github.com/acarbonetto)       | Improving   |
 | Guian Gumpac      | [GumpacG](https://github.com/GumpacG)               | Improving   |
 
@@ -34,3 +33,4 @@ This document contains a list of maintainers in this repo. See [opensearch-proje
 | Forest Vey        | [forestmvey](https://github.com/forestmvey)             | Improving   |
 | Vamsi Manohar     | [vamsimanohar](https://github.com/vamsimanohar)         | Amazon      |
 | Derek Ho          | [derek-ho](https://github.com/derek-ho)                 | Amazon      |
+| Yury Fridlyand    | [Yury-Fridlyand](https://github.com/Yury-Fridlyand)     | Improving   |
